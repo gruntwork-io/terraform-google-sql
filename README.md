@@ -7,16 +7,21 @@ This repo contains modules for running relational databases such as MySQL and Po
 
 ## Code included in this Module
 
-* [cloud-sql](/modules/cloud-sql): Deploy a Cloud SQL cluster.
+* [mysql](/modules/mysql): Deploy a Cloud SQL MySQL cluster.
+* [postgresql](/modules/mysql): Deploy a Cloud SQL PostgreSQL cluster.
 
 
 ## What is Cloud SQL?
 
 Cloud SQL is Google's fully-managed database service that makes it easy to set up, maintain, manage, and administer 
-your relational databases on Google Cloud Platform. Cloud SQL automatically includes Data replication between multiple 
-zones with automatic failover, automated and on-demand backups, and point-in-time recovery.
+your relational databases on Google Cloud Platform. Cloud SQL automatically includes: 
 
-You can learn more Cloud SQL from [the official documentation](https://cloud.google.com/sql/docs/).
+* Data replication between multiple zones with automatic failover.
+* Automated and on-demand backups, and point-in-time recovery.
+* Data encryption on networks, database tables, temporary files, and backups.
+* Secure external connections with the [Cloud SQL Proxy](https://cloud.google.com/sql/docs/mysql/sql-proxy) or with the SSL/TLS protocol.
+
+You can learn more about Cloud SQL from [the official documentation](https://cloud.google.com/sql/docs/).
 
 ## Who maintains this Module?
 
