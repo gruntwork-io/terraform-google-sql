@@ -29,6 +29,11 @@ variable "machine_type" {
   default     = "db-f1-micro"
 }
 
+variable "availability_type" {
+  description = "This specifies whether a PostgreSQL instance should be set up for high availability (REGIONAL) or single zone (ZONAL)."
+  default     = "ZONAL"
+}
+
 variable "db_name" {
   description = "Name of the default database to create"
   default     = "default"
@@ -44,17 +49,17 @@ variable "db_collation" {
   default     = ""
 }
 
-variable "master_user_name" {
+variable "db_user" {
   description = "The name of the default user"
   default     = "default"
 }
 
-variable "master_user_host" {
+variable "db_user_host" {
   description = "The host for the default user"
   default     = "%"
 }
 
-variable "master_user_password" {
+variable "db_password" {
   description = "The password for the default user."
   default     = ""
 }
