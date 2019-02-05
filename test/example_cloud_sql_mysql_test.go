@@ -9,6 +9,7 @@ import (
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/gruntwork-io/terratest/modules/test-structure"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -92,10 +93,7 @@ func TestCloudSQLMySql(t *testing.T) {
 		logger.Logf(t, "Connecting to: %s", publicIp)
 		db, err := sql.Open("mysql",
 			connectionString)
-
-		if err != nil {
-			t.Fatalf("Failed to open DB connection: %v", err)
-		}
+		require.NoError(t, err, "Failed to open DB connection")
 
 		// Make sure we clean up properly
 		defer db.Close()
@@ -121,21 +119,16 @@ func TestCloudSQLMySql(t *testing.T) {
 		// Insert data to check that our auto-increment flags worked
 		logger.Logf(t, "Insert data: %s", MYSQL_INSERT_TEST_ROW)
 		stmt, err := db.Prepare(MYSQL_INSERT_TEST_ROW)
-		if err != nil {
-			t.Fatalf("Failed to prepare statement: %v", err)
-		}
+		require.NoError(t, err, "Failed to prepare statement")
 
 		// Execute the statement
 		res, err := stmt.Exec("Grunt")
-		if err != nil {
-			t.Fatalf("Failed to execute statement: %v", err)
-		}
+		require.NoError(t, err, "Failed to execute statement")
 
 		// Get the last insert id
 		lastId, err := res.LastInsertId()
-		if err != nil {
-			t.Fatalf("Failed to get last insert id: %v", err)
-		}
+		require.NoError(t, err, "Failed to get last insert id")
+
 		// Since we set the auto increment to 5, modulus should always be 0
 		assert.Equal(t, int64(0), int64(lastId%5))
 	})
