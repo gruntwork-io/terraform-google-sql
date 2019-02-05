@@ -8,9 +8,9 @@ output "public_ip" {
   value       = "${module.mysql.public_ip}"
 }
 
-output "instance_self_link" {
+output "instance" {
   description = "Self link to the master instance"
-  value       = "${module.mysql.instance_self_link}"
+  value       = "${module.mysql.instance}"
 }
 
 output "db_name" {
@@ -22,8 +22,8 @@ output "proxy_connection" {
   value = "${module.mysql.proxy_connection}"
 }
 
-output "db_self_link" {
+output "db" {
   description = "Self link to the default database"
-  value       = "${module.mysql.db_self_link}"
+  value       = "${module.mysql.db}"
 }
 

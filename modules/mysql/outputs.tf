@@ -8,7 +8,7 @@ output "public_ip" {
   value       = "${var.publicly_accessible ? google_sql_database_instance.master.ip_address.0.ip_address : ""}"
 }
 
-output "instance_self_link" {
+output "instance" {
   description = "Self link to the master instance"
   value       = "${google_sql_database_instance.master.self_link}"
 }
@@ -18,11 +18,13 @@ output "db_name" {
   value = "${google_sql_database.default.name}"
 }
 
+
 output "proxy_connection" {
+  description = "Instance path for connecting with Cloud SQL Proxy. Read more at https://cloud.google.com/sql/docs/mysql/sql-proxy"
   value = "${var.project}:${var.region}:${google_sql_database_instance.master.name}"
 }
 
-output "db_self_link" {
+output "db" {
   description = "Self link to the default database"
   value       = "${google_sql_database.default.self_link}"
 }
