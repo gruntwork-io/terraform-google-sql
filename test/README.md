@@ -8,7 +8,7 @@ works as expected using a helper library called [Terratest](https://github.com/g
 
 ## WARNING WARNING WARNING
 
-**Note #1**: Many of these tests create real resources in an AWS account and then try to clean those resources up at 
+**Note #1**: Many of these tests create real resources in a GCP project and then try to clean those resources up at 
 the end of a test run. That means these tests may cost you money to run! When adding tests, please be considerate of 
 the resources you create and take extra care to clean everything up when you're done!
 
