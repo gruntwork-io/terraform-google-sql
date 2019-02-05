@@ -1,7 +1,9 @@
-# Cloud SQL Module
+# MySQL Module
 
-This module creates a [Google Cloud SQL](https://cloud.google.com/sql/) cluster. The cluster is managed by Google, 
-automating backups, replication, patches, and updates. 
+This module creates a [Google Cloud SQL](https://cloud.google.com/sql/) [MySQL](https://cloud.google.com/sql/docs/mysql/) cluster. 
+The cluster is managed by Google, automating backups, replication, patches, and updates. 
+
+TODO: Figure out documentation format for separate modules.
 
 You can use Cloud SQL with either [MySQL](https://cloud.google.com/sql/docs/mysql/) or [PostgreSQL](https://cloud.google.com/sql/docs/postgres/).
 
@@ -26,10 +28,8 @@ You can also use the [Cloud SQL Proxy](https://cloud.google.com/sql/docs/mysql/c
 This module provides the connection details as [Terraform output 
 variables](https://www.terraform.io/intro/getting-started/outputs.html):
 
-**TODO**: Connectivity and outputs below
 
-
-1. **Public IP** `private_ip`: The public endpoint for the cluster.
+1. TODO: **Private IP** `private_ip`: The public endpoint for the cluster.
 1. **Public IP** `public_ip`: The public endpoint for the cluster.
 1. **Connection name** `connection_name`: The private endpoint for the cluster.
 1. **Replica endpoints** `replica_endpoints`: A comma-separated list of all DB instance URLs in the cluster, including the primary and all
