@@ -22,4 +22,9 @@
 [[constraint]]
   name = "github.com/gruntwork-io/terratest"
   source = "git@github.com:gruntwork-io/terratest"
-  version = "0.13.22"
+  version = "0.13.24"
+
+[[constraint]]
+  name = "github.com/go-sql-driver/mysql"
+  source = "git@github.com:go-sql-driver/mysql"
+  version = "1.4.1"
