@@ -34,11 +34,11 @@ variable "db_name" {
   default     = ""
 }
 
-variable "master_username" {
+variable "master_user_name" {
   description = "The username for the master user."
 }
 
-variable "master_password" {
+variable "master_user_password" {
   description = "The password for the master user."
 }
 
@@ -131,7 +131,7 @@ variable "zone" {
   default = ""
 }
 
-variable "master_host" {
+variable "master_user_host" {
   description = "The host for the default user"
   default     = "%"
 }

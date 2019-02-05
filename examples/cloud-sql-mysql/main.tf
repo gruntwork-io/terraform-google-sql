@@ -9,22 +9,30 @@ terraform {
   required_version = ">= 0.10.3"
 }
 
+resource "random_id" "name" {
+  byte_length = 2
+}
+
+locals {
+  # If name_override is specified, use that - otherwise use the name_prefix with a random string
+  instance_name = "${length(var.name_override) == 0 ? format("%s-%s", var.name_prefix, random_id.name.hex) : var.name_override}"
+}
+
 module "mysql" {
-  source           = "../../modules/mysql"
+  source                          = "../../modules/mysql"
 
-  project = "${var.project}"
-  region = "${var.region}"
-  name   = "${var.name}"
-  db_name = "${var.db_name}"
+  project                         = "${var.project}"
+  region                          = "${var.region}"
+  name                            = "${local.instance_name}"
+  db_name                         = "${var.db_name}"
 
-  engine = "${var.mysql_version}"
-  machine_type = "${var.machine_type}"
+  engine                          = "${var.mysql_version}"
+  machine_type                    = "${var.machine_type}"
 
-  master_password = "${var.master_password}"
-  master_username = "${var.master_username}"
-
-  master_host = "%"
-  enable_public_internet_access = "${var.enable_public_internet_access}"
+  master_user_password            = "${var.master_user_password}"
+  master_user_name                = "${var.master_user_name}"
+  master_user_host                = "%"
+  enable_public_internet_access   = "${var.enable_public_internet_access}"
 
   # Never do this in production!
   # We're setting permissive network rules to make
@@ -41,7 +49,7 @@ module "mysql" {
   database_flags = [
     {
       name  = "auto_increment_increment"
-      value = "10"
+      value = "5"
     },
     {
       name  = "auto_increment_offset"

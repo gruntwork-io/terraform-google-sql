@@ -54,9 +54,9 @@ resource "google_sql_database" "default" {
 }
 
 resource "google_sql_user" "default" {
-  name     = "${var.master_username}"
+  name     = "${var.master_user_name}"
   project  = "${var.project}"
   instance = "${google_sql_database_instance.master.name}"
-  host     = "${var.master_host}"
-  password = "${var.master_password}"
+  host     = "${var.master_user_host}"
+  password = "${var.master_user_password}"
 }
