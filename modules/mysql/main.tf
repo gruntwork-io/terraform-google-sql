@@ -12,6 +12,7 @@
 # ------------------------------------------------------------------------------
 
 resource "google_sql_database_instance" "master" {
+  provider = "google-beta"
   name                 = "${var.name}"
   project              = "${var.project}"
   region               = "${var.region}"
