@@ -18,7 +18,7 @@ and encryption. For a list of all available variables and their descriptions, se
 
 ## How do you connect to the database?
 
-**Cloud SQL instances are created in a producer network (a VPC network internal to Google). They are not created in your VPC network.**
+**Cloud SQL instances are created in a producer network (a VPC network internal to Google). They are not created in your VPC network. See https://cloud.google.com/sql/docs/mysql/private-ip**
  
 You can use both [public IP](https://cloud.google.com/sql/docs/mysql/connect-admin-ip) and [private IP](https://cloud.google.com/sql/docs/mysql/private-ip) to connect to a Cloud SQL instance. 
 Neither connection method affects the other; you must protect the public IP connection whether the instance is configured to use private IP or not.
