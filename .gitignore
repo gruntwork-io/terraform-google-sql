@@ -24,3 +24,5 @@ vendor
 
 #VIM swap files
 *.swp
+
+.test-data
