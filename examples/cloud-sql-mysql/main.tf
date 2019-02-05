@@ -24,7 +24,7 @@ module "mysql" {
   master_username = "${var.master_username}"
 
   master_host = "%"
-  publicly_accessible = "${var.publicly_accessible}"
+  enable_public_internet_access = "${var.enable_public_internet_access}"
 
   # Never do this in production!
   # We're setting permissive network rules to make

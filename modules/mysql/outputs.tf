@@ -5,7 +5,7 @@ output "instance_name" {
 
 output "public_ip" {
   description = "The IPv4 address of the master database instance"
-  value       = "${var.publicly_accessible ? google_sql_database_instance.master.ip_address.0.ip_address : ""}"
+  value       = "${var.enable_public_internet_access ? google_sql_database_instance.master.ip_address.0.ip_address : ""}"
 }
 
 output "instance" {

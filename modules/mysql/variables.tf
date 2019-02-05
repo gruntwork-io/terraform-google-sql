@@ -137,7 +137,7 @@ variable "master_host" {
 }
 
 # In nearly all cases, databases should NOT be publicly accessible, however if you're migrating from a PAAS provider like Heroku to GCP, this needs to remain open to the internet.
-variable "publicly_accessible" {
+variable "enable_public_internet_access" {
   description = "WARNING: - In nearly all cases a database should NOT be publicly accessible. Only set this to true if you want the database open to the internet."
   default     = false
 }

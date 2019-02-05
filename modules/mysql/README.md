@@ -31,8 +31,8 @@ variables](https://www.terraform.io/intro/getting-started/outputs.html):
 
 1. TODO: **Private IP** `private_ip`: The public endpoint for the cluster.
 1. **Public IP** `public_ip`: The public endpoint for the cluster.
-1. **Connection name** `connection_name`: The private endpoint for the cluster.
-1. **Replica endpoints** `replica_endpoints`: A comma-separated list of all DB instance URLs in the cluster, including the primary and all
+1. **Proxy connection** `proxy_connection`: "Instance path for connecting with Cloud SQL Proxy. Read more at https://cloud.google.com/sql/docs/mysql/sql-proxy.
+1. TODO: **Replica endpoints** `replica_endpoints`: A comma-separated list of all DB instance URLs in the cluster, including the primary and all
    read replicas. Use these URLs for reads (see "How do you scale this DB?" below).
 
 

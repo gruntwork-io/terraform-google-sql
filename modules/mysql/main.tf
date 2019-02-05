@@ -25,7 +25,7 @@ resource "google_sql_database_instance" "master" {
 
     ip_configuration {
       authorized_networks = ["${var.authorized_networks}"],
-      ipv4_enabled = "${var.publicly_accessible}"
+      ipv4_enabled = "${var.enable_public_internet_access}"
     }
 
     location_preference {
