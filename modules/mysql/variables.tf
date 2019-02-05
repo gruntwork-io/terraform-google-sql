@@ -30,8 +30,7 @@ variable "machine_type" {
 }
 
 variable "db_name" {
-  description = "Name of for your database of up to 8 alpha-numeric characters."
-  default     = ""
+  description = "Name of your database. Needs to follow MySQL identifier rules: https://dev.mysql.com/doc/refman/5.7/en/identifiers.html"
 }
 
 variable "master_user_name" {

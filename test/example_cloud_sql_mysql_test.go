@@ -9,7 +9,6 @@ import (
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/gruntwork-io/terratest/modules/test-structure"
 	"github.com/stretchr/testify/assert"
-	"os"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -33,11 +32,11 @@ const OUTPUT_PUBLIC_IP = "public_ip"
 func TestCloudSQLMySql(t *testing.T) {
 	t.Parallel()
 
-	os.Setenv("SKIP_bootstrap", "true")
+	//os.Setenv("SKIP_bootstrap", "true")
 	//os.Setenv("SKIP_deploy", "true")
-	os.Setenv("SKIP_validate_outputs", "true")
-	os.Setenv("SKIP_sql_tests", "true")
-	os.Setenv("SKIP_teardown", "true")
+	//os.Setenv("SKIP_validate_outputs", "true")
+	//os.Setenv("SKIP_sql_tests", "true")
+	//os.Setenv("SKIP_teardown", "true")
 
 	_examplesDir := test_structure.CopyTerraformFolderToTemp(t, "../", "examples")
 	exampleDir := filepath.Join(_examplesDir, EXAMPLE_NAME)
