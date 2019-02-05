@@ -9,70 +9,44 @@ terraform {
   required_version = ">= 0.10.3"
 }
 
-variable "region" {
-  default = "europe-north1"
-}
+module "mysql" {
+  source           = "../../modules/mysql"
 
-variable "project" {
-  default = "dev-sandbox-228703"
-}
-
-
-variable "zone" {
-  default = "europe-north1-a"
-}
-
-variable "mysql_version" {
-  default = "MYSQL_5_6"
-}
-
-resource "random_id" "name" {
-  byte_length = 2
-}
-
-resource "google_compute_network" "private_network" {
-  provider = "google-beta"
-  name       = "private-network"
-}
-
-resource "google_compute_global_address" "private_ip_address" {
-  provider = "google-beta"
-  name          = "private-ip-address"
-  purpose       = "VPC_PEERING"
-  address_type = "INTERNAL"
-  prefix_length = 16
-  network       = "${google_compute_network.private_network.self_link}"
-}
-
-resource "google_service_networking_connection" "private_vpc_connection" {
-  provider = "google-beta"
-  network       = "${google_compute_network.private_network.self_link}"
-  service       = "servicenetworking.googleapis.com"
-  reserved_peering_ranges = ["${google_compute_global_address.private_ip_address.name}"]
-}
-
-
-module "mysql-db" {
-  source           = "../../modules/cloud-sql"
-  name             = "example-mysql-${random_id.name.hex}"
-  region = "${var.region}"
-  engine = "${var.mysql_version}"
   project = "${var.project}"
-  machine_type = "db-f1-micro"
+  region = "${var.region}"
+  name   = "${var.name}"
+  db_name = "${var.db_name}"
 
-  ip_configuration = [
+  engine = "${var.mysql_version}"
+  machine_type = "${var.machine_type}"
+
+  master_password = "${var.master_password}"
+  master_username = "${var.master_username}"
+
+  master_host = "%"
+  publicly_accessible = "${var.publicly_accessible}"
+
+  # Never do this in production!
+  # We're setting permissive network rules to make
+  # it easier to test the instance
+  authorized_networks = [
     {
-      ipv4_enabled = "true"
-      private_network = "${google_compute_network.private_network.self_link}"
+      name = "allow-all-inbound",
+      value = "0.0.0.0/0"
     }
   ]
 
-  # https://cloud.google.com/sql/docs/mysql/flags
-  flags = [
+  # Set auto-increment flags to test the
+  # feature in during automated testing
+  database_flags = [
+    {
+      name  = "auto_increment_increment"
+      value = "10"
+    },
+    {
+      name  = "auto_increment_offset"
+      value = "5"
+    }
   ]
-}
-
-output "mysql_conn" {
-  value = "${var.project}:${var.region}:${module.mysql-db.instance_name}"
 }
 
