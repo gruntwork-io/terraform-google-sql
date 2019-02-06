@@ -36,7 +36,7 @@ variable "enable_public_internet_access" {
 
 variable "mysql_version" {
   description = "The engine version of the database, e.g. `MYSQL_5_6` or `MYSQL_5_7`"
-  default = "MYSQL_5_7"
+  default     = "MYSQL_5_7"
 }
 
 variable "machine_type" {
@@ -50,7 +50,5 @@ variable "db_name" {
 
 variable "name_override" {
   description = "You may optionally override the name_prefix + random string by specifying an override"
-  default = ""
+  default     = ""
 }
-
-

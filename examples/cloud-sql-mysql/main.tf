@@ -1,5 +1,5 @@
 provider "google-beta" {
-  region = "${var.region}"
+  region  = "${var.region}"
   project = "${var.project}"
 }
 
@@ -22,29 +22,29 @@ module "mysql" {
   # When using these modules in your own templates, you will need to use a Git URL with a ref attribute that pins you
   # to a specific version of the modules, such as the following example:
   # source = "git::git@github.com:gruntwork-io/terraform-google-sql.git//modules/mysql?ref=v0.1.0"
-  source                          = "../../modules/mysql"
+  source = "../../modules/mysql"
 
-  project                         = "${var.project}"
-  region                          = "${var.region}"
-  name                            = "${local.instance_name}"
-  db_name                         = "${var.db_name}"
+  project = "${var.project}"
+  region  = "${var.region}"
+  name    = "${local.instance_name}"
+  db_name = "${var.db_name}"
 
-  engine                          = "${var.mysql_version}"
-  machine_type                    = "${var.machine_type}"
+  engine       = "${var.mysql_version}"
+  machine_type = "${var.machine_type}"
 
-  master_user_password            = "${var.master_user_password}"
-  master_user_name                = "${var.master_user_name}"
-  master_user_host                = "%"
-  enable_public_internet_access   = "${var.enable_public_internet_access}"
+  master_user_password          = "${var.master_user_password}"
+  master_user_name              = "${var.master_user_name}"
+  master_user_host              = "%"
+  enable_public_internet_access = "${var.enable_public_internet_access}"
 
   # Never do this in production!
   # We're setting permissive network rules to make
   # it easier to test the instance
   authorized_networks = [
     {
-      name = "allow-all-inbound",
+      name  = "allow-all-inbound"
       value = "0.0.0.0/0"
-    }
+    },
   ]
 
   # Set auto-increment flags to test the
@@ -57,7 +57,6 @@ module "mysql" {
     {
       name  = "auto_increment_offset"
       value = "5"
-    }
+    },
   ]
 }
-

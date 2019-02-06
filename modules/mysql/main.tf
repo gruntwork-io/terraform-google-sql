@@ -12,11 +12,11 @@
 # ------------------------------------------------------------------------------
 
 resource "google_sql_database_instance" "master" {
-  provider = "google-beta"
-  name                 = "${var.name}"
-  project              = "${var.project}"
-  region               = "${var.region}"
-  database_version     = "${var.engine}"
+  provider         = "google-beta"
+  name             = "${var.name}"
+  project          = "${var.project}"
+  region           = "${var.region}"
+  database_version = "${var.engine}"
 
   settings {
     tier                        = "${var.machine_type}"
@@ -25,19 +25,19 @@ resource "google_sql_database_instance" "master" {
     disk_autoresize             = "${var.disk_autoresize}"
 
     ip_configuration {
-      authorized_networks = ["${var.authorized_networks}"],
-      ipv4_enabled = "${var.enable_public_internet_access}"
+      authorized_networks = ["${var.authorized_networks}"]
+      ipv4_enabled        = "${var.enable_public_internet_access}"
     }
 
     location_preference {
       follow_gae_application = "${var.follow_gae_application}"
-      zone = "${var.zone}"
+      zone                   = "${var.zone}"
     }
 
-    disk_size                   = "${var.disk_size}"
-    disk_type                   = "${var.disk_type}"
-    database_flags              = ["${var.database_flags}"]
-    availability_type           = "${var.availability_type}"
+    disk_size         = "${var.disk_size}"
+    disk_type         = "${var.disk_type}"
+    database_flags    = ["${var.database_flags}"]
+    availability_type = "${var.availability_type}"
   }
 }
 

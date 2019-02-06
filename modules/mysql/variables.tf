@@ -54,7 +54,8 @@ variable "activation_policy" {
 variable "authorized_networks" {
   description = "A list of authorized CIDR-formatted IP address ranges that can connect to this DB."
   type        = "list"
-  default = []
+  default     = []
+
   # Example:
   #
   # authorized_networks = [
@@ -88,7 +89,7 @@ variable "db_collation" {
 
 variable "database_flags" {
   description = "List of Cloud SQL flags that are applied to the database server"
-  type = "list"
+  type        = "list"
   default     = []
 
   # Example:
@@ -122,12 +123,12 @@ variable "disk_type" {
 
 variable "follow_gae_application" {
   description = "A GAE application whose zone to remain in. Must be in the same region as this instance."
-  default = ""
+  default     = ""
 }
 
 variable "zone" {
   description = "Preferred zone for the instance."
-  default = ""
+  default     = ""
 }
 
 variable "master_user_host" {

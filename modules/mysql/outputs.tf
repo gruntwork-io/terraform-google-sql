@@ -15,17 +15,15 @@ output "instance" {
 
 output "db_name" {
   description = "Name of the default database"
-  value = "${google_sql_database.default.name}"
+  value       = "${google_sql_database.default.name}"
 }
-
 
 output "proxy_connection" {
   description = "Instance path for connecting with Cloud SQL Proxy. Read more at https://cloud.google.com/sql/docs/mysql/sql-proxy"
-  value = "${var.project}:${var.region}:${google_sql_database_instance.master.name}"
+  value       = "${var.project}:${var.region}:${google_sql_database_instance.master.name}"
 }
 
 output "db" {
   description = "Self link to the default database"
   value       = "${google_sql_database.default.self_link}"
 }
-

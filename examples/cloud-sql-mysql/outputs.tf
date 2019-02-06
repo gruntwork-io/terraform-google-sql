@@ -15,7 +15,7 @@ output "instance" {
 
 output "db_name" {
   description = "Name of the default database"
-  value = "${module.mysql.db_name}"
+  value       = "${module.mysql.db_name}"
 }
 
 output "proxy_connection" {
@@ -26,4 +26,3 @@ output "db" {
   description = "Self link to the default database"
   value       = "${module.mysql.db}"
 }
-
