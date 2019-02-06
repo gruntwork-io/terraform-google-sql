@@ -41,11 +41,11 @@ module "mysql" {
   master_user_name = "${var.master_user_name}"
   master_user_host = "%"
 
-  enable_public_internet_access = "${var.enable_public_internet_access}"
+  # To make it easier to test this example, we are giving the servers public IP addresses and allowing inbound
+  # connections from anywhere. In real-world usage, your servers should live in private subnets, only have private IP
+  # addresses, and only allow access from specific trusted networks, servers or applications in your VPC.
+  enable_public_internet_access = true
 
-  # Never do this in production!
-  # We're setting permissive network rules to make
-  # it easier to test the instance
   authorized_networks = [
     {
       name  = "allow-all-inbound"
