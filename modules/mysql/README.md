@@ -48,7 +48,7 @@ For full connectivity options and detailed documentation, see [Connecting to Clo
 * **Vertical scaling**: To scale vertically (i.e. bigger DB instances with more CPU and RAM), use the `machine_type` 
   input variable. For a list of Cloud SQL Machine Types, see [Cloud SQL Pricing](https://cloud.google.com/sql/pricing#2nd-gen-pricing).
 * **Horizontal scaling**: To scale horizontally, you can add more replicas using the `instance_count` input variable, 
-  and Aurora will automatically deploy the new instances, sync them to the master, and make them available as read 
+  and the module will automatically deploy the new instances, sync them to the master, and make them available as read 
   replicas.
 
 ## Known Issues
