@@ -48,7 +48,7 @@ module "mysql" {
   ]
 
   # Set auto-increment flags to test the
-  # feature in during automated testing
+  # feature during automated testing
   database_flags = [
     {
       name  = "auto_increment_increment"
