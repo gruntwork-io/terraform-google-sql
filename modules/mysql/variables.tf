@@ -34,11 +34,11 @@ variable "db_name" {
 }
 
 variable "master_user_name" {
-  description = "The username for the master user."
+  description = "The username part for the default user credentials, i.e. 'master_user_name'@'master_user_host' IDENTIFIED BY 'master_user_password' "
 }
 
 variable "master_user_password" {
-  description = "The password for the master user."
+  description = "The password part for the default user credentials, i.e. 'master_user_name'@'master_user_host' IDENTIFIED BY 'master_user_password' "
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -118,7 +118,7 @@ variable "disk_size" {
 
 variable "disk_type" {
   description = "The type of storage to use. Must be one of `PD_SSD` or `PD_HDD`."
-  default     = "PD_HDD"
+  default     = "PD_SSD"
 }
 
 variable "follow_gae_application" {
@@ -132,7 +132,7 @@ variable "zone" {
 }
 
 variable "master_user_host" {
-  description = "The host for the default user"
+  description = "The host part for the default user, i.e. 'master_user_name'@'master_user_host' IDENTIFIED BY 'master_user_password' "
   default     = "%"
 }
 
