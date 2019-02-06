@@ -141,3 +141,9 @@ variable "enable_public_internet_access" {
   description = "WARNING: - In nearly all cases a database should NOT be publicly accessible. Only set this to true if you want the database open to the internet."
   default     = false
 }
+
+variable "custom_labels" {
+  description = "A map of custom labels to apply to the instance. The key is the label name and the value is the label value."
+  type        = "map"
+  default     = {}
+}

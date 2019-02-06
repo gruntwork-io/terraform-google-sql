@@ -38,6 +38,8 @@ resource "google_sql_database_instance" "master" {
     disk_type         = "${var.disk_type}"
     database_flags    = ["${var.database_flags}"]
     availability_type = "${var.availability_type}"
+
+    user_labels = "${var.custom_labels}"
   }
 }
 

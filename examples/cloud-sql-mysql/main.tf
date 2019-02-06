@@ -65,4 +65,8 @@ module "mysql" {
       value = "5"
     },
   ]
+
+  custom_labels = {
+    project = "mysql-example"
+  }
 }

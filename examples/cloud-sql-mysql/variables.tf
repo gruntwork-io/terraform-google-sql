@@ -41,7 +41,7 @@ variable "mysql_version" {
 
 variable "machine_type" {
   description = "The machine type to use, see https://cloud.google.com/sql/pricing for more details"
-  default = "db-f1-micro"
+  default     = "db-f1-micro"
 }
 
 variable "db_name" {
