@@ -35,11 +35,12 @@ variable "enable_public_internet_access" {
 }
 
 variable "mysql_version" {
-  description = "The engine version of the database, e.g. `MYSQL_5_6` or `MYSQL_5_7`"
+  description = "The engine version of the database, e.g. `MYSQL_5_6` or `MYSQL_5_7`. See https://cloud.google.com/sql/docs/features for supported versions."
   default     = "MYSQL_5_7"
 }
 
 variable "machine_type" {
+  description = "The machine type to use, see https://cloud.google.com/sql/pricing for more details"
   default = "db-f1-micro"
 }
 

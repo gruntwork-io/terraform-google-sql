@@ -16,7 +16,7 @@ variable "name" {
 }
 
 variable "engine" {
-  description = "The engine version of the database, e.g. `MYSQL_5_6` or `MYSQL_5_7`."
+  description = "The engine version of the database, e.g. `MYSQL_5_6` or `MYSQL_5_7`. See https://cloud.google.com/sql/docs/features for supported versions."
 }
 
 # TODO: Depending on how the replicas are set up, tweak this.
