@@ -18,9 +18,9 @@ import (
 const DB_NAME = "testdb"
 const DB_USER = "testuser"
 const DB_PASS = "testpassword"
-const NAME_PREFIX = "mysql-test"
+const NAME_PREFIX = "mysql-public"
 const MYSQL_VERSION = "MYSQL_5_7"
-const EXAMPLE_NAME = "cloud-sql-mysql"
+const EXAMPLE_NAME = "mysql-public-ip"
 
 const KEY_REGION = "region"
 const KEY_PROJECT = "project"
@@ -30,7 +30,7 @@ const OUTPUT_PROXY_CONNECTION = "proxy_connection"
 const OUTPUT_DB_NAME = "db_name"
 const OUTPUT_PUBLIC_IP = "public_ip"
 
-func TestCloudSQLMySql(t *testing.T) {
+func TestMySqlPublicIP(t *testing.T) {
 	t.Parallel()
 
 	//os.Setenv("SKIP_bootstrap", "true")

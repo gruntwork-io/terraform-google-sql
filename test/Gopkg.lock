@@ -399,10 +399,11 @@
   input-imports = [
     "github.com/go-sql-driver/mysql",
     "github.com/gruntwork-io/terratest/modules/gcp",
-    "github.com/gruntwork-io/terratest/modules/random",
+    "github.com/gruntwork-io/terratest/modules/logger",
     "github.com/gruntwork-io/terratest/modules/terraform",
     "github.com/gruntwork-io/terratest/modules/test-structure",
     "github.com/stretchr/testify/assert",
+    "github.com/stretchr/testify/require",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1
