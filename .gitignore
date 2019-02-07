@@ -1,0 +1,28 @@
+# Terraform files
+.terraform
+terraform.tfstate
+terraform.tfvars
+*.tfstate*
+*.zip
+
+# OS X files
+.history
+.DS_Store
+
+# IntelliJ files
+.idea_modules
+*.iml
+*.iws
+*.ipr
+.idea/
+build/
+*/build/
+out/
+
+# Go best practices dictate that libraries should not include the vendor directory
+vendor
+
+#VIM swap files
+*.swp
+
+.test-data
