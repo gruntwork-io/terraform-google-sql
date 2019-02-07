@@ -1,8 +1,7 @@
-# MySQL Cloud SQL Example
+# MySQL Cloud SQL Public IP Example
 
 This folder contains an example of how to use the [MySQL module](/modules/mysql) to create a [Google Cloud SQL](https://cloud.google.com/sql/) 
-[MySQL](https://cloud.google.com/sql/docs/mysql/) cluster. The cluster is managed by Google and
-automatically handles leader election, replication, failover, backups, patching, and encryption. 
+[MySQL](https://cloud.google.com/sql/docs/mysql/) database instance with a public IP. 
 
 ## How do you run this example?
 
@@ -15,5 +14,4 @@ To run this example, you need to:
 1. `terraform plan`.
 1. If the plan looks good, run `terraform apply`.
 
-When the templates are applied, Terraform will output the IP address of the cluster endpoint (which points to the 
-master) and the instance endpoints (which point to the master and all replicas). 
+When the templates are applied, Terraform will output the IP address of the instance and the instance path for [connecting using the Cloud SQL Proxy](https://cloud.google.com/sql/docs/mysql/connect-admin-proxy). 
