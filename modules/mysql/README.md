@@ -3,9 +3,7 @@
 This module creates a [Google Cloud SQL](https://cloud.google.com/sql/) [MySQL](https://cloud.google.com/sql/docs/mysql/) cluster. 
 The cluster is managed by Google, automating backups, replication, patches, and updates. 
 
-TODO: Figure out documentation format for separate modules.
-
-You can use Cloud SQL with either [MySQL](https://cloud.google.com/sql/docs/mysql/) or [PostgreSQL](https://cloud.google.com/sql/docs/postgres/).
+This module helps you run [MySQL](https://cloud.google.com/sql/docs/mysql/), see [postgres](../postgresql) for running [PostgreSQL](https://cloud.google.com/sql/docs/postgres/).
 
 ## How do you use this module?
 
@@ -30,8 +28,8 @@ variables](https://www.terraform.io/intro/getting-started/outputs.html):
 
 
 1. TODO: **Private IP** `private_ip`: The public endpoint for the cluster.
-1. **Public IP** `public_ip`: The public endpoint for the cluster.
-1. **Proxy connection** `proxy_connection`: "Instance path for connecting with Cloud SQL Proxy. Read more at https://cloud.google.com/sql/docs/mysql/sql-proxy.
+1. **Public IP** `public_ip`: The public endpoint for the cluster; see [Connecting mysql Client Using Public IP](https://cloud.google.com/sql/docs/mysql/connect-admin-ip).
+1. **Proxy connection** `proxy_connection`: Instance path for connecting with Cloud SQL Proxy; see [Connecting mysql Client Using the Cloud SQL Proxy](https://cloud.google.com/sql/docs/mysql/connect-admin-proxy).
 1. TODO: **Replica endpoints** `replica_endpoints`: A comma-separated list of all DB instance URLs in the cluster, including the primary and all
    read replicas. Use these URLs for reads (see "How do you scale this DB?" below).
 
