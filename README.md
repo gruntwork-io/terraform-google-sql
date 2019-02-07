@@ -8,7 +8,7 @@ This repo contains modules for running relational databases such as MySQL and Po
 ## Code included in this Module
 
 * [mysql](/modules/mysql): Deploy a Cloud SQL MySQL cluster.
-* [postgresql](/modules/mysql): Deploy a Cloud SQL PostgreSQL cluster.
+* [postgresql](/modules/postgresql): Deploy a Cloud SQL PostgreSQL cluster.
 
 
 ## What is Cloud SQL?
