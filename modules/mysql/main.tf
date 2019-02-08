@@ -63,6 +63,12 @@ resource "google_sql_database_instance" "master" {
       zone                   = "${var.zone}"
     }
 
+    backup_configuration {
+      binary_log_enabled = "${var.binary_log_enabled}"
+      enabled            = "${var.backup_enabled}"
+      start_time         = "${var.backup_start_time}"
+    }
+
     disk_size         = "${var.disk_size}"
     disk_type         = "${var.disk_type}"
     database_flags    = ["${var.database_flags}"]

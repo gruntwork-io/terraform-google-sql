@@ -77,6 +77,21 @@ variable "availability_type" {
   default     = "ZONAL"
 }
 
+variable "backup_enabled" {
+  description = "Set to false if you want to disable backup."
+  default     = true
+}
+
+variable "backup_start_time" {
+  description = "HH:MM format (e.g. 04:00) time indicating when backup configuration starts. NOTE: Start time is randomly assigned if backup is enabled and 'backup_start_time' is not set"
+  default     = "04:00"
+}
+
+variable "binary_log_enabled" {
+  description = "Set to false if you want to disable binary logs. Note, when using failover or read replicas, master and existing backups need to have binary_log_enabled=true set."
+  default     = true
+}
+
 variable "db_charset" {
   description = "The charset for the default database."
   default     = ""
