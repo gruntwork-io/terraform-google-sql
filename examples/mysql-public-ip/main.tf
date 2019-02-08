@@ -49,7 +49,7 @@ module "mysql" {
   authorized_networks = [
     {
       name  = "allow-all-inbound"
-      value = "85.76.34.163/32"
+      value = "0.0.0.0/0"
     },
   ]
 
