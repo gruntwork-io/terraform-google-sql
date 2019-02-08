@@ -1,3 +1,11 @@
+# ------------------------------------------------------------------------------
+# LAUNCH A MYSQL CLOUD SQL PRIVATE IP INSTANCE
+# ------------------------------------------------------------------------------
+
+# ------------------------------------------------------------------------------
+# CONFIGURE OUR GCP CONNECTION
+# ------------------------------------------------------------------------------
+
 provider "google-beta" {
   region  = "${var.region}"
   project = "${var.project}"
@@ -8,6 +16,10 @@ provider "google-beta" {
 terraform {
   required_version = ">= 0.10.3"
 }
+
+# ------------------------------------------------------------------------------
+# CREATE A RANDOM SUFFIX AND PREPARE RESOURCE NAMES
+# ------------------------------------------------------------------------------
 
 resource "random_id" "name" {
   byte_length = 2
@@ -20,11 +32,17 @@ locals {
   private_ip_name      = "private-ip-${random_id.name.hex}"
 }
 
+# ------------------------------------------------------------------------------
+# CREATE COMPUTE NETWORKS
+# ------------------------------------------------------------------------------
+
+# Simple network, auto-creates subnetworks
 resource "google_compute_network" "private_network" {
   provider = "google-beta"
   name     = "${local.private_network_name}"
 }
 
+# Reserve global internal address range for the peering
 resource "google_compute_global_address" "private_ip_address" {
   provider      = "google-beta"
   name          = "${local.private_ip_name}"
@@ -34,12 +52,17 @@ resource "google_compute_global_address" "private_ip_address" {
   network       = "${google_compute_network.private_network.self_link}"
 }
 
+# Establish VPC network peering connection using the reserved address range
 resource "google_service_networking_connection" "private_vpc_connection" {
   provider                = "google-beta"
   network                 = "${google_compute_network.private_network.self_link}"
   service                 = "servicenetworking.googleapis.com"
   reserved_peering_ranges = ["${google_compute_global_address.private_ip_address.name}"]
 }
+
+# ------------------------------------------------------------------------------
+# CREATE DATABASE INSTANCE WITH PRIVATE IP
+# ------------------------------------------------------------------------------
 
 module "mysql" {
   # When using these modules in your own templates, you will need to use a Git URL with a ref attribute that pins you
