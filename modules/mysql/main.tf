@@ -89,6 +89,7 @@ resource "google_sql_database_instance" "master" {
   timeouts {
     create = "30m"
     delete = "30m"
+    update = "30m"
   }
 
   depends_on = ["null_resource.wait_for"]
