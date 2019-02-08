@@ -24,7 +24,8 @@ output "db_name" {
 }
 
 output "proxy_connection" {
-  value = "${module.mysql.proxy_connection}"
+  description = "Instance path for connecting with Cloud SQL Proxy. Read more at https://cloud.google.com/sql/docs/mysql/sql-proxy"
+  value       = "${module.mysql.proxy_connection}"
 }
 
 output "db" {

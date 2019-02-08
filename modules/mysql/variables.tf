@@ -93,13 +93,13 @@ variable "binary_log_enabled" {
 }
 
 variable "maintenance_window_day" {
-  description = "Day of week - (1-7), starting on Monday - on which system maintenance can occur. Performance may be degraded or there may even be a downtime during maintenance windows."
-  default     = 7                                                                                                                                                                          # Sunday
+  description = "Day of week (1-7), starting on Monday - on which system maintenance can occur. Performance may be degraded or there may even be a downtime during maintenance windows."
+  default     = 7                                                                                                                                                                        # Sunday
 }
 
 variable "maintenance_window_hour" {
-  description = "Hour of day - (0-23) - on which system maintenance can occur. Ignored if 'maintenance_window_day' not set. Performance may be degraded or there may even be a downtime during maintenance windows."
-  default     = 7                                                                                                                                                                                                    # 07:00 UTC
+  description = "Hour of day (0-23) on which system maintenance can occur. Ignored if 'maintenance_window_day' not set. Performance may be degraded or there may even be a downtime during maintenance windows."
+  default     = 7                                                                                                                                                                                                # 07:00 UTC
 }
 
 variable "maintenance_track" {

@@ -67,6 +67,6 @@ module "mysql" {
   ]
 
   custom_labels = {
-    project = "mysql-public-ip-example"
+    test-id = "mysql-public-ip-example"
   }
 }

@@ -30,7 +30,7 @@ locals {
     }]
   }
 
-  # We have to construct the sub-block dynamically. If the user wishes a public-ip instancel, only,
+  # We have to construct the sub-block dynamically. If the user creates a public-ip only instance,
   # passing an empty string into 'private_network' causes
   # 'private_network" ("") doesn't match regexp "projects/...'
   ip_configuration = "${local.ip_configuration_def[local.ip_configuration_key]}"
@@ -83,6 +83,9 @@ resource "google_sql_database_instance" "master" {
     user_labels = "${var.custom_labels}"
   }
 
+  # Default timeouts are 10 minutes, which in most cases should be enough.
+  # Sometimes the database creation can, however, take longer, so we
+  # increase the timeouts slightly.
   timeouts {
     create = "30m"
     delete = "30m"
