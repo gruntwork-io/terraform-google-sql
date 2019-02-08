@@ -3,6 +3,7 @@ package test
 import (
 	"database/sql"
 	"fmt"
+	"github.com/GoogleCloudPlatform/cloudsql-proxy/proxy/dialers/mysql"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gruntwork-io/terratest/modules/gcp"
 	"github.com/gruntwork-io/terratest/modules/logger"
@@ -13,6 +14,7 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 )
 
 const NAME_PREFIX_PUBLIC = "mysql-public"
@@ -25,11 +27,13 @@ func TestMySqlPublicIP(t *testing.T) {
 	//os.Setenv("SKIP_deploy", "true")
 	//os.Setenv("SKIP_validate_outputs", "true")
 	//os.Setenv("SKIP_sql_tests", "true")
+	//os.Setenv("SKIP_proxy_tests", "true")
 	//os.Setenv("SKIP_teardown", "true")
 
 	_examplesDir := test_structure.CopyTerraformFolderToTemp(t, "../", "examples")
 	exampleDir := filepath.Join(_examplesDir, EXAMPLE_NAME_PUBLIC)
 
+	// BOOTSTRAP VARIABLES FOR THE TESTS
 	test_structure.RunTestStage(t, "bootstrap", func() {
 		projectId := gcp.GetGoogleProjectIDFromEnvVar(t)
 		region := getRandomRegion(t, projectId)
@@ -38,7 +42,8 @@ func TestMySqlPublicIP(t *testing.T) {
 		test_structure.SaveString(t, exampleDir, KEY_PROJECT, projectId)
 	})
 
-	// At the end of the test, run `terraform destroy` to clean up any resources that were created
+	// AT THE END OF THE TESTS, RUN `terraform destroy`
+	// TO CLEAN UP ANY RESOURCES THAT WERE CREATED
 	defer test_structure.RunTestStage(t, "teardown", func() {
 		terraformOptions := test_structure.LoadTerraformOptions(t, exampleDir)
 		terraform.Destroy(t, terraformOptions)
@@ -53,6 +58,7 @@ func TestMySqlPublicIP(t *testing.T) {
 		terraform.InitAndApply(t, terraformOptions)
 	})
 
+	// VALIDATE MODULE OUTPUTS
 	test_structure.RunTestStage(t, "validate_outputs", func() {
 		terraformOptions := test_structure.LoadTerraformOptions(t, exampleDir)
 
@@ -70,6 +76,7 @@ func TestMySqlPublicIP(t *testing.T) {
 		assert.Equal(t, expectedDBConn, proxyConnectionFromOutput)
 	})
 
+	// TEST REGULAR SQL CLIENT
 	test_structure.RunTestStage(t, "sql_tests", func() {
 		terraformOptions := test_structure.LoadTerraformOptions(t, exampleDir)
 
@@ -116,6 +123,55 @@ func TestMySqlPublicIP(t *testing.T) {
 		// Get the last insert id
 		lastId, err := res.LastInsertId()
 		require.NoError(t, err, "Failed to get last insert id")
+
+		// Since we set the auto increment to 5, modulus should always be 0
+		assert.Equal(t, int64(0), int64(lastId%5))
+	})
+
+	// TEST CLOUD SQL PROXY
+	test_structure.RunTestStage(t, "proxy_tests", func() {
+		terraformOptions := test_structure.LoadTerraformOptions(t, exampleDir)
+
+		proxyConn := terraform.Output(t, terraformOptions, OUTPUT_PROXY_CONNECTION)
+
+		logger.Logf(t, "Connecting to: %s via Cloud SQL Proxy", proxyConn)
+
+		// Use the Cloud SQL Proxy for queries
+		// See https://cloud.google.com/sql/docs/mysql/sql-proxy
+		cfg := mysql.Cfg(proxyConn, DB_USER, DB_PASS)
+		cfg.DBName = DB_NAME
+		cfg.ParseTime = true
+
+		const timeout = 10 * time.Second
+		cfg.Timeout = timeout
+		cfg.ReadTimeout = timeout
+		cfg.WriteTimeout = timeout
+
+		// Dial in. This one actually pings the database already
+		db, err := mysql.DialCfg(cfg)
+		require.NoError(t, err, "Failed to open Proxy DB connection")
+
+		// Make sure we clean up properly
+		defer db.Close()
+
+		// Run ping to actually test the connection
+		logger.Log(t, "Ping the DB")
+		if err = db.Ping(); err != nil {
+			t.Fatalf("Failed to ping DB via Proxy: %v", err)
+		}
+
+		// Insert data to check that our auto-increment flags worked
+		logger.Logf(t, "Insert data: %s", MYSQL_INSERT_TEST_ROW)
+		stmt, err := db.Prepare(MYSQL_INSERT_TEST_ROW)
+		require.NoError(t, err, "Failed to prepare proxy statement")
+
+		// Execute the statement
+		res, err := stmt.Exec("Grunt2")
+		require.NoError(t, err, "Failed to execute proxy statement")
+
+		// Get the last insert id
+		lastId, err := res.LastInsertId()
+		require.NoError(t, err, "Failed to get last proxy insert id")
 
 		// Since we set the auto increment to 5, modulus should always be 0
 		assert.Equal(t, int64(0), int64(lastId%5))
