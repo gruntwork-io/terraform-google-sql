@@ -15,7 +15,30 @@ resource "random_id" "name" {
 
 locals {
   # If name_override is specified, use that - otherwise use the name_prefix with a random string
-  instance_name = "${length(var.name_override) == 0 ? format("%s-%s", var.name_prefix, random_id.name.hex) : var.name_override}"
+  instance_name        = "${length(var.name_override) == 0 ? format("%s-%s", var.name_prefix, random_id.name.hex) : var.name_override}"
+  private_network_name = "private-network-${random_id.name.hex}"
+  private_ip_name      = "private-ip-${random_id.name.hex}"
+}
+
+resource "google_compute_network" "private_network" {
+  provider = "google-beta"
+  name     = "${local.private_network_name}"
+}
+
+resource "google_compute_global_address" "private_ip_address" {
+  provider      = "google-beta"
+  name          = "${local.private_ip_name}"
+  purpose       = "VPC_PEERING"
+  address_type  = "INTERNAL"
+  prefix_length = 16
+  network       = "${google_compute_network.private_network.self_link}"
+}
+
+resource "google_service_networking_connection" "private_vpc_connection" {
+  provider                = "google-beta"
+  network                 = "${google_compute_network.private_network.self_link}"
+  service                 = "servicenetworking.googleapis.com"
+  reserved_peering_ranges = ["${google_compute_global_address.private_ip_address.name}"]
 }
 
 module "mysql" {
@@ -41,32 +64,26 @@ module "mysql" {
   master_user_name = "${var.master_user_name}"
   master_user_host = "%"
 
-  # To make it easier to test this example, we are giving the servers public IP addresses and allowing inbound
-  # connections from anywhere. In real-world usage, your servers should live in private subnets, only have private IP
-  # addresses, and only allow access from specific trusted networks, servers or applications in your VPC.
-  enable_public_internet_access = true
+  # Pass the private network link to the module
+  private_network = "${google_compute_network.private_network.self_link}"
 
-  authorized_networks = [
-    {
-      name  = "allow-all-inbound"
-      value = "85.76.34.163/32"
-    },
-  ]
+  # Wait for the vpc connection to complete
+  wait_for = "${google_service_networking_connection.private_vpc_connection.network}"
 
   # Set auto-increment flags to test the
   # feature during automated testing
   database_flags = [
     {
       name  = "auto_increment_increment"
-      value = "5"
+      value = "6"
     },
     {
       name  = "auto_increment_offset"
-      value = "5"
+      value = "6"
     },
   ]
 
   custom_labels = {
-    project = "mysql-public-ip-example"
+    project = "mysql-private-ip-example"
   }
 }

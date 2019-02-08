@@ -15,20 +15,8 @@ import (
 	"testing"
 )
 
-const DB_NAME = "testdb"
-const DB_USER = "testuser"
-const DB_PASS = "testpassword"
-const NAME_PREFIX = "mysql-public"
-const MYSQL_VERSION = "MYSQL_5_7"
-const EXAMPLE_NAME = "mysql-public-ip"
-
-const KEY_REGION = "region"
-const KEY_PROJECT = "project"
-
-const OUTPUT_INSTANCE_NAME = "instance_name"
-const OUTPUT_PROXY_CONNECTION = "proxy_connection"
-const OUTPUT_DB_NAME = "db_name"
-const OUTPUT_PUBLIC_IP = "public_ip"
+const NAME_PREFIX_PUBLIC = "mysql-public"
+const EXAMPLE_NAME_PUBLIC = "mysql-public-ip"
 
 func TestMySqlPublicIP(t *testing.T) {
 	t.Parallel()
@@ -40,7 +28,7 @@ func TestMySqlPublicIP(t *testing.T) {
 	//os.Setenv("SKIP_teardown", "true")
 
 	_examplesDir := test_structure.CopyTerraformFolderToTemp(t, "../", "examples")
-	exampleDir := filepath.Join(_examplesDir, EXAMPLE_NAME)
+	exampleDir := filepath.Join(_examplesDir, EXAMPLE_NAME_PUBLIC)
 
 	test_structure.RunTestStage(t, "bootstrap", func() {
 		projectId := gcp.GetGoogleProjectIDFromEnvVar(t)
@@ -59,7 +47,7 @@ func TestMySqlPublicIP(t *testing.T) {
 	test_structure.RunTestStage(t, "deploy", func() {
 		region := test_structure.LoadString(t, exampleDir, KEY_REGION)
 		projectId := test_structure.LoadString(t, exampleDir, KEY_PROJECT)
-		terraformOptions := createTerratestOptionsForMySql(projectId, region, exampleDir)
+		terraformOptions := createTerratestOptionsForMySql(projectId, region, exampleDir, NAME_PREFIX_PUBLIC)
 		test_structure.SaveTerraformOptions(t, exampleDir, terraformOptions)
 
 		terraform.InitAndApply(t, terraformOptions)
@@ -77,7 +65,7 @@ func TestMySqlPublicIP(t *testing.T) {
 
 		expectedDBConn := fmt.Sprintf("%s:%s:%s", projectId, region, instanceNameFromOutput)
 
-		assert.True(t, strings.HasPrefix(instanceNameFromOutput, NAME_PREFIX))
+		assert.True(t, strings.HasPrefix(instanceNameFromOutput, NAME_PREFIX_PUBLIC))
 		assert.Equal(t, DB_NAME, dbNameFromOutput)
 		assert.Equal(t, expectedDBConn, proxyConnectionFromOutput)
 	})
@@ -132,23 +120,4 @@ func TestMySqlPublicIP(t *testing.T) {
 		// Since we set the auto increment to 5, modulus should always be 0
 		assert.Equal(t, int64(0), int64(lastId%5))
 	})
-}
-
-func createTerratestOptionsForMySql(projectId string, region string, exampleDir string) *terraform.Options {
-
-	terratestOptions := &terraform.Options{
-		// The path to where your Terraform code is located
-		TerraformDir: exampleDir,
-		Vars: map[string]interface{}{
-			"region":               region,
-			"project":              projectId,
-			"name_prefix":          NAME_PREFIX,
-			"mysql_version":        MYSQL_VERSION,
-			"db_name":              DB_NAME,
-			"master_user_name":     DB_USER,
-			"master_user_password": DB_PASS,
-		},
-	}
-
-	return terratestOptions
 }

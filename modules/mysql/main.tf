@@ -5,6 +5,38 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # ------------------------------------------------------------------------------
+# PREPARE LOCALS
+#
+# NOTE: Due to limitations in terraform and heavy use of nested sub-blocks in the resource,
+# we have to construct some of the configuration values dynamocally
+# ------------------------------------------------------------------------------
+
+locals {
+  # Terraform does not allow using lists of maps with coditionals, so we have to
+  # trick terraform by creating a string conditional first.
+  # See https://github.com/hashicorp/terraform/issues/12453
+  ip_configuration_key = "${var.private_network != "" ? "PRIVATE" : "PUBLIC"}"
+
+  ip_configuration_def = {
+    "PRIVATE" = [{
+      authorized_networks = ["${var.authorized_networks}"]
+      ipv4_enabled        = "${var.enable_public_internet_access}"
+      private_network     = "${var.private_network}"
+    }]
+
+    "PUBLIC" = [{
+      authorized_networks = ["${var.authorized_networks}"]
+      ipv4_enabled        = "${var.enable_public_internet_access}"
+    }]
+  }
+
+  # We have to construct the sub-block dynamically. If the user wishes a public-ip instancel, only,
+  # passing an empty string into 'private_network' causes
+  # 'private_network" ("") doesn't match regexp "projects/...'
+  ip_configuration = "${local.ip_configuration_def[local.ip_configuration_key]}"
+}
+
+# ------------------------------------------------------------------------------
 # CREATE THE CLOUD SQL MYSQL CLUSTER
 #
 # NOTE: We have multiple google_sql_database_instance resources, based on
@@ -24,10 +56,7 @@ resource "google_sql_database_instance" "master" {
     authorized_gae_applications = ["${var.authorized_gae_applications}"]
     disk_autoresize             = "${var.disk_autoresize}"
 
-    ip_configuration {
-      authorized_networks = ["${var.authorized_networks}"]
-      ipv4_enabled        = "${var.enable_public_internet_access}"
-    }
+    ip_configuration = ["${local.ip_configuration}"]
 
     location_preference {
       follow_gae_application = "${var.follow_gae_application}"
@@ -41,6 +70,13 @@ resource "google_sql_database_instance" "master" {
 
     user_labels = "${var.custom_labels}"
   }
+
+  timeouts {
+    create = "30m"
+    delete = "30m"
+  }
+
+  depends_on = ["null_resource.wait_for"]
 }
 
 # ------------------------------------------------------------------------------
@@ -61,4 +97,13 @@ resource "google_sql_user" "default" {
   instance = "${google_sql_database_instance.master.name}"
   host     = "${var.master_user_host}"
   password = "${var.master_user_password}"
+}
+
+# ------------------------------------------------------------------------------
+# CREATE A NULL RESOURCE TO EMULATE DEPENDENCIES
+# ------------------------------------------------------------------------------
+resource "null_resource" "wait_for" {
+  triggers = {
+    instance = "${var.wait_for}"
+  }
 }

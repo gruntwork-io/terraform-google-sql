@@ -3,9 +3,14 @@ output "instance_name" {
   value       = "${module.mysql.instance_name}"
 }
 
-output "public_ip" {
-  description = "The IPv4 address of the master database instance"
-  value       = "${module.mysql.public_ip}"
+output "ip_addresses" {
+  description = "All IP addresses of the instance as list of maps, see https://www.terraform.io/docs/providers/google/r/sql_database_instance.html#ip_address-0-ip_address"
+  value       = "${module.mysql.ip_addresses}"
+}
+
+output "private_ip" {
+  description = "The first IPv4 address of the addresses assigned to the instance. As this instance has only private IP, it is the private IP address."
+  value       = "${module.mysql.first_ip_address}"
 }
 
 output "instance" {

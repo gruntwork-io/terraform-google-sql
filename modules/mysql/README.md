@@ -27,8 +27,7 @@ This module provides the connection details as [Terraform output
 variables](https://www.terraform.io/intro/getting-started/outputs.html):
 
 
-1. TODO: **Private IP** `private_ip`: The public endpoint for the cluster.
-1. **Public IP** `public_ip`: The public endpoint for the cluster; see [Connecting mysql Client Using Public IP](https://cloud.google.com/sql/docs/mysql/connect-admin-ip).
+1. **First IP Address** `first_ip_address`: The first IPv4 address of the addresses assigned to the instance. If the instance has only public IP, it is the [public IP address](https://cloud.google.com/sql/docs/mysql/connect-admin-ip). If it has only private IP, it the [private IP address](https://cloud.google.com/sql/docs/mysql/private-ip). If it has both, it is the first item in the list and full IP address details are in `instance_ip_addresses`.
 1. **Proxy connection** `proxy_connection`: Instance path for connecting with Cloud SQL Proxy; see [Connecting mysql Client Using the Cloud SQL Proxy](https://cloud.google.com/sql/docs/mysql/connect-admin-proxy).
 1. TODO: **Replica endpoints** `replica_endpoints`: A comma-separated list of all DB instance URLs in the cluster, including the primary and all
    read replicas. Use these URLs for reads (see "How do you scale this DB?" below).

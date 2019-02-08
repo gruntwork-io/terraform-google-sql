@@ -52,7 +52,7 @@ variable "activation_policy" {
 }
 
 variable "authorized_networks" {
-  description = "A list of authorized CIDR-formatted IP address ranges that can connect to this DB."
+  description = "A list of authorized CIDR-formatted IP address ranges that can connect to this DB. Only applies to public IP instances."
   type        = "list"
   default     = []
 
@@ -142,8 +142,18 @@ variable "enable_public_internet_access" {
   default     = false
 }
 
+variable "private_network" {
+  description = "The resource link for the VPC network from which the Cloud SQL instance is accessible for private IP."
+  default     = ""
+}
+
 variable "custom_labels" {
   description = "A map of custom labels to apply to the instance. The key is the label name and the value is the label value."
   type        = "map"
   default     = {}
+}
+
+variable "wait_for" {
+  description = "By passing a value to this variable, you can effectively tell this module to wait to deploy until the given variable's value is resolved, which is a way to require that this module depend on some other module. Note that the actual value of this variable doesn't matter."
+  default     = ""
 }
