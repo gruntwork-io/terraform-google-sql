@@ -69,6 +69,12 @@ resource "google_sql_database_instance" "master" {
       start_time         = "${var.backup_start_time}"
     }
 
+    maintenance_window {
+      day          = "${var.maintenance_window_day}"
+      hour         = "${var.maintenance_window_hour}"
+      update_track = "${var.maintenance_track}"
+    }
+
     disk_size         = "${var.disk_size}"
     disk_type         = "${var.disk_type}"
     database_flags    = ["${var.database_flags}"]
