@@ -5,7 +5,7 @@ There can be only one pending operation at a given point of time because of the 
 This is a limitation on the concurrent writes to a CloudSQL database. To resolve this issue,
 we will create the certificate in a separate module.
 
-Creating the certificate while there are other operations ongoing will result in Avoiding `googleapi: Error 409: Operation failed because another operation was already in progress.`
+Creating the certificate while there are other operations ongoing will result in `googleapi: Error 409: Operation failed because another operation was already in progress.`
 
 
 ## How do you run this example?
