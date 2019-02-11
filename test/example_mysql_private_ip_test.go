@@ -54,15 +54,15 @@ func TestMySqlPrivateIP(t *testing.T) {
 		region := test_structure.LoadString(t, exampleDir, KEY_REGION)
 		projectId := test_structure.LoadString(t, exampleDir, KEY_PROJECT)
 
-		instanceNameFromOutput := terraform.Output(t, terraformOptions, OUTPUT_INSTANCE_NAME)
-		ipAddressesFromOutput := terraform.Output(t, terraformOptions, OUTPUT_IP_ADDRESSES)
-		privateIPFromOutput := terraform.Output(t, terraformOptions, OUTPUT_PRIVATE_IP)
+		instanceNameFromOutput := terraform.Output(t, terraformOptions, OUTPUT_MASTER_INSTANCE_NAME)
+		ipAddressesFromOutput := terraform.Output(t, terraformOptions, OUTPUT_MASTER_IP_ADDRESSES)
+		privateIPFromOutput := terraform.Output(t, terraformOptions, OUTPUT_MASTER_PRIVATE_IP)
 
 		assert.Contains(t, ipAddressesFromOutput, "PRIVATE", "IP Addresses output has to contain 'PRIVATE'")
 		assert.Contains(t, ipAddressesFromOutput, privateIPFromOutput, "IP Addresses output has to contain 'private_ip' from output")
 
 		dbNameFromOutput := terraform.Output(t, terraformOptions, OUTPUT_DB_NAME)
-		proxyConnectionFromOutput := terraform.Output(t, terraformOptions, OUTPUT_PROXY_CONNECTION)
+		proxyConnectionFromOutput := terraform.Output(t, terraformOptions, OUTPUT_MASTER_PROXY_CONNECTION)
 
 		expectedDBConn := fmt.Sprintf("%s:%s:%s", projectId, region, instanceNameFromOutput)
 

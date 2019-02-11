@@ -15,12 +15,16 @@ const KEY_PROJECT = "project"
 
 const MYSQL_VERSION = "MYSQL_5_7"
 
-const OUTPUT_IP_ADDRESSES = "ip_addresses"
-const OUTPUT_INSTANCE_NAME = "instance_name"
-const OUTPUT_PROXY_CONNECTION = "proxy_connection"
+const OUTPUT_MASTER_IP_ADDRESSES = "master_ip_addresses"
+const OUTPUT_MASTER_INSTANCE_NAME = "master_instance_name"
+const OUTPUT_MASTER_PROXY_CONNECTION = "master_proxy_connection"
+const OUTPUT_MASTER_PUBLIC_IP = "master_public_ip"
+const OUTPUT_MASTER_PRIVATE_IP = "master_private_ip"
+const OUTPUT_MASTER_CA_CERT = "master_ca_cert"
+const OUTPUT_CLIENT_CA_CERT = "client_ca_cert"
+const OUTPUT_CLIENT_PRIVATE_KEY = "client_private_key"
+
 const OUTPUT_DB_NAME = "db_name"
-const OUTPUT_PUBLIC_IP = "public_ip"
-const OUTPUT_PRIVATE_IP = "private_ip"
 
 const MYSQL_CREATE_TEST_TABLE_WITH_AUTO_INCREMENT_STATEMENT = "CREATE TABLE IF NOT EXISTS test (id int NOT NULL AUTO_INCREMENT, name varchar(10) NOT NULL, PRIMARY KEY (ID))"
 const MYSQL_EMPTY_TEST_TABLE_STATEMENT = "DELETE FROM test"
@@ -45,6 +49,22 @@ func createTerratestOptionsForMySql(projectId string, region string, exampleDir 
 			"db_name":              DB_NAME,
 			"master_user_name":     DB_USER,
 			"master_user_password": DB_PASS,
+		},
+	}
+
+	return terratestOptions
+}
+
+func createTerratestOptionsForClientCert(projectId string, region string, exampleDir string, commonName string, instanceName string) *terraform.Options {
+
+	terratestOptions := &terraform.Options{
+		// The path to where your Terraform code is located
+		TerraformDir: exampleDir,
+		Vars: map[string]interface{}{
+			"region":                 region,
+			"project":                projectId,
+			"common_name":            commonName,
+			"database_instance_name": instanceName,
 		},
 	}
 

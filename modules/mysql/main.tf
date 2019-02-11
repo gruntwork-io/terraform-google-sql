@@ -22,11 +22,13 @@ locals {
       authorized_networks = ["${var.authorized_networks}"]
       ipv4_enabled        = "${var.enable_public_internet_access}"
       private_network     = "${var.private_network}"
+      require_ssl         = "${var.require_ssl}"
     }]
 
     "PUBLIC" = [{
       authorized_networks = ["${var.authorized_networks}"]
       ipv4_enabled        = "${var.enable_public_internet_access}"
+      require_ssl         = "${var.require_ssl}"
     }]
   }
 
@@ -122,4 +124,11 @@ resource "null_resource" "wait_for" {
   triggers = {
     instance = "${var.wait_for}"
   }
+}
+
+# ------------------------------------------------------------------------------
+# CREATE A NULL RESOURCE TO SIGNAL ALL RESOURCES HAVE BEEN CREATED
+# ------------------------------------------------------------------------------
+resource "null_resource" "complete" {
+  depends_on = ["google_sql_user.default"]
 }

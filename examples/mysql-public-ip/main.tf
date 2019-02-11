@@ -62,6 +62,10 @@ module "mysql" {
   # addresses, and only allow access from specific trusted networks, servers or applications in your VPC.
   enable_public_internet_access = true
 
+  # Default setting for this is 'false' in 'variables.tf'
+  # In the test cases, we're setting this to true, to test forced SSL.
+  require_ssl = "${var.require_ssl}"
+
   authorized_networks = [
     {
       name  = "allow-all-inbound"
