@@ -52,7 +52,7 @@ variable "activation_policy" {
 }
 
 variable "authorized_networks" {
-  description = "A list of authorized CIDR-formatted IP address ranges that can connect to this DB."
+  description = "A list of authorized CIDR-formatted IP address ranges that can connect to this DB. Only applies to public IP instances."
   type        = "list"
   default     = []
 
@@ -75,6 +75,36 @@ variable "authorized_gae_applications" {
 variable "availability_type" {
   description = "This specifies whether a PostgreSQL instance should be set up for high availability (REGIONAL) or single zone (ZONAL)."
   default     = "ZONAL"
+}
+
+variable "backup_enabled" {
+  description = "Set to false if you want to disable backup."
+  default     = true
+}
+
+variable "backup_start_time" {
+  description = "HH:MM format (e.g. 04:00) time indicating when backup configuration starts. NOTE: Start time is randomly assigned if backup is enabled and 'backup_start_time' is not set"
+  default     = "04:00"
+}
+
+variable "binary_log_enabled" {
+  description = "Set to false if you want to disable binary logs. Note, when using failover or read replicas, master and existing backups need to have binary_log_enabled=true set."
+  default     = true
+}
+
+variable "maintenance_window_day" {
+  description = "Day of week (1-7), starting on Monday, on which system maintenance can occur. Performance may be degraded or there may even be a downtime during maintenance windows."
+  default     = 7
+}
+
+variable "maintenance_window_hour" {
+  description = "Hour of day (0-23) on which system maintenance can occur. Ignored if 'maintenance_window_day' not set. Performance may be degraded or there may even be a downtime during maintenance windows."
+  default     = 7
+}
+
+variable "maintenance_track" {
+  description = "Receive updates earlier (canary) or later (stable)."
+  default     = "stable"
 }
 
 variable "db_charset" {
@@ -142,8 +172,18 @@ variable "enable_public_internet_access" {
   default     = false
 }
 
+variable "private_network" {
+  description = "The resource link for the VPC network from which the Cloud SQL instance is accessible for private IP."
+  default     = ""
+}
+
 variable "custom_labels" {
   description = "A map of custom labels to apply to the instance. The key is the label name and the value is the label value."
   type        = "map"
   default     = {}
+}
+
+variable "wait_for" {
+  description = "By passing a value to this variable, you can effectively tell this module to wait to deploy until the given variable's value is resolved, which is a way to require that this module depend on some other module. Note that the actual value of this variable doesn't matter."
+  default     = ""
 }

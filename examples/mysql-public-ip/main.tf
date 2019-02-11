@@ -1,3 +1,11 @@
+# ------------------------------------------------------------------------------
+# LAUNCH A MYSQL CLOUD SQL PUBLIC IP INSTANCE
+# ------------------------------------------------------------------------------
+
+# ------------------------------------------------------------------------------
+# CONFIGURE OUR GCP CONNECTION
+# ------------------------------------------------------------------------------
+
 provider "google-beta" {
   region  = "${var.region}"
   project = "${var.project}"
@@ -9,6 +17,10 @@ terraform {
   required_version = ">= 0.10.3"
 }
 
+# ------------------------------------------------------------------------------
+# CREATE A RANDOM SUFFIX AND PREPARE RESOURCE NAMES
+# ------------------------------------------------------------------------------
+
 resource "random_id" "name" {
   byte_length = 2
 }
@@ -17,6 +29,10 @@ locals {
   # If name_override is specified, use that - otherwise use the name_prefix with a random string
   instance_name = "${length(var.name_override) == 0 ? format("%s-%s", var.name_prefix, random_id.name.hex) : var.name_override}"
 }
+
+# ------------------------------------------------------------------------------
+# CREATE DATABASE INSTANCE WITH PUBLIC IP
+# ------------------------------------------------------------------------------
 
 module "mysql" {
   # When using these modules in your own templates, you will need to use a Git URL with a ref attribute that pins you
@@ -67,6 +83,6 @@ module "mysql" {
   ]
 
   custom_labels = {
-    project = "mysql-example"
+    test-id = "mysql-public-ip-example"
   }
 }

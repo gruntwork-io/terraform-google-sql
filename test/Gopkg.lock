@@ -18,6 +18,20 @@
   version = "v0.26.0"
 
 [[projects]]
+  digest = "1:5204bbf2acdc60904e9ed06b4364810bd8b16e2cd48e4c5cbb242c52d6fa1d5f"
+  name = "github.com/GoogleCloudPlatform/cloudsql-proxy"
+  packages = [
+    "logging",
+    "proxy/certs",
+    "proxy/dialers/mysql",
+    "proxy/proxy",
+    "proxy/util",
+  ]
+  pruneopts = ""
+  revision = "ac834ce67862b7c4ed8bdbe86e664572f820c245"
+  version = "1.13"
+
+[[projects]]
   digest = "1:4b6ba994aa18b6c6a871cd700a66525a182f2c0cd78022e25e01508fc8559122"
   name = "github.com/aws/aws-sdk-go"
   packages = [
@@ -313,6 +327,7 @@
     "internal",
     "iterator",
     "option",
+    "sqladmin/v1beta4",
     "storage/v1",
     "transport/http",
     "transport/http/internal/propagation",
@@ -397,12 +412,14 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
+    "github.com/GoogleCloudPlatform/cloudsql-proxy/proxy/dialers/mysql",
     "github.com/go-sql-driver/mysql",
     "github.com/gruntwork-io/terratest/modules/gcp",
-    "github.com/gruntwork-io/terratest/modules/random",
+    "github.com/gruntwork-io/terratest/modules/logger",
     "github.com/gruntwork-io/terratest/modules/terraform",
     "github.com/gruntwork-io/terratest/modules/test-structure",
     "github.com/stretchr/testify/assert",
+    "github.com/stretchr/testify/require",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1
