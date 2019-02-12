@@ -9,7 +9,6 @@ import (
 	"github.com/gruntwork-io/terratest/modules/test-structure"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"os"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -21,11 +20,11 @@ const EXAMPLE_NAME_REPLICAS = "mysql-replicas"
 func TestMySqlReplicas(t *testing.T) {
 	t.Parallel()
 
-	os.Setenv("SKIP_bootstrap", "true")
-	os.Setenv("SKIP_deploy", "true")
-	os.Setenv("SKIP_validate_outputs", "true")
-	os.Setenv("SKIP_sql_tests", "true")
-	os.Setenv("SKIP_teardown", "true")
+	//os.Setenv("SKIP_bootstrap", "true")
+	//os.Setenv("SKIP_deploy", "true")
+	//os.Setenv("SKIP_validate_outputs", "true")
+	//os.Setenv("SKIP_sql_tests", "true")
+	//os.Setenv("SKIP_teardown", "true")
 
 	_examplesDir := test_structure.CopyTerraformFolderToTemp(t, "../", "examples")
 	exampleDir := filepath.Join(_examplesDir, EXAMPLE_NAME_REPLICAS)
@@ -68,9 +67,18 @@ func TestMySqlReplicas(t *testing.T) {
 
 		expectedDBConn := fmt.Sprintf("%s:%s:%s", projectId, region, instanceNameFromOutput)
 
-		assert.True(t, strings.HasPrefix(instanceNameFromOutput, NAME_PREFIX_PUBLIC))
+		assert.True(t, strings.HasPrefix(instanceNameFromOutput, NAME_PREFIX_REPLICAS))
 		assert.Equal(t, DB_NAME, dbNameFromOutput)
 		assert.Equal(t, expectedDBConn, proxyConnectionFromOutput)
+
+		// Failover replica outputs
+		failoverInstanceNameFromOutput := terraform.Output(t, terraformOptions, OUTPUT_FAILOVER_INSTANCE_NAME)
+		failoverProxyConnectionFromOutput := terraform.Output(t, terraformOptions, OUTPUT_FAILOVER_PROXY_CONNECTION)
+
+		expectedFailoverDBConn := fmt.Sprintf("%s:%s:%s", projectId, region, failoverInstanceNameFromOutput)
+
+		assert.True(t, strings.HasPrefix(failoverInstanceNameFromOutput, NAME_PREFIX_REPLICAS))
+		assert.Equal(t, expectedFailoverDBConn, failoverProxyConnectionFromOutput)
 	})
 
 	// TEST REGULAR SQL CLIENT

@@ -52,9 +52,20 @@ module "mysql" {
 
   master_zone = "a"
 
+  # To make it easier to test this example, we are giving the servers public IP addresses and allowing inbound
+  # connections from anywhere. In real-world usage, your servers should live in private subnets, only have private IP
+  # addresses, and only allow access from specific trusted networks, servers or applications in your VPC.
   enable_public_internet_access = true
-  enable_failover_replica       = true
-  failover_replica_zone         = "b"
+
+  authorized_networks = [
+    {
+      name  = "allow-all-inbound"
+      value = "0.0.0.0/0"
+    },
+  ]
+
+  enable_failover_replica = true
+  failover_replica_zone   = "b"
 
   # These together will construct the master_user privileges, i.e.
   # 'master_user_name'@'master_user_host' IDENTIFIED BY 'master_user_password'.

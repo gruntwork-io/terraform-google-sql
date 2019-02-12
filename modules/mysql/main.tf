@@ -13,6 +13,7 @@
 
 locals {
   is_postgres = "${replace(var.engine, "POSTGRES", "") != var.engine}"
+  is_mysql    = "${replace(var.engine, "MYSQL", "") != var.engine}"
 
   actual_master_zone  = "${var.master_zone != "" ? format("%s-%s", var.region, var.master_zone) : ""}"
   actual_replica_zone = "${var.failover_replica_zone != "" ? format("%s-%s", var.region, var.failover_replica_zone) : ""}"
@@ -42,19 +43,14 @@ locals {
   # 'private_network" ("") doesn't match regexp "projects/...'
   ip_configuration = "${local.ip_configuration_def[local.ip_configuration_key]}"
 
-  # Replica certificate info
-  failover_certificate                  = "${join("",data.template_file.failover_certificate.*.rendered)}"
-  failover_certificate_common_name      = "${join("",data.template_file.failover_certificate_common_name.*.rendered)}"
-  failover_certificate_create_time      = "${join("",data.template_file.failover_certificate_create_time.*.rendered)}"
-  failover_certificate_expiration_time  = "${join("",data.template_file.failover_certificate_expiration_time.*.rendered)}"
-  failover_certificate_sha1_fingerprint = "${join("",data.template_file.failover_certificate_sha1_fingerprint.*.rendered)}"
+  failover_proxy_connection = "${join("",data.template_file.failover_proxy_connection.*.rendered)}"
 }
 
 # ------------------------------------------------------------------------------
 # CREATE THE MASTER INSTANCE
 #
 # NOTE: We have multiple google_sql_database_instance resources, based on
-# HA, encryption and replication configuration options.
+# HA and replication configuration options.
 # ------------------------------------------------------------------------------
 
 resource "google_sql_database_instance" "master" {
@@ -143,10 +139,11 @@ resource "null_resource" "wait_for" {
 }
 
 # ------------------------------------------------------------------------------
-# CREATE A NULL RESOURCE TO SIGNAL ALL RESOURCES HAVE BEEN CREATED
+# CREATE A TEMPLATE FILE TO SIGNAL ALL RESOURCES HAVE BEEN CREATED
 # ------------------------------------------------------------------------------
-resource "null_resource" "complete" {
-  depends_on = ["google_sql_user.default"]
+data "template_file" "complete" {
+  depends_on = ["google_sql_database_instance.failover_replica"]
+  template   = "true"
 }
 
 # ------------------------------------------------------------------------------
@@ -204,30 +201,10 @@ resource "google_sql_database_instance" "failover_replica" {
 }
 
 # ------------------------------------------------------------------------------
-# FAILOVER REPLICA CERTIFICATE INFORMATION
+# FAILOVER REPLICA CERTIFICATE PROXY CONNECTION TEMPLATE
 # ------------------------------------------------------------------------------
 
-data "template_file" "failover_certificate" {
+data "template_file" "failover_proxy_connection" {
   count    = "${var.enable_failover_replica}"
-  template = "${google_sql_database_instance.failover_replica.0.server_ca_cert.0.cert}"
-}
-
-data "template_file" "failover_certificate_common_name" {
-  count    = "${var.enable_failover_replica}"
-  template = "${google_sql_database_instance.failover_replica.0.server_ca_cert.0.common_name}"
-}
-
-data "template_file" "failover_certificate_create_time" {
-  count    = "${var.enable_failover_replica}"
-  template = "${google_sql_database_instance.failover_replica.0.server_ca_cert.0.create_time}"
-}
-
-data "template_file" "failover_certificate_expiration_time" {
-  count    = "${var.enable_failover_replica}"
-  template = "${google_sql_database_instance.failover_replica.0.server_ca_cert.0.expiration_time}"
-}
-
-data "template_file" "failover_certificate_sha1_fingerprint" {
-  count    = "${var.enable_failover_replica}"
-  template = "${google_sql_database_instance.failover_replica.0.server_ca_cert.0.sha1_fingerprint}"
+  template = "${var.project}:${var.region}:${google_sql_database_instance.failover_replica.0.name}"
 }
