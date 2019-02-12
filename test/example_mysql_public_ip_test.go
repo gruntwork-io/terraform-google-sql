@@ -1,10 +1,12 @@
 package test
 
 import (
+	"crypto/tls"
+	"crypto/x509"
 	"database/sql"
 	"fmt"
-	"github.com/GoogleCloudPlatform/cloudsql-proxy/proxy/dialers/mysql"
-	_ "github.com/go-sql-driver/mysql"
+	mydialer "github.com/GoogleCloudPlatform/cloudsql-proxy/proxy/dialers/mysql"
+	"github.com/go-sql-driver/mysql"
 	"github.com/gruntwork-io/terratest/modules/gcp"
 	"github.com/gruntwork-io/terratest/modules/logger"
 	"github.com/gruntwork-io/terratest/modules/terraform"
@@ -19,6 +21,7 @@ import (
 
 const NAME_PREFIX_PUBLIC = "mysql-public"
 const EXAMPLE_NAME_PUBLIC = "mysql-public-ip"
+const EXAMPLE_NAME_CERT = "client-certificate"
 
 func TestMySqlPublicIP(t *testing.T) {
 	t.Parallel()
@@ -28,10 +31,15 @@ func TestMySqlPublicIP(t *testing.T) {
 	//os.Setenv("SKIP_validate_outputs", "true")
 	//os.Setenv("SKIP_sql_tests", "true")
 	//os.Setenv("SKIP_proxy_tests", "true")
+	//os.Setenv("SKIP_deploy_cert", "true")
+	//os.Setenv("SKIP_redeploy", "true")
+	//os.Setenv("SKIP_ssl_sql_tests", "true")
+	//os.Setenv("SKIP_teardown_cert", "true")
 	//os.Setenv("SKIP_teardown", "true")
 
 	_examplesDir := test_structure.CopyTerraformFolderToTemp(t, "../", "examples")
 	exampleDir := filepath.Join(_examplesDir, EXAMPLE_NAME_PUBLIC)
+	certExampleDir := filepath.Join(_examplesDir, EXAMPLE_NAME_CERT)
 
 	// BOOTSTRAP VARIABLES FOR THE TESTS
 	test_structure.RunTestStage(t, "bootstrap", func() {
@@ -46,6 +54,11 @@ func TestMySqlPublicIP(t *testing.T) {
 	// TO CLEAN UP ANY RESOURCES THAT WERE CREATED
 	defer test_structure.RunTestStage(t, "teardown", func() {
 		terraformOptions := test_structure.LoadTerraformOptions(t, exampleDir)
+		terraform.Destroy(t, terraformOptions)
+	})
+
+	defer test_structure.RunTestStage(t, "teardown_cert", func() {
+		terraformOptions := test_structure.LoadTerraformOptions(t, certExampleDir)
 		terraform.Destroy(t, terraformOptions)
 	})
 
@@ -65,9 +78,9 @@ func TestMySqlPublicIP(t *testing.T) {
 		region := test_structure.LoadString(t, exampleDir, KEY_REGION)
 		projectId := test_structure.LoadString(t, exampleDir, KEY_PROJECT)
 
-		instanceNameFromOutput := terraform.Output(t, terraformOptions, OUTPUT_INSTANCE_NAME)
+		instanceNameFromOutput := terraform.Output(t, terraformOptions, OUTPUT_MASTER_INSTANCE_NAME)
 		dbNameFromOutput := terraform.Output(t, terraformOptions, OUTPUT_DB_NAME)
-		proxyConnectionFromOutput := terraform.Output(t, terraformOptions, OUTPUT_PROXY_CONNECTION)
+		proxyConnectionFromOutput := terraform.Output(t, terraformOptions, OUTPUT_MASTER_PROXY_CONNECTION)
 
 		expectedDBConn := fmt.Sprintf("%s:%s:%s", projectId, region, instanceNameFromOutput)
 
@@ -80,7 +93,7 @@ func TestMySqlPublicIP(t *testing.T) {
 	test_structure.RunTestStage(t, "sql_tests", func() {
 		terraformOptions := test_structure.LoadTerraformOptions(t, exampleDir)
 
-		publicIp := terraform.Output(t, terraformOptions, OUTPUT_PUBLIC_IP)
+		publicIp := terraform.Output(t, terraformOptions, OUTPUT_MASTER_PUBLIC_IP)
 
 		connectionString := fmt.Sprintf("%s:%s@tcp(%s:3306)/%s", DB_USER, DB_PASS, publicIp, DB_NAME)
 
@@ -132,13 +145,13 @@ func TestMySqlPublicIP(t *testing.T) {
 	test_structure.RunTestStage(t, "proxy_tests", func() {
 		terraformOptions := test_structure.LoadTerraformOptions(t, exampleDir)
 
-		proxyConn := terraform.Output(t, terraformOptions, OUTPUT_PROXY_CONNECTION)
+		proxyConn := terraform.Output(t, terraformOptions, OUTPUT_MASTER_PROXY_CONNECTION)
 
 		logger.Logf(t, "Connecting to: %s via Cloud SQL Proxy", proxyConn)
 
 		// Use the Cloud SQL Proxy for queries
 		// See https://cloud.google.com/sql/docs/mysql/sql-proxy
-		cfg := mysql.Cfg(proxyConn, DB_USER, DB_PASS)
+		cfg := mydialer.Cfg(proxyConn, DB_USER, DB_PASS)
 		cfg.DBName = DB_NAME
 		cfg.ParseTime = true
 
@@ -148,7 +161,7 @@ func TestMySqlPublicIP(t *testing.T) {
 		cfg.WriteTimeout = timeout
 
 		// Dial in. This one actually pings the database already
-		db, err := mysql.DialCfg(cfg)
+		db, err := mydialer.DialCfg(cfg)
 		require.NoError(t, err, "Failed to open Proxy DB connection")
 
 		// Make sure we clean up properly
@@ -175,5 +188,99 @@ func TestMySqlPublicIP(t *testing.T) {
 
 		// Since we set the auto increment to 5, modulus should always be 0
 		assert.Equal(t, int64(0), int64(lastId%5))
+	})
+
+	// CREATE CLIENT CERT
+	test_structure.RunTestStage(t, "deploy_cert", func() {
+		region := test_structure.LoadString(t, exampleDir, KEY_REGION)
+		projectId := test_structure.LoadString(t, exampleDir, KEY_PROJECT)
+
+		terraformOptions := test_structure.LoadTerraformOptions(t, exampleDir)
+		instanceNameFromOutput := terraform.Output(t, terraformOptions, OUTPUT_MASTER_INSTANCE_NAME)
+		commonName := fmt.Sprintf("%s-client", instanceNameFromOutput)
+
+		terraformOptionsForCert := createTerratestOptionsForClientCert(projectId, region, certExampleDir, commonName, instanceNameFromOutput)
+		test_structure.SaveTerraformOptions(t, certExampleDir, terraformOptionsForCert)
+
+		terraform.InitAndApply(t, terraformOptionsForCert)
+	})
+
+	// REDEPLOY WITH FORCED SSL SETTINGS
+	test_structure.RunTestStage(t, "redeploy", func() {
+		terraformOptions := test_structure.LoadTerraformOptions(t, exampleDir)
+
+		// Force secure connections
+		terraformOptions.Vars["require_ssl"] = true
+		terraform.InitAndApply(t, terraformOptions)
+	})
+
+	// RUN TESTS WITH SECURED CONNECTION
+	test_structure.RunTestStage(t, "ssl_sql_tests", func() {
+		terraformOptions := test_structure.LoadTerraformOptions(t, exampleDir)
+		terraformOptionsForCert := test_structure.LoadTerraformOptions(t, certExampleDir)
+
+		//********************************************************
+		// First test that we're not allowed to connect over insecure connection
+		//********************************************************
+
+		publicIp := terraform.Output(t, terraformOptions, OUTPUT_MASTER_PUBLIC_IP)
+
+		connectionString := fmt.Sprintf("%s:%s@tcp(%s:3306)/%s", DB_USER, DB_PASS, publicIp, DB_NAME)
+
+		// Does not actually open up the connection - just returns a DB ref
+		logger.Logf(t, "Connecting to: %s", publicIp)
+		db, err := sql.Open("mysql",
+			connectionString)
+		require.NoError(t, err, "Failed to open DB connection")
+
+		// Make sure we clean up properly
+		defer db.Close()
+
+		// Run ping to actually test the connection
+		logger.Log(t, "Ping the DB with forced SSL")
+		if err = db.Ping(); err != nil {
+			logger.Logf(t, "Not allowed to ping %s as expected.", publicIp)
+		} else {
+			t.Fatalf("Ping %v succeeded against the odds.", publicIp)
+		}
+
+		//********************************************************
+		// Test connection over secure connection
+		//********************************************************
+
+		// Prepare certificates
+		rootCertPool := x509.NewCertPool()
+		serverCertB := []byte(terraform.Output(t, terraformOptions, OUTPUT_MASTER_CA_CERT))
+		clientCertB := []byte(terraform.Output(t, terraformOptionsForCert, OUTPUT_CLIENT_CA_CERT))
+		clientPKB := []byte(terraform.Output(t, terraformOptionsForCert, OUTPUT_CLIENT_PRIVATE_KEY))
+
+		if ok := rootCertPool.AppendCertsFromPEM(serverCertB); !ok {
+			t.Fatal("Failed to append PEM.")
+		}
+
+		clientCert := make([]tls.Certificate, 0, 1)
+		certs, err := tls.X509KeyPair(clientCertB, clientPKB)
+		require.NoError(t, err, "Failed to create key pair")
+
+		clientCert = append(clientCert, certs)
+
+		// Register MySQL certificate config
+		// To avoid certificate validation errors complaining about
+		// missing IP SANs, we set 'InsecureSkipVerify: true'
+		mysql.RegisterTLSConfig("custom", &tls.Config{
+			RootCAs:            rootCertPool,
+			Certificates:       clientCert,
+			InsecureSkipVerify: true,
+		})
+
+		// Prepare the secure connection string and ping the DB
+		sslConnectionString := fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?tls=custom", DB_USER, DB_PASS, publicIp, DB_NAME)
+		db, err = sql.Open("mysql", sslConnectionString)
+
+		// Run ping to actually test the connection with the SSL config
+		logger.Log(t, "Ping the DB with forced SSL")
+		if err = db.Ping(); err != nil {
+			t.Fatalf("Failed to ping DB with forced SSL: %v", err)
+		}
 	})
 }

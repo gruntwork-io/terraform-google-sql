@@ -47,3 +47,10 @@ variable "name_override" {
   description = "You may optionally override the name_prefix + random string by specifying an override"
   default     = ""
 }
+
+# When configuring a public IP instance, you should only allow secure connections
+# For testing purposes, we're initially allowing unsecured connections.
+variable "require_ssl" {
+  description = "True if the instance should require SSL/TLS for users connecting over IP. Note: SSL/TLS is needed to provide security when you connect to Cloud SQL using IP addresses. If you are connecting to your instance only by using the Cloud SQL Proxy or the Java Socket Library, you do not need to configure your instance to use SSL/TLS."
+  default     = false
+}

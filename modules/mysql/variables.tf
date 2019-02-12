@@ -172,6 +172,11 @@ variable "enable_public_internet_access" {
   default     = false
 }
 
+variable "require_ssl" {
+  description = "True if the instance should require SSL/TLS for users connecting over IP. Note: SSL/TLS is needed to provide security when you connect to Cloud SQL using IP addresses. If you are connecting to your instance only by using the Cloud SQL Proxy or the Java Socket Library, you do not need to configure your instance to use SSL/TLS."
+  default     = false
+}
+
 variable "private_network" {
   description = "The resource link for the VPC network from which the Cloud SQL instance is accessible for private IP."
   default     = ""
