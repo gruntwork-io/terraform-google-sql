@@ -77,8 +77,6 @@ output "db_name" {
 output "failover_instance_name" {
   description = "The name of the failover database instance"
   value       = "${join("", google_sql_database_instance.failover_replica.*.name)}"
-
-  #value       = "${local.failover_name}"
 }
 
 # Due to the provider output format (list of list of maps), this will be rendered in a very awkward way and as such is really not usable
@@ -107,29 +105,27 @@ output "failover_proxy_connection" {
 # ------------------------------------------------------------------------------
 
 output "failover_replica_ca_cert" {
-  value = "${join("", google_sql_database_instance.failover_replica.*.server_ca_cert.0.cert)}"
-
-  #value       = "${local.failover_certificate}"
+  value       = "${local.failover_certificate}"
   description = "The CA Certificate used to connect to the failover instance via SSL"
 }
 
 output "failover_replica_ca_cert_common_name" {
-  value       = "${join("", google_sql_database_instance.failover_replica.*.server_ca_cert.0.common_name)}"
+  value       = "${local.failover_certificate_common_name}"
   description = "The CN valid for the failover instance CA Cert"
 }
 
 output "failover_replica_ca_cert_create_time" {
-  value       = "${join("", google_sql_database_instance.failover_replica.*.server_ca_cert.0.create_time)}"
+  value       = "${local.failover_certificate_create_time}"
   description = "Creation time of the failover instance CA Cert"
 }
 
 output "failover_replica_ca_cert_expiration_time" {
-  value       = "${join("", google_sql_database_instance.failover_replica.*.server_ca_cert.0.expiration_time)}"
+  value       = "${local.failover_certificate_expiration_time}"
   description = "Expiration time of the failover instance CA Cert"
 }
 
 output "failover_replica_ca_cert_sha1_fingerprint" {
-  value       = "${join("", google_sql_database_instance.failover_replica.*.server_ca_cert.0.sha1_fingerprint)}"
+  value       = "${local.failover_certificate_sha1_fingerprint}"
   description = "SHA Fingerprint of the failover instance CA Cert"
 }
 
