@@ -8,7 +8,15 @@ variable "project" {
 }
 
 variable "region" {
-  description = "The region to host the database in."
+  description = "The region to host the database in (e.g. 'us-central1')."
+}
+
+variable "master_zone" {
+  description = "The preferred zone for the master instance (e.g. 'us-central1-a'). Must be different than 'failover_replica_zone'."
+}
+
+variable "failover_replica_zone" {
+  description = "The preferred zone for the failover instance (e.g. 'us-central1-b'). Must be different than 'master_zone'."
 }
 
 # Note, after a name db instance is used, it cannot be reused for up to one week.

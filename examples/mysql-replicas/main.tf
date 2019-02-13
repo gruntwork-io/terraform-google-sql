@@ -50,7 +50,7 @@ module "mysql" {
   engine       = "${var.mysql_version}"
   machine_type = "${var.machine_type}"
 
-  master_zone = "a"
+  master_zone = "${var.master_zone}"
 
   # To make it easier to test this example, we are giving the servers public IP addresses and allowing inbound
   # connections from anywhere. In real-world usage, your servers should live in private subnets, only have private IP
@@ -64,8 +64,9 @@ module "mysql" {
     },
   ]
 
+  # Indicate that we want to create a failover replica
   enable_failover_replica = true
-  failover_replica_zone   = "b"
+  failover_replica_zone   = "${var.failover_replica_zone}"
 
   # These together will construct the master_user privileges, i.e.
   # 'master_user_name'@'master_user_host' IDENTIFIED BY 'master_user_password'.

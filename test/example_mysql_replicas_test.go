@@ -34,7 +34,11 @@ func TestMySqlReplicas(t *testing.T) {
 		projectId := gcp.GetGoogleProjectIDFromEnvVar(t)
 		region := getRandomRegion(t, projectId)
 
+		masterZone, replicaZone := getTwoDistinctRandomZonesForRegion(t, projectId, region)
+
 		test_structure.SaveString(t, exampleDir, KEY_REGION, region)
+		test_structure.SaveString(t, exampleDir, KEY_MASTER_ZONE, masterZone)
+		test_structure.SaveString(t, exampleDir, KEY_REPLICA_ZONE, replicaZone)
 		test_structure.SaveString(t, exampleDir, KEY_PROJECT, projectId)
 	})
 
@@ -48,7 +52,9 @@ func TestMySqlReplicas(t *testing.T) {
 	test_structure.RunTestStage(t, "deploy", func() {
 		region := test_structure.LoadString(t, exampleDir, KEY_REGION)
 		projectId := test_structure.LoadString(t, exampleDir, KEY_PROJECT)
-		terraformOptions := createTerratestOptionsForMySql(projectId, region, exampleDir, NAME_PREFIX_REPLICAS)
+		masterZone := test_structure.LoadString(t, exampleDir, KEY_MASTER_ZONE)
+		replicaZone := test_structure.LoadString(t, exampleDir, KEY_REPLICA_ZONE)
+		terraformOptions := createTerratestOptionsForMySql(projectId, region, exampleDir, NAME_PREFIX_REPLICAS, masterZone, replicaZone)
 		test_structure.SaveTerraformOptions(t, exampleDir, terraformOptions)
 
 		terraform.InitAndApply(t, terraformOptions)
@@ -91,8 +97,7 @@ func TestMySqlReplicas(t *testing.T) {
 
 		// Does not actually open up the connection - just returns a DB ref
 		logger.Logf(t, "Connecting to: %s", publicIp)
-		db, err := sql.Open("mysql",
-			connectionString)
+		db, err := sql.Open("mysql", connectionString)
 		require.NoError(t, err, "Failed to open DB connection")
 
 		// Make sure we clean up properly

@@ -151,7 +151,7 @@ variable "follow_gae_application" {
 }
 
 variable "master_zone" {
-  description = "Preferred zone for the instance (e.g. 'a'). Will be appended to the 'region'. Must be different than 'replica_zone'."
+  description = "Preferred zone for the master instance (e.g. 'us-central1-a'). 'region'. If empty, Google will auto-assign a zone."
   default     = ""
 }
 
@@ -172,7 +172,7 @@ variable "enable_failover_replica" {
 }
 
 variable "failover_replica_zone" {
-  description = "The preferred zone for the failover instance (e.g. 'a'). Will be appended to the 'region'. Must be different than 'master_zone'."
+  description = "The preferred zone for the failover instance (e.g. 'us-central1-b'). Must be different than 'master_zone'."
   default     = ""
 }
 

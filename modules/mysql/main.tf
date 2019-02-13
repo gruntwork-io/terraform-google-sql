@@ -15,9 +15,6 @@ locals {
   is_postgres = "${replace(var.engine, "POSTGRES", "") != var.engine}"
   is_mysql    = "${replace(var.engine, "MYSQL", "") != var.engine}"
 
-  actual_master_zone  = "${var.master_zone != "" ? format("%s-%s", var.region, var.master_zone) : ""}"
-  actual_replica_zone = "${var.failover_replica_zone != "" ? format("%s-%s", var.region, var.failover_replica_zone) : ""}"
-
   # Terraform does not allow using lists of maps with coditionals, so we have to
   # trick terraform by creating a string conditional first.
   # See https://github.com/hashicorp/terraform/issues/12453
@@ -42,16 +39,6 @@ locals {
   # passing an empty string into 'private_network' causes
   # 'private_network" ("") doesn't match regexp "projects/...'
   ip_configuration = "${local.ip_configuration_def[local.ip_configuration_key]}"
-
-  # Replica proxy connection info
-  failover_proxy_connection = "${join("",data.template_file.failover_proxy_connection.*.rendered)}"
-
-  # Replica certificate info
-  failover_certificate                  = "${join("",data.template_file.failover_certificate.*.rendered)}"
-  failover_certificate_common_name      = "${join("",data.template_file.failover_certificate_common_name.*.rendered)}"
-  failover_certificate_create_time      = "${join("",data.template_file.failover_certificate_create_time.*.rendered)}"
-  failover_certificate_expiration_time  = "${join("",data.template_file.failover_certificate_expiration_time.*.rendered)}"
-  failover_certificate_sha1_fingerprint = "${join("",data.template_file.failover_certificate_sha1_fingerprint.*.rendered)}"
 }
 
 # ------------------------------------------------------------------------------
@@ -78,7 +65,7 @@ resource "google_sql_database_instance" "master" {
 
     location_preference {
       follow_gae_application = "${var.follow_gae_application}"
-      zone                   = "${local.actual_master_zone}"
+      zone                   = "${var.master_zone}"
     }
 
     backup_configuration {
@@ -147,14 +134,6 @@ resource "null_resource" "wait_for" {
 }
 
 # ------------------------------------------------------------------------------
-# CREATE A TEMPLATE FILE TO SIGNAL ALL RESOURCES HAVE BEEN CREATED
-# ------------------------------------------------------------------------------
-data "template_file" "complete" {
-  depends_on = ["google_sql_database_instance.failover_replica"]
-  template   = "true"
-}
-
-# ------------------------------------------------------------------------------
 # CREATE THE FAILOVER REPLICA
 # ------------------------------------------------------------------------------
 
@@ -188,7 +167,7 @@ resource "google_sql_database_instance" "failover_replica" {
 
     location_preference {
       follow_gae_application = "${var.follow_gae_application}"
-      zone                   = "${local.actual_replica_zone}"
+      zone                   = "${var.failover_replica_zone}"
     }
 
     disk_size      = "${var.disk_size}"
@@ -209,43 +188,9 @@ resource "google_sql_database_instance" "failover_replica" {
 }
 
 # ------------------------------------------------------------------------------
-# FAILOVER REPLICA PROXY CONNECTION TEMPLATE
+# CREATE A TEMPLATE FILE TO SIGNAL ALL RESOURCES HAVE BEEN CREATED
 # ------------------------------------------------------------------------------
-
-data "template_file" "failover_proxy_connection" {
-  count    = "${var.enable_failover_replica}"
-  template = "${var.project}:${var.region}:${google_sql_database_instance.failover_replica.0.name}"
-}
-
-# ------------------------------------------------------------------------------
-# FAILOVER REPLICA CERTIFICATE TEMPLATES
-#
-# We have to produce the certificate outputs via template_file. Using splat syntax would yield:
-# Resource 'google_sql_database_instance.failover_replica' does not have attribute 'server_ca_cert.0.cert'
-# for variable 'google_sql_database_instance.failover_replica.*.server_ca_cert.0.cert'
-# ------------------------------------------------------------------------------
-
-data "template_file" "failover_certificate" {
-  count    = "${var.enable_failover_replica}"
-  template = "${google_sql_database_instance.failover_replica.0.server_ca_cert.0.cert}"
-}
-
-data "template_file" "failover_certificate_common_name" {
-  count    = "${var.enable_failover_replica}"
-  template = "${google_sql_database_instance.failover_replica.0.server_ca_cert.0.common_name}"
-}
-
-data "template_file" "failover_certificate_create_time" {
-  count    = "${var.enable_failover_replica}"
-  template = "${google_sql_database_instance.failover_replica.0.server_ca_cert.0.create_time}"
-}
-
-data "template_file" "failover_certificate_expiration_time" {
-  count    = "${var.enable_failover_replica}"
-  template = "${google_sql_database_instance.failover_replica.0.server_ca_cert.0.expiration_time}"
-}
-
-data "template_file" "failover_certificate_sha1_fingerprint" {
-  count    = "${var.enable_failover_replica}"
-  template = "${google_sql_database_instance.failover_replica.0.server_ca_cert.0.sha1_fingerprint}"
+data "template_file" "complete" {
+  depends_on = ["google_sql_database_instance.failover_replica"]
+  template   = "true"
 }

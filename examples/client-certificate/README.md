@@ -1,8 +1,8 @@
 # Client Certificate Example
 
-This folder contains an example of how to create client certificates for [Google Cloud SQL](https://cloud.google.com/sql/) database instance. 
+This folder contains an example of how to create client certificates for [Cloud SQL](https://cloud.google.com/sql/) database instance. 
 There can be only one pending operation at a given point of time because of the inherent Cloud SQL system architecture.
-This is a limitation on the concurrent writes to a CloudSQL database. To resolve this issue,
+This is a limitation on the concurrent writes to a Cloud SQL database. To resolve this issue,
 we will create the certificate in a separate module.
 
 Creating the certificate while there are other operations ongoing will result in `googleapi: Error 409: Operation failed because another operation was already in progress.`
