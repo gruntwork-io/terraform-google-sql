@@ -89,6 +89,18 @@ func TestMySqlReplicas(t *testing.T) {
 
 		assert.True(t, strings.HasPrefix(failoverInstanceNameFromOutput, NAME_PREFIX_REPLICAS))
 		assert.Equal(t, expectedFailoverDBConn, failoverProxyConnectionFromOutput)
+
+		// Read replica outputs
+		readReplicaInstanceNameFromOutputList := terraform.OutputList(t, terraformOptions, OUTPUT_READ_REPLICA_INSTANCE_NAMES)
+		readReplicaProxyConnectionFromOutputList := terraform.OutputList(t, terraformOptions, OUTPUT_READ_REPLICA_PROXY_CONNECTIONS)
+
+		readReplicaInstanceNameFromOutput := readReplicaInstanceNameFromOutputList[0]
+		readReplicaProxyConnectionFromOutput := readReplicaProxyConnectionFromOutputList[0]
+
+		expectedReadReplicaDBConn := fmt.Sprintf("%s:%s:%s", projectId, region, readReplicaInstanceNameFromOutput)
+
+		assert.True(t, strings.HasPrefix(readReplicaInstanceNameFromOutput, NAME_PREFIX_REPLICAS))
+		assert.Equal(t, expectedReadReplicaDBConn, readReplicaProxyConnectionFromOutput)
 	})
 
 	// TEST REGULAR SQL CLIENT

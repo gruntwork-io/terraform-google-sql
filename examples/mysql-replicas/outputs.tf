@@ -71,20 +71,20 @@ output "failover_proxy_connection" {
 
 output "read_replica_instance_names" {
   description = "List of names for the read replica instances"
-  value       = "${module.mysql.read_replica_instance_names}"
+  value       = ["${module.mysql.read_replica_instance_names}"]
 }
 
 output "read_replica_public_ips" {
   description = "List of first IPv4 addresses of the addresses assigned to the read replica instances. As the instances have only public IP in the example, the are the public IP addresses."
-  value       = "${module.mysql.read_replica_first_ip_addresses}"
+  value       = ["${module.mysql.read_replica_first_ip_addresses}"]
 }
 
 output "read_replica_instances" {
   description = "List of self links to the read replica instances"
-  value       = "${module.mysql.read_replica_instances}"
+  value       = ["${module.mysql.read_replica_instances}"]
 }
 
 output "read_replica_proxy_connections" {
   description = "List of read replica instance paths for connecting with Cloud SQL Proxy. Read more at https://cloud.google.com/sql/docs/mysql/sql-proxy"
-  value       = "${module.mysql.read_replica_proxy_connections}"
+  value       = ["${module.mysql.read_replica_proxy_connections}"]
 }

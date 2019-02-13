@@ -32,28 +32,28 @@ output "master_proxy_connection" {
 # ------------------------------------------------------------------------------
 
 output "master_ca_cert" {
-  value       = "${google_sql_database_instance.master.server_ca_cert.0.cert}"
   description = "The CA Certificate used to connect to the master instance via SSL"
+  value       = "${google_sql_database_instance.master.server_ca_cert.0.cert}"
 }
 
 output "master_ca_cert_common_name" {
-  value       = "${google_sql_database_instance.master.server_ca_cert.0.common_name}"
   description = "The CN valid for the master instance CA Cert"
+  value       = "${google_sql_database_instance.master.server_ca_cert.0.common_name}"
 }
 
 output "master_ca_cert_create_time" {
-  value       = "${google_sql_database_instance.master.server_ca_cert.0.create_time}"
   description = "Creation time of the master instance CA Cert"
+  value       = "${google_sql_database_instance.master.server_ca_cert.0.create_time}"
 }
 
 output "master_ca_cert_expiration_time" {
-  value       = "${google_sql_database_instance.master.server_ca_cert.0.expiration_time}"
   description = "Expiration time of the master instance CA Cert"
+  value       = "${google_sql_database_instance.master.server_ca_cert.0.expiration_time}"
 }
 
 output "master_ca_cert_sha1_fingerprint" {
-  value       = "${google_sql_database_instance.master.server_ca_cert.0.sha1_fingerprint}"
   description = "SHA Fingerprint of the master instance CA Cert"
+  value       = "${google_sql_database_instance.master.server_ca_cert.0.sha1_fingerprint}"
 }
 
 # ------------------------------------------------------------------------------
@@ -105,28 +105,28 @@ output "failover_proxy_connection" {
 # ------------------------------------------------------------------------------
 
 output "failover_replica_ca_cert" {
-  value       = "${local.failover_certificate}"
   description = "The CA Certificate used to connect to the failover instance via SSL"
+  value       = "${local.failover_certificate}"
 }
 
 output "failover_replica_ca_cert_common_name" {
-  value       = "${local.failover_certificate_common_name}"
   description = "The CN valid for the failover instance CA Cert"
+  value       = "${local.failover_certificate_common_name}"
 }
 
 output "failover_replica_ca_cert_create_time" {
-  value       = "${local.failover_certificate_create_time}"
   description = "Creation time of the failover instance CA Cert"
+  value       = "${local.failover_certificate_create_time}"
 }
 
 output "failover_replica_ca_cert_expiration_time" {
-  value       = "${local.failover_certificate_expiration_time}"
   description = "Expiration time of the failover instance CA Cert"
+  value       = "${local.failover_certificate_expiration_time}"
 }
 
 output "failover_replica_ca_cert_sha1_fingerprint" {
-  value       = "${local.failover_certificate_sha1_fingerprint}"
   description = "SHA Fingerprint of the failover instance CA Cert"
+  value       = "${local.failover_certificate_sha1_fingerprint}"
 }
 
 # ------------------------------------------------------------------------------
@@ -164,28 +164,28 @@ output "read_replica_proxy_connections" {
 # ------------------------------------------------------------------------------
 
 output "read_replica_ca_certs" {
-  value       = "${local.failover_certificate}"
   description = "List of CA Certificates used to connect to the read replica instances via SSL"
+  value       = ["${data.template_file.read_replica_certificate.*.rendered}"]
 }
 
 output "read_replica_ca_cert_common_names" {
-  value       = "${local.failover_certificate_common_name}"
   description = "List of CNs valid for the read replica instances CA Certs"
+  value       = ["${data.template_file.read_replica_certificate_common_name.*.rendered}"]
 }
 
 output "read_replica_ca_cert_create_times" {
-  value       = "${local.failover_certificate_create_time}"
   description = "List of creation times of the read replica instances CA Certs"
+  value       = ["${data.template_file.read_replica_certificate_create_time.*.rendered}"]
 }
 
 output "read_replica_ca_cert_expiration_times" {
-  value       = "${local.failover_certificate_expiration_time}"
   description = "List of expiration times of the read replica instances CA Certs"
+  value       = ["${data.template_file.read_replica_certificate_expiration_time.*.rendered}"]
 }
 
 output "read_replica_ca_cert_sha1_fingerprints" {
-  value       = "${local.failover_certificate_sha1_fingerprint}"
   description = "List of SHA Fingerprints of the read replica instances CA Certs"
+  value       = ["${data.template_file.read_replica_certificate_sha1_fingerprint.*.rendered}"]
 }
 
 # ------------------------------------------------------------------------------
