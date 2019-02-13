@@ -79,25 +79,25 @@ data "template_file" "read_replica_proxy_connection" {
 
 data "template_file" "read_replica_certificate" {
   count    = "${var.num_read_replicas}"
-  template = "${google_sql_database_instance.read_replica.*.server_ca_cert.0.cert[count.index]}"
+  template = "${lookup(google_sql_database_instance.read_replica.server_ca_cert[count.index], "cert")}"
 }
 
 data "template_file" "read_replica_certificate_common_name" {
   count    = "${var.num_read_replicas}"
-  template = "${google_sql_database_instance.read_replica.*.server_ca_cert.0.common_name[count.index]}"
+  template = "${lookup(google_sql_database_instance.read_replica.server_ca_cert[count.index], "common_name")}"
 }
 
 data "template_file" "read_replica_certificate_create_time" {
   count    = "${var.num_read_replicas}"
-  template = "${google_sql_database_instance.read_replica.*.server_ca_cert.0.create_time[count.index]}"
+  template = "${lookup(google_sql_database_instance.read_replica.server_ca_cert[count.index], "create_time")}"
 }
 
 data "template_file" "read_replica_certificate_expiration_time" {
   count    = "${var.num_read_replicas}"
-  template = "${google_sql_database_instance.read_replica.*.server_ca_cert.0.expiration_time[count.index]}"
+  template = "${lookup(google_sql_database_instance.read_replica.server_ca_cert[count.index], "expiration_time")}"
 }
 
 data "template_file" "read_replica_certificate_sha1_fingerprint" {
   count    = "${var.num_read_replicas}"
-  template = "${google_sql_database_instance.read_replica.*.server_ca_cert.0.sha1_fingerprint[count.index]}"
+  template = "${lookup(google_sql_database_instance.read_replica.server_ca_cert[count.index], "sha1_fingerprint")}"
 }

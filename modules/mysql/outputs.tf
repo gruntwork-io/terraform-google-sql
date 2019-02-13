@@ -163,6 +163,11 @@ output "read_replica_proxy_connections" {
 # READ REPLICA CERT OUTPUTS
 # ------------------------------------------------------------------------------
 
+output "read_replica_server_ca_certs" {
+  description = "List of CA Certificates used to connect to the read replica instances via SSL"
+  value       = ["${google_sql_database_instance.read_replica.*.server_ca_cert}"]
+}
+
 output "read_replica_ca_certs" {
   description = "List of CA Certificates used to connect to the read replica instances via SSL"
   value       = ["${data.template_file.read_replica_certificate.*.rendered}"]

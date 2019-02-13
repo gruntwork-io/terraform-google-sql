@@ -88,3 +88,33 @@ output "read_replica_proxy_connections" {
   description = "List of read replica instance paths for connecting with Cloud SQL Proxy. Read more at https://cloud.google.com/sql/docs/mysql/sql-proxy"
   value       = ["${module.mysql.read_replica_proxy_connections}"]
 }
+
+output "read_replica_server_ca_certs" {
+  description = "List of CA Certificates used to connect to the read replica instances via SSL"
+  value       = ["${module.mysql.read_replica_server_ca_certs}"]
+}
+
+output "read_replica_ca_certs" {
+  description = "List of CA Certificates used to connect to the read replica instances via SSL"
+  value       = ["${module.mysql.read_replica_ca_certs}"]
+}
+
+output "read_replica_ca_cert_common_names" {
+  description = "List of CNs valid for the read replica instances CA Certs"
+  value       = ["${module.mysql.read_replica_ca_cert_common_names}"]
+}
+
+output "read_replica_ca_cert_create_times" {
+  description = "List of creation times of the read replica instances CA Certs"
+  value       = ["${module.mysql.read_replica_ca_cert_create_times}"]
+}
+
+output "read_replica_ca_cert_expiration_times" {
+  description = "List of expiration times of the read replica instances CA Certs"
+  value       = ["${module.mysql.read_replica_ca_cert_expiration_times}"]
+}
+
+output "read_replica_ca_cert_sha1_fingerprints" {
+  description = "List of SHA Fingerprints of the read replica instances CA Certs"
+  value       = ["${module.mysql.read_replica_ca_cert_sha1_fingerprints}"]
+}
