@@ -19,14 +19,8 @@ variable "engine" {
   description = "The engine version of the database, e.g. `MYSQL_5_6` or `MYSQL_5_7`. See https://cloud.google.com/sql/docs/features for supported versions."
 }
 
-# TODO: Depending on how the replicas are set up, tweak this.
-#variable "master_instance_name" {
-#  description = "The name of the instance that will act as the master in the replication setup. Note, this requires the master to have binary_log_enabled set, as well as existing backups."
-#  default     = ""
-#}
-
 variable "machine_type" {
-  description = "The machine type for the instance. See this page for supported tiers and pricing: https://cloud.google.com/sql/pricing"
+  description = "The machine type for the instances. See this page for supported tiers and pricing: https://cloud.google.com/sql/pricing"
 }
 
 variable "db_name" {
@@ -156,8 +150,8 @@ variable "follow_gae_application" {
   default     = ""
 }
 
-variable "zone" {
-  description = "Preferred zone for the instance."
+variable "master_zone" {
+  description = "Preferred zone for the master instance (e.g. 'us-central1-a'). 'region'. If empty, Google will auto-assign a zone."
   default     = ""
 }
 
@@ -170,6 +164,16 @@ variable "master_user_host" {
 variable "enable_public_internet_access" {
   description = "WARNING: - In nearly all cases a database should NOT be publicly accessible. Only set this to true if you want the database open to the internet."
   default     = false
+}
+
+variable "enable_failover_replica" {
+  description = "Set to true to enable failover replica."
+  default     = false
+}
+
+variable "failover_replica_zone" {
+  description = "The preferred zone for the failover instance (e.g. 'us-central1-b'). Must be different than 'master_zone'."
+  default     = ""
 }
 
 variable "require_ssl" {

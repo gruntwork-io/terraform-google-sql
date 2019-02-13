@@ -65,7 +65,7 @@ func TestMySqlPublicIP(t *testing.T) {
 	test_structure.RunTestStage(t, "deploy", func() {
 		region := test_structure.LoadString(t, exampleDir, KEY_REGION)
 		projectId := test_structure.LoadString(t, exampleDir, KEY_PROJECT)
-		terraformOptions := createTerratestOptionsForMySql(projectId, region, exampleDir, NAME_PREFIX_PUBLIC)
+		terraformOptions := createTerratestOptionsForMySql(projectId, region, exampleDir, NAME_PREFIX_PUBLIC, "", "")
 		test_structure.SaveTerraformOptions(t, exampleDir, terraformOptions)
 
 		terraform.InitAndApply(t, terraformOptions)

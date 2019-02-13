@@ -8,10 +8,13 @@
 # PREPARE LOCALS
 #
 # NOTE: Due to limitations in terraform and heavy use of nested sub-blocks in the resource,
-# we have to construct some of the configuration values dynamocally
+# we have to construct some of the configuration values dynamically
 # ------------------------------------------------------------------------------
 
 locals {
+  is_postgres = "${replace(var.engine, "POSTGRES", "") != var.engine}"
+  is_mysql    = "${replace(var.engine, "MYSQL", "") != var.engine}"
+
   # Terraform does not allow using lists of maps with coditionals, so we have to
   # trick terraform by creating a string conditional first.
   # See https://github.com/hashicorp/terraform/issues/12453
@@ -39,10 +42,10 @@ locals {
 }
 
 # ------------------------------------------------------------------------------
-# CREATE THE CLOUD SQL MYSQL CLUSTER
+# CREATE THE MASTER INSTANCE
 #
 # NOTE: We have multiple google_sql_database_instance resources, based on
-# HA, encryption and replication configuration options.
+# HA and replication configuration options.
 # ------------------------------------------------------------------------------
 
 resource "google_sql_database_instance" "master" {
@@ -62,7 +65,7 @@ resource "google_sql_database_instance" "master" {
 
     location_preference {
       follow_gae_application = "${var.follow_gae_application}"
-      zone                   = "${var.zone}"
+      zone                   = "${var.master_zone}"
     }
 
     backup_configuration {
@@ -102,6 +105,8 @@ resource "google_sql_database_instance" "master" {
 # ------------------------------------------------------------------------------
 
 resource "google_sql_database" "default" {
+  depends_on = ["google_sql_database_instance.master"]
+
   name      = "${var.db_name}"
   project   = "${var.project}"
   instance  = "${google_sql_database_instance.master.name}"
@@ -110,6 +115,8 @@ resource "google_sql_database" "default" {
 }
 
 resource "google_sql_user" "default" {
+  depends_on = ["google_sql_database.default"]
+
   name     = "${var.master_user_name}"
   project  = "${var.project}"
   instance = "${google_sql_database_instance.master.name}"
@@ -127,8 +134,63 @@ resource "null_resource" "wait_for" {
 }
 
 # ------------------------------------------------------------------------------
-# CREATE A NULL RESOURCE TO SIGNAL ALL RESOURCES HAVE BEEN CREATED
+# CREATE THE FAILOVER REPLICA
 # ------------------------------------------------------------------------------
-resource "null_resource" "complete" {
+
+resource "google_sql_database_instance" "failover_replica" {
+  count = "${var.enable_failover_replica}"
+
   depends_on = ["google_sql_user.default"]
+
+  provider         = "google-beta"
+  name             = "${var.name}-failover"
+  project          = "${var.project}"
+  region           = "${var.region}"
+  database_version = "${var.engine}"
+
+  # The name of the instance that will act as the master in the replication setup.
+  master_instance_name = "${google_sql_database_instance.master.name}"
+
+  replica_configuration {
+    # Specifies that the replica is the failover target.
+    failover_target = true
+  }
+
+  settings {
+    crash_safe_replication = true
+
+    tier                        = "${var.machine_type}"
+    authorized_gae_applications = ["${var.authorized_gae_applications}"]
+    disk_autoresize             = "${var.disk_autoresize}"
+
+    ip_configuration = ["${local.ip_configuration}"]
+
+    location_preference {
+      follow_gae_application = "${var.follow_gae_application}"
+      zone                   = "${var.failover_replica_zone}"
+    }
+
+    disk_size      = "${var.disk_size}"
+    disk_type      = "${var.disk_type}"
+    database_flags = ["${var.database_flags}"]
+
+    user_labels = "${var.custom_labels}"
+  }
+
+  # Default timeouts are 10 minutes, which in most cases should be enough.
+  # Sometimes the database creation can, however, take longer, so we
+  # increase the timeouts slightly.
+  timeouts {
+    create = "30m"
+    delete = "30m"
+    update = "30m"
+  }
+}
+
+# ------------------------------------------------------------------------------
+# CREATE A TEMPLATE FILE TO SIGNAL ALL RESOURCES HAVE BEEN CREATED
+# ------------------------------------------------------------------------------
+data "template_file" "complete" {
+  depends_on = ["google_sql_database_instance.failover_replica"]
+  template   = "true"
 }
