@@ -24,6 +24,7 @@ func TestMySqlReplicas(t *testing.T) {
 	//os.Setenv("SKIP_deploy", "true")
 	//os.Setenv("SKIP_validate_outputs", "true")
 	//os.Setenv("SKIP_sql_tests", "true")
+	//os.Setenv("SKIP_read_replica_tests", "true")
 	//os.Setenv("SKIP_teardown", "true")
 
 	_examplesDir := test_structure.CopyTerraformFolderToTemp(t, "../", "examples")
@@ -34,11 +35,13 @@ func TestMySqlReplicas(t *testing.T) {
 		projectId := gcp.GetGoogleProjectIDFromEnvVar(t)
 		region := getRandomRegion(t, projectId)
 
-		masterZone, replicaZone := getTwoDistinctRandomZonesForRegion(t, projectId, region)
+		masterZone, failoverReplicaZone := getTwoDistinctRandomZonesForRegion(t, projectId, region)
+		readReplicaZone := gcp.GetRandomZoneForRegion(t, projectId, region)
 
 		test_structure.SaveString(t, exampleDir, KEY_REGION, region)
 		test_structure.SaveString(t, exampleDir, KEY_MASTER_ZONE, masterZone)
-		test_structure.SaveString(t, exampleDir, KEY_REPLICA_ZONE, replicaZone)
+		test_structure.SaveString(t, exampleDir, KEY_FAILOVER_REPLICA_ZONE, failoverReplicaZone)
+		test_structure.SaveString(t, exampleDir, KEY_READ_REPLICA_ZONE, readReplicaZone)
 		test_structure.SaveString(t, exampleDir, KEY_PROJECT, projectId)
 	})
 
@@ -53,8 +56,9 @@ func TestMySqlReplicas(t *testing.T) {
 		region := test_structure.LoadString(t, exampleDir, KEY_REGION)
 		projectId := test_structure.LoadString(t, exampleDir, KEY_PROJECT)
 		masterZone := test_structure.LoadString(t, exampleDir, KEY_MASTER_ZONE)
-		replicaZone := test_structure.LoadString(t, exampleDir, KEY_REPLICA_ZONE)
-		terraformOptions := createTerratestOptionsForMySql(projectId, region, exampleDir, NAME_PREFIX_REPLICAS, masterZone, replicaZone)
+		failoverReplicaZone := test_structure.LoadString(t, exampleDir, KEY_FAILOVER_REPLICA_ZONE)
+		readReplicaZone := test_structure.LoadString(t, exampleDir, KEY_READ_REPLICA_ZONE)
+		terraformOptions := createTerratestOptionsForMySql(projectId, region, exampleDir, NAME_PREFIX_REPLICAS, masterZone, failoverReplicaZone, 1, readReplicaZone)
 		test_structure.SaveTerraformOptions(t, exampleDir, terraformOptions)
 
 		terraform.InitAndApply(t, terraformOptions)
@@ -136,5 +140,56 @@ func TestMySqlReplicas(t *testing.T) {
 
 		// Since we set the auto increment to 7, modulus should always be 0
 		assert.Equal(t, int64(0), int64(lastId%7))
+	})
+
+	// TEST REGULAR SQL CLIENT
+	test_structure.RunTestStage(t, "read_replica_tests", func() {
+		terraformOptions := test_structure.LoadTerraformOptions(t, exampleDir)
+
+		readReplicaPublicIpList := terraform.OutputList(t, terraformOptions, OUTPUT_READ_REPLICA_PUBLIC_IPS)
+		readReplicaPublicIp := readReplicaPublicIpList[0]
+
+		connectionString := fmt.Sprintf("%s:%s@tcp(%s:3306)/%s", DB_USER, DB_PASS, readReplicaPublicIp, DB_NAME)
+
+		// Does not actually open up the connection - just returns a DB ref
+		logger.Logf(t, "Connecting to read replica: %s", readReplicaPublicIp)
+		db, err := sql.Open("mysql", connectionString)
+		require.NoError(t, err, "Failed to open DB connection to read replica")
+
+		// Make sure we clean up properly
+		defer db.Close()
+
+		// Run ping to actually test the connection
+		logger.Log(t, "Ping the read replica DB")
+		if err = db.Ping(); err != nil {
+			t.Fatalf("Failed to ping read replica DB: %v", err)
+		}
+
+		// Try to insert data to verify we cannot write
+		logger.Logf(t, "Insert data: %s", MYSQL_INSERT_TEST_ROW)
+		stmt, err := db.Prepare(MYSQL_INSERT_TEST_ROW)
+		require.NoError(t, err, "Failed to prepare insert readonly statement")
+
+		// Execute the statement
+		_, err = stmt.Exec("ReadOnlyGrunt")
+		// This time we actually expect an error:
+		// 'The MySQL server is running with the --read-only option so it cannot execute this statement'
+		require.Error(t, err, "Should not be able to write to read replica")
+		logger.Logf(t, "Failed to insert data to read replica as expected: %v", err)
+
+		// Prepare statement for reading data
+		stmtOut, err := db.Prepare(MYSQL_QUERY_ROW_COUNT)
+		require.NoError(t, err, "Failed to prepare readonly count statement")
+
+		// Query data, results don't matter...
+		logger.Logf(t, "Query r/o data: %s", MYSQL_QUERY_ROW_COUNT)
+
+		var numResults int
+
+		err = stmtOut.QueryRow().Scan(&numResults)
+		require.NoError(t, err, "Failed to execute query statement on read replica")
+
+		logger.Logf(t, "Number of rows... just for fun: %v", numResults)
+
 	})
 }

@@ -130,6 +130,65 @@ output "failover_replica_ca_cert_sha1_fingerprint" {
 }
 
 # ------------------------------------------------------------------------------
+# READ REPLICA OUTPUTS
+# ------------------------------------------------------------------------------
+
+output "read_replica_instance_names" {
+  description = "List of names for the read replica instances"
+  value       = ["${google_sql_database_instance.read_replica.*.name}"]
+}
+
+# Due to the provider output format (list of list of maps), this will be rendered in a very awkward way and as such is really not usable
+output "read_replica_ip_addresses" {
+  description = "List of IP addresses of the read replica instances as a list of maps, see https://www.terraform.io/docs/providers/google/r/sql_database_instance.html#ip_address-0-ip_address"
+  value       = ["${google_sql_database_instance.read_replica.*.ip_address}"]
+}
+
+output "read_replica_first_ip_addresses" {
+  description = "List of first IPv4 addresses of the addresses assigned to the read replica instances. If the instance has only public IP, it is the public IP address. If it has only private IP, it the private IP address. If it has both, it is the first item in the list and full IP address details are in 'instance_ip_addresses'"
+  value       = ["${google_sql_database_instance.read_replica.*.first_ip_address}"]
+}
+
+output "read_replica_instances" {
+  description = "List of self links to the read replica instances"
+  value       = ["${google_sql_database_instance.read_replica.*.self_link}"]
+}
+
+output "read_replica_proxy_connections" {
+  description = "List of read replica instance paths for connecting with Cloud SQL Proxy. Read more at https://cloud.google.com/sql/docs/mysql/sql-proxy"
+  value       = ["${data.template_file.read_replica_proxy_connection.*.rendered}"]
+}
+
+# ------------------------------------------------------------------------------
+# READ REPLICA CERT OUTPUTS
+# ------------------------------------------------------------------------------
+
+output "read_replica_ca_certs" {
+  value       = "${local.failover_certificate}"
+  description = "List of CA Certificates used to connect to the read replica instances via SSL"
+}
+
+output "read_replica_ca_cert_common_names" {
+  value       = "${local.failover_certificate_common_name}"
+  description = "List of CNs valid for the read replica instances CA Certs"
+}
+
+output "read_replica_ca_cert_create_times" {
+  value       = "${local.failover_certificate_create_time}"
+  description = "List of creation times of the read replica instances CA Certs"
+}
+
+output "read_replica_ca_cert_expiration_times" {
+  value       = "${local.failover_certificate_expiration_time}"
+  description = "List of expiration times of the read replica instances CA Certs"
+}
+
+output "read_replica_ca_cert_sha1_fingerprints" {
+  value       = "${local.failover_certificate_sha1_fingerprint}"
+  description = "List of SHA Fingerprints of the read replica instances CA Certs"
+}
+
+# ------------------------------------------------------------------------------
 # MISC OUTPUTS
 # ------------------------------------------------------------------------------
 

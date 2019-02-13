@@ -188,9 +188,61 @@ resource "google_sql_database_instance" "failover_replica" {
 }
 
 # ------------------------------------------------------------------------------
+# CREATE THE READ REPLICAS
+# ------------------------------------------------------------------------------
+
+resource "google_sql_database_instance" "read_replica" {
+  count = "${var.num_read_replicas}"
+
+  depends_on = ["google_sql_database_instance.failover_replica"]
+
+  provider         = "google-beta"
+  name             = "${var.name}-read-${count.index}"
+  project          = "${var.project}"
+  region           = "${var.region}"
+  database_version = "${var.engine}"
+
+  # The name of the instance that will act as the master in the replication setup.
+  master_instance_name = "${google_sql_database_instance.master.name}"
+
+  replica_configuration {
+    # Specifies that the replica is not the failover target.
+    failover_target = false
+  }
+
+  settings {
+    tier                        = "${var.machine_type}"
+    authorized_gae_applications = ["${var.authorized_gae_applications}"]
+    disk_autoresize             = "${var.disk_autoresize}"
+
+    ip_configuration = ["${local.ip_configuration}"]
+
+    location_preference {
+      follow_gae_application = "${var.follow_gae_application}"
+      zone                   = "${element(var.read_replica_zones, count.index)}"
+    }
+
+    disk_size      = "${var.disk_size}"
+    disk_type      = "${var.disk_type}"
+    database_flags = ["${var.database_flags}"]
+
+    user_labels = "${var.custom_labels}"
+  }
+
+  # Default timeouts are 10 minutes, which in most cases should be enough.
+  # Sometimes the database creation can, however, take longer, so we
+  # increase the timeouts slightly.
+  timeouts {
+    create = "30m"
+    delete = "30m"
+    update = "30m"
+  }
+}
+
+# ------------------------------------------------------------------------------
 # CREATE A TEMPLATE FILE TO SIGNAL ALL RESOURCES HAVE BEEN CREATED
 # ------------------------------------------------------------------------------
 data "template_file" "complete" {
-  depends_on = ["google_sql_database_instance.failover_replica"]
+  depends_on = ["google_sql_database_instance.read_replica"]
   template   = "true"
 }
