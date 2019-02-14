@@ -1,29 +1,26 @@
 package test
 
 import (
-	"crypto/tls"
-	"crypto/x509"
 	"database/sql"
 	"fmt"
-	mydialer "github.com/GoogleCloudPlatform/cloudsql-proxy/proxy/dialers/mysql"
-	"github.com/go-sql-driver/mysql"
+	_ "github.com/GoogleCloudPlatform/cloudsql-proxy/proxy/dialers/postgres"
 	"github.com/gruntwork-io/terratest/modules/gcp"
 	"github.com/gruntwork-io/terratest/modules/logger"
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/gruntwork-io/terratest/modules/test-structure"
+	_ "github.com/lib/pq"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"os"
 	"path/filepath"
 	"strings"
 	"testing"
-	"time"
 )
 
-const NAME_PREFIX_PUBLIC = "mysql-public"
-const EXAMPLE_NAME_PUBLIC = "mysql-public-ip"
-const EXAMPLE_NAME_CERT = "client-certificate"
+const NAME_PREFIX_POSTGRES_PUBLIC = "postgres-public"
+const EXAMPLE_NAME_POSTGRES_PUBLIC = "postgres-public-ip"
 
-func TestMySqlPublicIP(t *testing.T) {
+func TestPostgresPublicIP(t *testing.T) {
 	t.Parallel()
 
 	//os.Setenv("SKIP_bootstrap", "true")
@@ -38,7 +35,7 @@ func TestMySqlPublicIP(t *testing.T) {
 	//os.Setenv("SKIP_teardown", "true")
 
 	_examplesDir := test_structure.CopyTerraformFolderToTemp(t, "../", "examples")
-	exampleDir := filepath.Join(_examplesDir, EXAMPLE_NAME_PUBLIC)
+	exampleDir := filepath.Join(_examplesDir, EXAMPLE_NAME_POSTGRES_PUBLIC)
 	certExampleDir := filepath.Join(_examplesDir, EXAMPLE_NAME_CERT)
 
 	// BOOTSTRAP VARIABLES FOR THE TESTS
@@ -65,7 +62,7 @@ func TestMySqlPublicIP(t *testing.T) {
 	test_structure.RunTestStage(t, "deploy", func() {
 		region := test_structure.LoadString(t, exampleDir, KEY_REGION)
 		projectId := test_structure.LoadString(t, exampleDir, KEY_PROJECT)
-		terraformOptions := createTerratestOptionsForCloudSql(projectId, region, exampleDir, NAME_PREFIX_PUBLIC, "", "", 0, "")
+		terraformOptions := createTerratestOptionsForCloudSql(projectId, region, exampleDir, NAME_PREFIX_POSTGRES_PUBLIC, "", "", 0, "")
 		test_structure.SaveTerraformOptions(t, exampleDir, terraformOptions)
 
 		terraform.InitAndApply(t, terraformOptions)
@@ -84,7 +81,7 @@ func TestMySqlPublicIP(t *testing.T) {
 
 		expectedDBConn := fmt.Sprintf("%s:%s:%s", projectId, region, instanceNameFromOutput)
 
-		assert.True(t, strings.HasPrefix(instanceNameFromOutput, NAME_PREFIX_PUBLIC))
+		assert.True(t, strings.HasPrefix(instanceNameFromOutput, NAME_PREFIX_POSTGRES_PUBLIC))
 		assert.Equal(t, DB_NAME, dbNameFromOutput)
 		assert.Equal(t, expectedDBConn, proxyConnectionFromOutput)
 	})
@@ -95,12 +92,11 @@ func TestMySqlPublicIP(t *testing.T) {
 
 		publicIp := terraform.Output(t, terraformOptions, OUTPUT_MASTER_PUBLIC_IP)
 
-		connectionString := fmt.Sprintf("%s:%s@tcp(%s:3306)/%s", DB_USER, DB_PASS, publicIp, DB_NAME)
+		connectionString := fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable", DB_USER, DB_PASS, publicIp, DB_NAME)
 
 		// Does not actually open up the connection - just returns a DB ref
 		logger.Logf(t, "Connecting to: %s", publicIp)
-		db, err := sql.Open("mysql",
-			connectionString)
+		db, err := sql.Open("postgres", connectionString)
 		require.NoError(t, err, "Failed to open DB connection")
 
 		// Make sure we clean up properly
@@ -113,8 +109,8 @@ func TestMySqlPublicIP(t *testing.T) {
 		}
 
 		// Create table if not exists
-		logger.Logf(t, "Create table: %s", MYSQL_CREATE_TEST_TABLE_WITH_AUTO_INCREMENT_STATEMENT)
-		if _, err = db.Exec(MYSQL_CREATE_TEST_TABLE_WITH_AUTO_INCREMENT_STATEMENT); err != nil {
+		logger.Logf(t, "Create table: %s", POSTGRES_CREATE_TEST_TABLE_WITH_SERIAL)
+		if _, err = db.Exec(POSTGRES_CREATE_TEST_TABLE_WITH_SERIAL); err != nil {
 			t.Fatalf("Failed to create table: %v", err)
 		}
 
@@ -124,21 +120,12 @@ func TestMySqlPublicIP(t *testing.T) {
 			t.Fatalf("Failed to clean up table: %v", err)
 		}
 
-		// Insert data to check that our auto-increment flags worked
-		logger.Logf(t, "Insert data: %s", MYSQL_INSERT_TEST_ROW)
-		stmt, err := db.Prepare(MYSQL_INSERT_TEST_ROW)
-		require.NoError(t, err, "Failed to prepare statement")
+		logger.Logf(t, "Insert data: %s", POSTGRES_INSERT_TEST_ROW)
+		var testid int
+		err = db.QueryRow(POSTGRES_INSERT_TEST_ROW).Scan(&testid)
+		require.NoError(t, err, "Failed to insert data")
 
-		// Execute the statement
-		res, err := stmt.Exec("Grunt")
-		require.NoError(t, err, "Failed to execute statement")
-
-		// Get the last insert id
-		lastId, err := res.LastInsertId()
-		require.NoError(t, err, "Failed to get last insert id")
-
-		// Since we set the auto increment to 5, modulus should always be 0
-		assert.Equal(t, int64(0), int64(lastId%5))
+		assert.True(t, testid > 0, "Data was inserted")
 	})
 
 	// TEST CLOUD SQL PROXY
@@ -151,43 +138,29 @@ func TestMySqlPublicIP(t *testing.T) {
 
 		// Use the Cloud SQL Proxy for queries
 		// See https://cloud.google.com/sql/docs/mysql/sql-proxy
-		cfg := mydialer.Cfg(proxyConn, DB_USER, DB_PASS)
-		cfg.DBName = DB_NAME
-		cfg.ParseTime = true
 
-		const timeout = 10 * time.Second
-		cfg.Timeout = timeout
-		cfg.ReadTimeout = timeout
-		cfg.WriteTimeout = timeout
+		// Note that sslmode=disable is required it does not mean that the connection
+		// is unencrypted. All connections via the proxy are completely encrypted.
+		datasourceName := fmt.Sprintf("host=%s user=%s dbname=%s password=%s sslmode=disable", proxyConn, DB_USER, DB_NAME, DB_PASS)
+		db, err := sql.Open("cloudsqlpostgres", datasourceName)
 
-		// Dial in. This one actually pings the database already
-		db, err := mydialer.DialCfg(cfg)
 		require.NoError(t, err, "Failed to open Proxy DB connection")
 
 		// Make sure we clean up properly
 		defer db.Close()
 
 		// Run ping to actually test the connection
-		logger.Log(t, "Ping the DB")
+		logger.Log(t, "Ping the DB via Proxy")
 		if err = db.Ping(); err != nil {
 			t.Fatalf("Failed to ping DB via Proxy: %v", err)
 		}
 
-		// Insert data to check that our auto-increment flags worked
-		logger.Logf(t, "Insert data: %s", MYSQL_INSERT_TEST_ROW)
-		stmt, err := db.Prepare(MYSQL_INSERT_TEST_ROW)
-		require.NoError(t, err, "Failed to prepare proxy statement")
+		logger.Logf(t, "Insert data via Proxy: %s", POSTGRES_INSERT_TEST_ROW)
+		var testid int
+		err = db.QueryRow(POSTGRES_INSERT_TEST_ROW).Scan(&testid)
+		require.NoError(t, err, "Failed to insert data via Proxy")
 
-		// Execute the statement
-		res, err := stmt.Exec("Grunt2")
-		require.NoError(t, err, "Failed to execute proxy statement")
-
-		// Get the last insert id
-		lastId, err := res.LastInsertId()
-		require.NoError(t, err, "Failed to get last proxy insert id")
-
-		// Since we set the auto increment to 5, modulus should always be 0
-		assert.Equal(t, int64(0), int64(lastId%5))
+		assert.True(t, testid > 0, "Assert data was inserted")
 	})
 
 	// CREATE CLIENT CERT
@@ -225,11 +198,11 @@ func TestMySqlPublicIP(t *testing.T) {
 
 		publicIp := terraform.Output(t, terraformOptions, OUTPUT_MASTER_PUBLIC_IP)
 
-		connectionString := fmt.Sprintf("%s:%s@tcp(%s:3306)/%s", DB_USER, DB_PASS, publicIp, DB_NAME)
+		connectionString := fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable", DB_USER, DB_PASS, publicIp, DB_NAME)
 
 		// Does not actually open up the connection - just returns a DB ref
 		logger.Logf(t, "Connecting to: %s", publicIp)
-		db, err := sql.Open("mysql",
+		db, err := sql.Open("postgres",
 			connectionString)
 		require.NoError(t, err, "Failed to open DB connection")
 
@@ -249,33 +222,23 @@ func TestMySqlPublicIP(t *testing.T) {
 		//********************************************************
 
 		// Prepare certificates
-		rootCertPool := x509.NewCertPool()
 		serverCertB := []byte(terraform.Output(t, terraformOptions, OUTPUT_MASTER_CA_CERT))
 		clientCertB := []byte(terraform.Output(t, terraformOptionsForCert, OUTPUT_CLIENT_CA_CERT))
 		clientPKB := []byte(terraform.Output(t, terraformOptionsForCert, OUTPUT_CLIENT_PRIVATE_KEY))
 
-		if ok := rootCertPool.AppendCertsFromPEM(serverCertB); !ok {
-			t.Fatal("Failed to append PEM.")
-		}
+		serverCertFile := createTempFile(t, serverCertB)
+		defer os.Remove(serverCertFile.Name())
 
-		clientCert := make([]tls.Certificate, 0, 1)
-		certs, err := tls.X509KeyPair(clientCertB, clientPKB)
-		require.NoError(t, err, "Failed to create key pair")
+		clientCertFile := createTempFile(t, clientCertB)
+		defer os.Remove(clientCertFile.Name())
 
-		clientCert = append(clientCert, certs)
-
-		// Register MySQL certificate config
-		// To avoid certificate validation errors complaining about
-		// missing IP SANs, we set 'InsecureSkipVerify: true'
-		mysql.RegisterTLSConfig("custom", &tls.Config{
-			RootCAs:            rootCertPool,
-			Certificates:       clientCert,
-			InsecureSkipVerify: true,
-		})
+		clientPKFile := createTempFile(t, clientPKB)
+		defer os.Remove(clientPKFile.Name())
 
 		// Prepare the secure connection string and ping the DB
-		sslConnectionString := fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?tls=custom", DB_USER, DB_PASS, publicIp, DB_NAME)
-		db, err = sql.Open("mysql", sslConnectionString)
+		sslConnectionString := fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=require&sslrootcert=%s&sslcert=%s&sslkey=%s", DB_USER, DB_PASS, publicIp, DB_NAME, serverCertFile.Name(), clientCertFile.Name(), clientPKFile.Name())
+
+		db, err = sql.Open("postgres", sslConnectionString)
 
 		// Run ping to actually test the connection with the SSL config
 		logger.Log(t, "Ping the DB with forced SSL")

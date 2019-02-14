@@ -11,10 +11,10 @@ import (
 	"testing"
 )
 
-const NAME_PREFIX_PRIVATE = "mysql-private"
-const EXAMPLE_NAME_PRIVATE = "mysql-private-ip"
+const NAME_PREFIX_POSTGRES_PRIVATE = "postgres-private"
+const EXAMPLE_NAME_POSTGRES_PRIVATE = "postgres-private-ip"
 
-func TestMySqlPrivateIP(t *testing.T) {
+func TestPostgresPrivateIP(t *testing.T) {
 	t.Parallel()
 
 	//os.Setenv("SKIP_bootstrap", "true")
@@ -23,7 +23,7 @@ func TestMySqlPrivateIP(t *testing.T) {
 	//os.Setenv("SKIP_teardown", "true")
 
 	_examplesDir := test_structure.CopyTerraformFolderToTemp(t, "../", "examples")
-	exampleDir := filepath.Join(_examplesDir, EXAMPLE_NAME_PRIVATE)
+	exampleDir := filepath.Join(_examplesDir, EXAMPLE_NAME_POSTGRES_PRIVATE)
 
 	test_structure.RunTestStage(t, "bootstrap", func() {
 		projectId := gcp.GetGoogleProjectIDFromEnvVar(t)
@@ -42,7 +42,7 @@ func TestMySqlPrivateIP(t *testing.T) {
 	test_structure.RunTestStage(t, "deploy", func() {
 		region := test_structure.LoadString(t, exampleDir, KEY_REGION)
 		projectId := test_structure.LoadString(t, exampleDir, KEY_PROJECT)
-		terraformOptions := createTerratestOptionsForCloudSql(projectId, region, exampleDir, NAME_PREFIX_PRIVATE, "", "", 0, "")
+		terraformOptions := createTerratestOptionsForCloudSql(projectId, region, exampleDir, NAME_PREFIX_POSTGRES_PRIVATE, "", "", 0, "")
 		test_structure.SaveTerraformOptions(t, exampleDir, terraformOptions)
 
 		terraform.InitAndApply(t, terraformOptions)
@@ -66,7 +66,7 @@ func TestMySqlPrivateIP(t *testing.T) {
 
 		expectedDBConn := fmt.Sprintf("%s:%s:%s", projectId, region, instanceNameFromOutput)
 
-		assert.True(t, strings.HasPrefix(instanceNameFromOutput, NAME_PREFIX_PRIVATE))
+		assert.True(t, strings.HasPrefix(instanceNameFromOutput, NAME_PREFIX_POSTGRES_PRIVATE))
 		assert.Equal(t, DB_NAME, dbNameFromOutput)
 		assert.Equal(t, expectedDBConn, proxyConnectionFromOutput)
 	})

@@ -66,11 +66,6 @@ variable "authorized_gae_applications" {
   default     = []
 }
 
-variable "availability_type" {
-  description = "This specifies whether a PostgreSQL instance should be set up for high availability (REGIONAL) or single zone (ZONAL)."
-  default     = "ZONAL"
-}
-
 variable "backup_enabled" {
   description = "Set to false if you want to disable backup."
   default     = true
@@ -81,8 +76,8 @@ variable "backup_start_time" {
   default     = "04:00"
 }
 
-variable "binary_log_enabled" {
-  description = "Set to false if you want to disable binary logs. Note, when using failover or read replicas, master and existing backups need to have binary_log_enabled=true set."
+variable "mysql_binary_log_enabled" {
+  description = "Set to false if you want to disable binary logs - only applicable to MySQL. Note, when using failover or read replicas, master and existing backups need to have binary_log_enabled=true set."
   default     = true
 }
 
@@ -172,7 +167,7 @@ variable "enable_failover_replica" {
 }
 
 variable "failover_replica_zone" {
-  description = "The preferred zone for the failover instance (e.g. 'us-central1-b'). Must be different than 'master_zone'."
+  description = "The preferred zone for the failover instance (e.g. 'us-central1-b'). Must be different than 'master_zone'. Only applicable to MySQL, Postgres will determine this automatically."
   default     = ""
 }
 

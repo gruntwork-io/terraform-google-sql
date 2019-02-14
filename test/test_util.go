@@ -3,6 +3,9 @@ package test
 import (
 	"github.com/gruntwork-io/terratest/modules/gcp"
 	"github.com/gruntwork-io/terratest/modules/terraform"
+	"github.com/stretchr/testify/require"
+	"io/ioutil"
+	"os"
 	"testing"
 )
 
@@ -15,8 +18,6 @@ const KEY_PROJECT = "project"
 const KEY_MASTER_ZONE = "masterZone"
 const KEY_FAILOVER_REPLICA_ZONE = "failoverReplicaZone"
 const KEY_READ_REPLICA_ZONE = "readReplicaZone"
-
-const MYSQL_VERSION = "MYSQL_5_7"
 
 const OUTPUT_MASTER_IP_ADDRESSES = "master_ip_addresses"
 const OUTPUT_MASTER_INSTANCE_NAME = "master_instance_name"
@@ -35,9 +36,13 @@ const OUTPUT_CLIENT_PRIVATE_KEY = "client_private_key"
 const OUTPUT_DB_NAME = "db_name"
 
 const MYSQL_CREATE_TEST_TABLE_WITH_AUTO_INCREMENT_STATEMENT = "CREATE TABLE IF NOT EXISTS test (id int NOT NULL AUTO_INCREMENT, name varchar(10) NOT NULL, PRIMARY KEY (ID))"
-const MYSQL_EMPTY_TEST_TABLE_STATEMENT = "DELETE FROM test"
 const MYSQL_INSERT_TEST_ROW = "INSERT INTO test(name) VALUES(?)"
-const MYSQL_QUERY_ROW_COUNT = "SELECT count(*) FROM test"
+
+const SQL_EMPTY_TEST_TABLE_STATEMENT = "DELETE FROM test"
+const SQL_QUERY_ROW_COUNT = "SELECT count(*) FROM test"
+
+const POSTGRES_CREATE_TEST_TABLE_WITH_SERIAL = "CREATE TABLE IF NOT EXISTS test (id SERIAL, name varchar(10) NOT NULL, PRIMARY KEY (ID))"
+const POSTGRES_INSERT_TEST_ROW = "INSERT INTO test(name) VALUES('Grunty') RETURNING id"
 
 func getRandomRegion(t *testing.T, projectID string) string {
 	approvedRegions := []string{"europe-north1", "europe-west1", "europe-west2", "europe-west3", "us-central1", "us-east1", "us-west1"}
@@ -58,7 +63,7 @@ func getTwoDistinctRandomZonesForRegion(t *testing.T, projectID string, region s
 	return firstZone, secondZone
 }
 
-func createTerratestOptionsForMySql(projectId string, region string, exampleDir string, namePrefix string, masterZone string, failoverReplicaZone string, numReadReplicas int, readReplicaZone string) *terraform.Options {
+func createTerratestOptionsForCloudSql(projectId string, region string, exampleDir string, namePrefix string, masterZone string, failoverReplicaZone string, numReadReplicas int, readReplicaZone string) *terraform.Options {
 
 	terratestOptions := &terraform.Options{
 		// The path to where your Terraform code is located
@@ -71,7 +76,6 @@ func createTerratestOptionsForMySql(projectId string, region string, exampleDir 
 			"failover_replica_zone": failoverReplicaZone,
 			"project":               projectId,
 			"name_prefix":           namePrefix,
-			"mysql_version":         MYSQL_VERSION,
 			"db_name":               DB_NAME,
 			"master_user_name":      DB_USER,
 			"master_user_password":  DB_PASS,
@@ -95,4 +99,14 @@ func createTerratestOptionsForClientCert(projectId string, region string, exampl
 	}
 
 	return terratestOptions
+}
+
+func createTempFile(t *testing.T, content []byte) *os.File {
+	tmpFile, err := ioutil.TempFile(os.TempDir(), "temp-")
+	require.NoError(t, err, "Failed to create temp file")
+	_, err = tmpFile.Write(content)
+	require.NoError(t, err, "Failed to write to temp file")
+	err = tmpFile.Close()
+	require.NoError(t, err, "Failed to close temp file")
+	return tmpFile
 }
