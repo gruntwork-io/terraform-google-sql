@@ -1,7 +1,7 @@
 # MySQL Cloud SQL Public IP Example
 
-This folder contains an example of how to use the [MySQL module](/modules/mysql) to create a [Google Cloud SQL](https://cloud.google.com/sql/) 
-[MySQL](https://cloud.google.com/sql/docs/mysql/) database instance with a public IP. 
+This folder contains an example of how to use the [Cloud SQL module](/modules/cloud-sql) to create a [Google Cloud SQL](https://cloud.google.com/sql/) 
+[MySQL](https://cloud.google.com/sql/docs/mysql/) database instance with a public IP address. 
 
 ## How do you run this example?
 

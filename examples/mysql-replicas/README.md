@@ -1,6 +1,6 @@
-# MySQL Cloud SQL Replica Example
+# MySQL Cloud SQL HA Example
 
-This folder contains an example of how to use the [MySQL module](/modules/mysql) to create a [Google Cloud SQL](https://cloud.google.com/sql/) 
+This folder contains an example of how to use the [Cloud SQL module](/modules/cloud-sql) to create a [High Availability](https://cloud.google.com/sql/docs/mysql/configure-ha) [Google Cloud SQL](https://cloud.google.com/sql/) 
 [MySQL](https://cloud.google.com/sql/docs/mysql/) database cluster with a public IP and failover and read replicas. 
 
 ## How do you run this example?
