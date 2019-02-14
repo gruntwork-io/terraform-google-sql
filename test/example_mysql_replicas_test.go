@@ -154,7 +154,7 @@ func TestMySqlReplicas(t *testing.T) {
 		assert.Equal(t, int64(0), int64(lastId%7))
 	})
 
-	// TEST REGULAR SQL CLIENT
+	// TEST READ REPLICA WITH REGULAR SQL CLIENT
 	test_structure.RunTestStage(t, "read_replica_tests", func() {
 		terraformOptions := test_structure.LoadTerraformOptions(t, exampleDir)
 
