@@ -49,6 +49,8 @@ locals {
 # ------------------------------------------------------------------------------
 
 resource "google_sql_database_instance" "master" {
+  depends_on = ["null_resource.wait_for"]
+
   provider         = "google-beta"
   name             = "${var.name}"
   project          = "${var.project}"
@@ -96,8 +98,6 @@ resource "google_sql_database_instance" "master" {
     delete = "30m"
     update = "30m"
   }
-
-  depends_on = ["null_resource.wait_for"]
 }
 
 # ------------------------------------------------------------------------------
@@ -140,7 +140,11 @@ resource "null_resource" "wait_for" {
 resource "google_sql_database_instance" "failover_replica" {
   count = "${var.enable_failover_replica}"
 
-  depends_on = ["google_sql_user.default"]
+  depends_on = [
+    "google_sql_database_instance.master",
+    "google_sql_database.default",
+    "google_sql_user.default",
+  ]
 
   provider         = "google-beta"
   name             = "${var.name}-failover"
@@ -188,9 +192,74 @@ resource "google_sql_database_instance" "failover_replica" {
 }
 
 # ------------------------------------------------------------------------------
+# CREATE THE READ REPLICAS
+# ------------------------------------------------------------------------------
+
+resource "google_sql_database_instance" "read_replica" {
+  count = "${var.num_read_replicas}"
+
+  depends_on = [
+    "google_sql_database_instance.master",
+    "google_sql_database_instance.failover_replica",
+    "google_sql_database.default",
+    "google_sql_user.default",
+  ]
+
+  provider         = "google-beta"
+  name             = "${var.name}-read-${count.index}"
+  project          = "${var.project}"
+  region           = "${var.region}"
+  database_version = "${var.engine}"
+
+  # The name of the instance that will act as the master in the replication setup.
+  master_instance_name = "${google_sql_database_instance.master.name}"
+
+  replica_configuration {
+    # Specifies that the replica is not the failover target.
+    failover_target = false
+  }
+
+  settings {
+    tier                        = "${var.machine_type}"
+    authorized_gae_applications = ["${var.authorized_gae_applications}"]
+    disk_autoresize             = "${var.disk_autoresize}"
+
+    ip_configuration = ["${local.ip_configuration}"]
+
+    location_preference {
+      follow_gae_application = "${var.follow_gae_application}"
+      zone                   = "${element(var.read_replica_zones, count.index)}"
+    }
+
+    disk_size      = "${var.disk_size}"
+    disk_type      = "${var.disk_type}"
+    database_flags = ["${var.database_flags}"]
+
+    user_labels = "${var.custom_labels}"
+  }
+
+  # Read replica creation is initiated concurrently, but the provider creates
+  # the resources sequentially. Therefore we increase the timeouts considerably
+  # to allow successful creation of multiple read replicas without having to
+  # fear the operation timing out.
+  timeouts {
+    create = "60m"
+    delete = "60m"
+    update = "60m"
+  }
+}
+
+# ------------------------------------------------------------------------------
 # CREATE A TEMPLATE FILE TO SIGNAL ALL RESOURCES HAVE BEEN CREATED
 # ------------------------------------------------------------------------------
 data "template_file" "complete" {
-  depends_on = ["google_sql_database_instance.failover_replica"]
-  template   = "true"
+  depends_on = [
+    "google_sql_database_instance.master",
+    "google_sql_database_instance.failover_replica",
+    "google_sql_database_instance.read_replica",
+    "google_sql_database.default",
+    "google_sql_user.default",
+  ]
+
+  template = "true"
 }

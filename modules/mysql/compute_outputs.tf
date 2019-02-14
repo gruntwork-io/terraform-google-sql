@@ -59,3 +59,12 @@ data "template_file" "failover_certificate_sha1_fingerprint" {
   count    = "${var.enable_failover_replica}"
   template = "${google_sql_database_instance.failover_replica.0.server_ca_cert.0.sha1_fingerprint}"
 }
+
+# ------------------------------------------------------------------------------
+# READ REPLICA PROXY CONNECTION TEMPLATE
+# ------------------------------------------------------------------------------
+
+data "template_file" "read_replica_proxy_connection" {
+  count    = "${var.num_read_replicas}"
+  template = "${var.project}:${var.region}:${google_sql_database_instance.read_replica.*.name[count.index]}"
+}

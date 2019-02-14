@@ -68,6 +68,10 @@ module "mysql" {
   enable_failover_replica = true
   failover_replica_zone   = "${var.failover_replica_zone}"
 
+  # Indicate we want read replicas to be created
+  num_read_replicas  = "${var.num_read_replicas}"
+  read_replica_zones = ["${var.read_replica_zones}"]
+
   # These together will construct the master_user privileges, i.e.
   # 'master_user_name'@'master_user_host' IDENTIFIED BY 'master_user_password'.
   # These should typically be set as the environment variable TF_VAR_master_user_password, etc.

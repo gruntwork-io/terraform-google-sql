@@ -186,6 +186,20 @@ variable "private_network" {
   default     = ""
 }
 
+variable "num_read_replicas" {
+  description = "The number of read replicas to create. Cloud SQL will replicate all data from the master to these replicas, which you can use to horizontally scale read traffic."
+  default     = 0
+}
+
+variable "read_replica_zones" {
+  description = "A list of compute zones where read replicas should be created. List size should match 'num_read_replicas'"
+  type        = "list"
+  default     = []
+
+  # Example:
+  #  default = ["us-central1-b", "us-central1-c"]
+}
+
 variable "custom_labels" {
   description = "A map of custom labels to apply to the instance. The key is the label name and the value is the label value."
   type        = "map"

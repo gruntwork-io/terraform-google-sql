@@ -19,6 +19,18 @@ variable "failover_replica_zone" {
   description = "The preferred zone for the failover instance (e.g. 'us-central1-b'). Must be different than 'master_zone'."
 }
 
+variable "num_read_replicas" {
+  description = "The number of read replicas to create. Cloud SQL will replicate all data from the master to these replicas, which you can use to horizontally scale read traffic."
+}
+
+variable "read_replica_zones" {
+  description = "A list of compute zones where read replicas should be created. List size should match 'num_read_replicas'"
+  type        = "list"
+
+  # Example:
+  #  default = ["us-central1-b", "us-central1-c"]
+}
+
 # Note, after a name db instance is used, it cannot be reused for up to one week.
 variable "name_prefix" {
   description = "The name prefix for the database instance. Will be appended with a random string. Use lowercase letters, numbers, and hyphens. Start with a letter."
