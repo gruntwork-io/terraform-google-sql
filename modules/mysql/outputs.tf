@@ -79,7 +79,6 @@ output "failover_instance_name" {
   value       = "${join("", google_sql_database_instance.failover_replica.*.name)}"
 }
 
-# Due to the provider output format (list of list of maps), this will be rendered in a very awkward way and as such is really not usable
 output "failover_ip_addresses" {
   description = "All IP addresses of the failover instance JSON encoded, see https://www.terraform.io/docs/providers/google/r/sql_database_instance.html#ip_address-0-ip_address"
   value       = "${jsonencode(google_sql_database_instance.failover_replica.*.ip_address)}"
@@ -138,10 +137,9 @@ output "read_replica_instance_names" {
   value       = ["${google_sql_database_instance.read_replica.*.name}"]
 }
 
-# Due to the provider output format (list of list of maps), this will be rendered in a very awkward way and as such is really not usable
 output "read_replica_ip_addresses" {
-  description = "List of IP addresses of the read replica instances as a list of maps, see https://www.terraform.io/docs/providers/google/r/sql_database_instance.html#ip_address-0-ip_address"
-  value       = ["${google_sql_database_instance.read_replica.*.ip_address}"]
+  description = "All IP addresses of the read replica instances JSON encoded, see https://www.terraform.io/docs/providers/google/r/sql_database_instance.html#ip_address-0-ip_address"
+  value       = "${jsonencode(google_sql_database_instance.read_replica.*.ip_address)}"
 }
 
 output "read_replica_first_ip_addresses" {
