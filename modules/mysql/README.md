@@ -53,6 +53,15 @@ For full connectivity options and detailed documentation, see [Connecting to Clo
 ### Instance Recovery
 
 Due to limitations on the current `terraform` provider for Google, it is not possible to restore backups with `terraform`. 
+
 See https://github.com/terraform-providers/terraform-provider-google/issues/2446
+
+### Read Replica and IP Addresses Outputs
+
+Retrieving and outputting distinct values from list of maps is not possible with resources using `count` prior to `terraform 0.12`. 
+Instead we have to output the values JSON encoded - for example `read_replica_server_ca_certs`. For full details of the outputs and 
+their format, see [outputs.tf](./outputs.tf).
+
+See https://github.com/hashicorp/terraform/issues/17048
 
 

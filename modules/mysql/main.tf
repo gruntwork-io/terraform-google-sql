@@ -49,6 +49,8 @@ locals {
 # ------------------------------------------------------------------------------
 
 resource "google_sql_database_instance" "master" {
+  depends_on = ["null_resource.wait_for"]
+
   provider         = "google-beta"
   name             = "${var.name}"
   project          = "${var.project}"
@@ -96,8 +98,6 @@ resource "google_sql_database_instance" "master" {
     delete = "30m"
     update = "30m"
   }
-
-  depends_on = ["null_resource.wait_for"]
 }
 
 # ------------------------------------------------------------------------------
@@ -140,7 +140,11 @@ resource "null_resource" "wait_for" {
 resource "google_sql_database_instance" "failover_replica" {
   count = "${var.enable_failover_replica}"
 
-  depends_on = ["google_sql_user.default"]
+  depends_on = [
+    "google_sql_database_instance.master",
+    "google_sql_database.default",
+    "google_sql_user.default",
+  ]
 
   provider         = "google-beta"
   name             = "${var.name}-failover"
@@ -194,7 +198,12 @@ resource "google_sql_database_instance" "failover_replica" {
 resource "google_sql_database_instance" "read_replica" {
   count = "${var.num_read_replicas}"
 
-  depends_on = ["google_sql_database_instance.failover_replica"]
+  depends_on = [
+    "google_sql_database_instance.master",
+    "google_sql_database_instance.failover_replica",
+    "google_sql_database.default",
+    "google_sql_user.default",
+  ]
 
   provider         = "google-beta"
   name             = "${var.name}-read-${count.index}"
@@ -229,13 +238,14 @@ resource "google_sql_database_instance" "read_replica" {
     user_labels = "${var.custom_labels}"
   }
 
-  # Default timeouts are 10 minutes, which in most cases should be enough.
-  # Sometimes the database creation can, however, take longer, so we
-  # increase the timeouts slightly.
+  # Read replica creation is initiated concurrently, but the provider creates
+  # the resources sequentially. Therefore we increase the timeouts considerably
+  # to allow successful creation of multiple read replicas without having to
+  # fear the operation timing out.
   timeouts {
-    create = "30m"
-    delete = "30m"
-    update = "30m"
+    create = "60m"
+    delete = "60m"
+    update = "60m"
   }
 }
 
@@ -243,6 +253,13 @@ resource "google_sql_database_instance" "read_replica" {
 # CREATE A TEMPLATE FILE TO SIGNAL ALL RESOURCES HAVE BEEN CREATED
 # ------------------------------------------------------------------------------
 data "template_file" "complete" {
-  depends_on = ["google_sql_database_instance.read_replica"]
-  template   = "true"
+  depends_on = [
+    "google_sql_database_instance.master",
+    "google_sql_database_instance.failover_replica",
+    "google_sql_database_instance.read_replica",
+    "google_sql_database.default",
+    "google_sql_user.default",
+  ]
+
+  template = "true"
 }

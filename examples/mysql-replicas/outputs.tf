@@ -89,32 +89,10 @@ output "read_replica_proxy_connections" {
   value       = ["${module.mysql.read_replica_proxy_connections}"]
 }
 
+# Although we don't use the values, this output highlights the JSON encoded output we use in certain
+# cases where the resource output cannot properly be computed.
+# See https://github.com/hashicorp/terraform/issues/17048
 output "read_replica_server_ca_certs" {
-  description = "List of CA Certificates used to connect to the read replica instances via SSL"
-  value       = ["${module.mysql.read_replica_server_ca_certs}"]
-}
-
-output "read_replica_ca_certs" {
-  description = "List of CA Certificates used to connect to the read replica instances via SSL"
-  value       = ["${module.mysql.read_replica_ca_certs}"]
-}
-
-output "read_replica_ca_cert_common_names" {
-  description = "List of CNs valid for the read replica instances CA Certs"
-  value       = ["${module.mysql.read_replica_ca_cert_common_names}"]
-}
-
-output "read_replica_ca_cert_create_times" {
-  description = "List of creation times of the read replica instances CA Certs"
-  value       = ["${module.mysql.read_replica_ca_cert_create_times}"]
-}
-
-output "read_replica_ca_cert_expiration_times" {
-  description = "List of expiration times of the read replica instances CA Certs"
-  value       = ["${module.mysql.read_replica_ca_cert_expiration_times}"]
-}
-
-output "read_replica_ca_cert_sha1_fingerprints" {
-  description = "List of SHA Fingerprints of the read replica instances CA Certs"
-  value       = ["${module.mysql.read_replica_ca_cert_sha1_fingerprints}"]
+  description = "JSON encoded list of CA Certificates used to connect to the read replica instances via SSL"
+  value       = "${module.mysql.read_replica_server_ca_certs}"
 }

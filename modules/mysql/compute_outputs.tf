@@ -68,36 +68,3 @@ data "template_file" "read_replica_proxy_connection" {
   count    = "${var.num_read_replicas}"
   template = "${var.project}:${var.region}:${google_sql_database_instance.read_replica.*.name[count.index]}"
 }
-
-# ------------------------------------------------------------------------------
-# READ REPLICA CERTIFICATE TEMPLATES
-#
-# We have to produce the certificate outputs via template_file. Using splat syntax would yield:
-# Resource 'google_sql_database_instance.read_replica' does not have attribute 'server_ca_cert.0.cert'
-# for variable 'google_sql_database_instance.read_replica.*.server_ca_cert.0.cert'
-# ------------------------------------------------------------------------------
-
-data "template_file" "read_replica_certificate" {
-  count    = "${var.num_read_replicas}"
-  template = "${lookup(google_sql_database_instance.read_replica.server_ca_cert[count.index], "cert")}"
-}
-
-data "template_file" "read_replica_certificate_common_name" {
-  count    = "${var.num_read_replicas}"
-  template = "${lookup(google_sql_database_instance.read_replica.server_ca_cert[count.index], "common_name")}"
-}
-
-data "template_file" "read_replica_certificate_create_time" {
-  count    = "${var.num_read_replicas}"
-  template = "${lookup(google_sql_database_instance.read_replica.server_ca_cert[count.index], "create_time")}"
-}
-
-data "template_file" "read_replica_certificate_expiration_time" {
-  count    = "${var.num_read_replicas}"
-  template = "${lookup(google_sql_database_instance.read_replica.server_ca_cert[count.index], "expiration_time")}"
-}
-
-data "template_file" "read_replica_certificate_sha1_fingerprint" {
-  count    = "${var.num_read_replicas}"
-  template = "${lookup(google_sql_database_instance.read_replica.server_ca_cert[count.index], "sha1_fingerprint")}"
-}

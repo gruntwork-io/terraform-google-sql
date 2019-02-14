@@ -8,13 +8,13 @@ output "master_instance_name" {
 }
 
 output "master_ip_addresses" {
-  description = "All IP addresses of the master instance as list of maps, see https://www.terraform.io/docs/providers/google/r/sql_database_instance.html#ip_address-0-ip_address"
-  value       = "${ google_sql_database_instance.master.ip_address }"
+  description = "All IP addresses of the master instance JSON encoded, see https://www.terraform.io/docs/providers/google/r/sql_database_instance.html#ip_address-0-ip_address"
+  value       = "${jsonencode(google_sql_database_instance.master.ip_address)}"
 }
 
 output "master_first_ip_address" {
   description = "The first IPv4 address of the addresses assigned to the master instance. If the instance has only public IP, it is the public IP address. If it has only private IP, it the private IP address. If it has both, it is the first item in the list and full IP address details are in 'instance_ip_addresses'"
-  value       = "${ google_sql_database_instance.master.first_ip_address }"
+  value       = "${google_sql_database_instance.master.first_ip_address}"
 }
 
 output "master_instance" {
@@ -81,8 +81,8 @@ output "failover_instance_name" {
 
 # Due to the provider output format (list of list of maps), this will be rendered in a very awkward way and as such is really not usable
 output "failover_ip_addresses" {
-  description = "All IP addresses of the failover instance as list of maps, see https://www.terraform.io/docs/providers/google/r/sql_database_instance.html#ip_address-0-ip_address"
-  value       = "${google_sql_database_instance.failover_replica.*.ip_address}"
+  description = "All IP addresses of the failover instance JSON encoded, see https://www.terraform.io/docs/providers/google/r/sql_database_instance.html#ip_address-0-ip_address"
+  value       = "${jsonencode(google_sql_database_instance.failover_replica.*.ip_address)}"
 }
 
 output "failover_first_ip_address" {
@@ -159,38 +159,9 @@ output "read_replica_proxy_connections" {
   value       = ["${data.template_file.read_replica_proxy_connection.*.rendered}"]
 }
 
-# ------------------------------------------------------------------------------
-# READ REPLICA CERT OUTPUTS
-# ------------------------------------------------------------------------------
-
 output "read_replica_server_ca_certs" {
-  description = "List of CA Certificates used to connect to the read replica instances via SSL"
-  value       = ["${google_sql_database_instance.read_replica.*.server_ca_cert}"]
-}
-
-output "read_replica_ca_certs" {
-  description = "List of CA Certificates used to connect to the read replica instances via SSL"
-  value       = ["${data.template_file.read_replica_certificate.*.rendered}"]
-}
-
-output "read_replica_ca_cert_common_names" {
-  description = "List of CNs valid for the read replica instances CA Certs"
-  value       = ["${data.template_file.read_replica_certificate_common_name.*.rendered}"]
-}
-
-output "read_replica_ca_cert_create_times" {
-  description = "List of creation times of the read replica instances CA Certs"
-  value       = ["${data.template_file.read_replica_certificate_create_time.*.rendered}"]
-}
-
-output "read_replica_ca_cert_expiration_times" {
-  description = "List of expiration times of the read replica instances CA Certs"
-  value       = ["${data.template_file.read_replica_certificate_expiration_time.*.rendered}"]
-}
-
-output "read_replica_ca_cert_sha1_fingerprints" {
-  description = "List of SHA Fingerprints of the read replica instances CA Certs"
-  value       = ["${data.template_file.read_replica_certificate_sha1_fingerprint.*.rendered}"]
+  description = "JSON encoded list of CA Certificates used to connect to the read replica instances via SSL"
+  value       = "${jsonencode(google_sql_database_instance.read_replica.*.server_ca_cert)}"
 }
 
 # ------------------------------------------------------------------------------
