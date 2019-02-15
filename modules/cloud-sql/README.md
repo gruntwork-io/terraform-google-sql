@@ -28,7 +28,7 @@ This module provides the connection details as [Terraform output
 variables](https://www.terraform.io/intro/getting-started/outputs.html):
 
 
-1. **Master First IP Address** `master_first_ip_address`: The first IPv4 address of the addresses assigned to the instance. If the instance has only public IP, it is the [public IP address](https://cloud.google.com/sql/docs/mysql/connect-admin-ip). If it has only private IP, it the [private IP address](https://cloud.google.com/sql/docs/mysql/private-ip). If it has both, it is the first item in the list and full IP address details are in `instance_ip_addresses`.
+1. **Master First IP Address** `master_first_ip_address`: The first IPv4 address of the addresses assigned to the instance. If the instance has only public IP, it is the [public IP address](https://cloud.google.com/sql/docs/mysql/connect-admin-ip). If it has only private IP, it the [private IP address](https://cloud.google.com/sql/docs/mysql/private-ip). If it has both, it is the first item in the list and full IP address details are in `master_ip_addresses`.
 1. **Master Proxy connection** `master_proxy_connection`: Instance path for connecting with Cloud SQL Proxy; see [Connecting mysql Client Using the Cloud SQL Proxy](https://cloud.google.com/sql/docs/mysql/connect-admin-proxy).
 1. **Read Replica First IP Addresses** `read_replica_first_ip_addresses`: A list of all read replica IP addresses in the cluster. Use these addresses for reads (see "How do you scale this database?" below).
 1. **Read Replica Proxy Connections** `read_replica_proxy_connections`: A list of instance paths for connecting with Cloud SQL Proxy; see [Connecting Using the Cloud SQL Proxy](https://cloud.google.com/sql/docs/mysql/connect-admin-proxy).
