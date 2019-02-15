@@ -7,7 +7,7 @@ This repo contains modules for running relational databases such as MySQL and Po
 
 ## Code included in this Module
 
-* [cloud-sql](/modules/cloud-sql): Deploy a Cloud SQL MySQL or PostgreSQL cluster.
+* [cloud-sql](/modules/cloud-sql): Deploy a Cloud SQL [MySQL](https://cloud.google.com/sql/docs/mysql/) or [PostgreSQL](https://cloud.google.com/sql/docs/postgres/) cluster.
 
 
 ## What is Cloud SQL?
