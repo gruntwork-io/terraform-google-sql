@@ -1,14 +1,14 @@
 # PostgreSQL Cloud SQL HA Example
 
 This folder contains an example of how to use the [Cloud SQL module](/modules/cloud-sql) to create a [High Availability](https://cloud.google.com/sql/docs/postgres/high-availability) [Google Cloud SQL](https://cloud.google.com/sql/) 
-[PostgreSQL](https://cloud.google.com/sql/docs/postgres/) database cluster with a public IP and a read replica. 
+[PostgreSQL](https://cloud.google.com/sql/docs/postgres/) database cluster with a [public IP address](https://cloud.google.com/sql/docs/postgres/connect-external-app#appaccessIP) and a [read replica](https://cloud.google.com/sql/docs/postgres/replication/). 
 
 ## How do you run this example?
 
 To run this example, you need to:
 
 1. Install [Terraform](https://www.terraform.io/).
-1. Open up `vars.tf` and set secrets at the top of the file as environment variables and fill in any other variables in
+1. Open up `variables.tf` and set secrets at the top of the file as environment variables and fill in any other variables in
    the file that don't have defaults. 
 1. `terraform init`.
 1. `terraform plan`.
