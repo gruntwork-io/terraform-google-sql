@@ -100,9 +100,9 @@ resource "google_sql_database_instance" "master" {
   # Sometimes the database creation can, however, take longer, so we
   # increase the timeouts slightly.
   timeouts {
-    create = "30m"
-    delete = "30m"
-    update = "30m"
+    create = "${var.resource_timeout}"
+    delete = "${var.resource_timeout}"
+    update = "${var.resource_timeout}"
   }
 }
 
@@ -191,9 +191,9 @@ resource "google_sql_database_instance" "failover_replica" {
   # Sometimes the database creation can, however, take longer, so we
   # increase the timeouts slightly.
   timeouts {
-    create = "30m"
-    delete = "30m"
-    update = "30m"
+    create = "${var.resource_timeout}"
+    delete = "${var.resource_timeout}"
+    update = "${var.resource_timeout}"
   }
 }
 
@@ -249,9 +249,9 @@ resource "google_sql_database_instance" "read_replica" {
   # to allow successful creation of multiple read replicas without having to
   # fear the operation timing out.
   timeouts {
-    create = "60m"
-    delete = "60m"
-    update = "60m"
+    create = "${var.resource_timeout}"
+    delete = "${var.resource_timeout}"
+    update = "${var.resource_timeout}"
   }
 }
 

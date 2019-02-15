@@ -201,6 +201,13 @@ variable "custom_labels" {
   default     = {}
 }
 
+# Resources are created sequentially. Therefore we increase the default timeouts considerably
+# to not have the operations time out.
+variable "resource_timeout" {
+  description = "Timeout for creating, updating and deleting database instances. Valid units of time are s, m, h."
+  default     = "60m"
+}
+
 variable "wait_for" {
   description = "By passing a value to this variable, you can effectively tell this module to wait to deploy until the given variable's value is resolved, which is a way to require that this module depend on some other module. Note that the actual value of this variable doesn't matter."
   default     = ""
