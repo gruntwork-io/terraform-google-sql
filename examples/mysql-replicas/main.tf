@@ -65,8 +65,8 @@ module "mysql" {
   ]
 
   # Indicate that we want to create a failover replica
-  enable_failover_replica = true
-  failover_replica_zone   = "${var.failover_replica_zone}"
+  enable_failover_replica     = true
+  mysql_failover_replica_zone = "${var.failover_replica_zone}"
 
   # Indicate we want read replicas to be created
   num_read_replicas  = "${var.num_read_replicas}"

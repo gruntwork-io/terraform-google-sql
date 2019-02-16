@@ -166,7 +166,7 @@ variable "enable_failover_replica" {
   default     = false
 }
 
-variable "failover_replica_zone" {
+variable "mysql_failover_replica_zone" {
   description = "The preferred zone for the failover instance (e.g. 'us-central1-b'). Must be different than 'master_zone'. Only applicable to MySQL, Postgres will determine this automatically."
   default     = ""
 }

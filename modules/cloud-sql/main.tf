@@ -17,7 +17,7 @@ locals {
   is_mysql    = "${replace(var.engine, "MYSQL", "") != var.engine}"
 
   # Calculate actuals, so we get expected behavior for each engine
-  actual_binary_log             = "${local.is_postgres ? false : var.mysql_binary_log_enabled}"
+  actual_binary_log_enabled     = "${local.is_postgres ? false : var.mysql_binary_log_enabled}"
   actual_availability_type      = "${local.is_postgres && var.enable_failover_replica ? "REGIONAL" : "ZONAL"}"
   actual_failover_replica_count = "${local.is_postgres ? 0 : var.enable_failover_replica ? 1 : 0}"
 
@@ -77,7 +77,7 @@ resource "google_sql_database_instance" "master" {
     }
 
     backup_configuration {
-      binary_log_enabled = "${local.actual_binary_log}"
+      binary_log_enabled = "${local.actual_binary_log_enabled}"
       enabled            = "${var.backup_enabled}"
       start_time         = "${var.backup_start_time}"
     }
@@ -177,7 +177,7 @@ resource "google_sql_database_instance" "failover_replica" {
 
     location_preference {
       follow_gae_application = "${var.follow_gae_application}"
-      zone                   = "${var.failover_replica_zone}"
+      zone                   = "${var.mysql_failover_replica_zone}"
     }
 
     disk_size      = "${var.disk_size}"

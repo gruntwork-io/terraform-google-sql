@@ -73,8 +73,8 @@ module "postgres" {
     },
   ]
 
-  # Set auto-increment flags to test the
-  # feature during automated testing
+  # Set test flags
+  # Cloud SQL will complain if they're not applicable to the engine
   database_flags = [
     {
       name  = "autovacuum_naptime"

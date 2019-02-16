@@ -18,8 +18,8 @@ output "master_public_ip" {
 }
 
 output "master_ca_cert" {
-  value       = "${module.postgres.master_ca_cert}"
   description = "The CA Certificate used to connect to the SQL Instance via SSL"
+  value       = "${module.postgres.master_ca_cert}"
 }
 
 output "master_instance" {
