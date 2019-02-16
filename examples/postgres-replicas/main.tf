@@ -1,5 +1,5 @@
 # ------------------------------------------------------------------------------
-# LAUNCH A MYSQL CLOUD SQL PUBLIC IP INSTANCE
+# LAUNCH A POSTGRES CLUSTER WITH HA AND READ REPLICAS
 # ------------------------------------------------------------------------------
 
 # ------------------------------------------------------------------------------
@@ -27,14 +27,16 @@ resource "random_id" "name" {
 
 locals {
   # If name_override is specified, use that - otherwise use the name_prefix with a random string
-  instance_name = "${length(var.name_override) == 0 ? format("%s-%s", var.name_prefix, random_id.name.hex) : var.name_override}"
+  instance_name        = "${length(var.name_override) == 0 ? format("%s-%s", var.name_prefix, random_id.name.hex) : var.name_override}"
+  private_network_name = "private-network-${random_id.name.hex}"
+  private_ip_name      = "private-ip-${random_id.name.hex}"
 }
 
 # ------------------------------------------------------------------------------
-# CREATE DATABASE INSTANCE WITH PUBLIC IP
+# CREATE DATABASE CLUSTER WITH PUBLIC IP
 # ------------------------------------------------------------------------------
 
-module "mysql" {
+module "postgres" {
   # When using these modules in your own templates, you will need to use a Git URL with a ref attribute that pins you
   # to a specific version of the modules, such as the following example:
   # source = "git::git@github.com:gruntwork-io/terraform-google-sql.git//modules/cloud-sql?ref=v0.1.0"
@@ -45,8 +47,29 @@ module "mysql" {
   name    = "${local.instance_name}"
   db_name = "${var.db_name}"
 
-  engine       = "${var.mysql_version}"
+  engine       = "${var.postgres_version}"
   machine_type = "${var.machine_type}"
+
+  master_zone = "${var.master_zone}"
+
+  # To make it easier to test this example, we are giving the servers public IP addresses and allowing inbound
+  # connections from anywhere. In real-world usage, your servers should live in private subnets, only have private IP
+  # addresses, and only allow access from specific trusted networks, servers or applications in your VPC.
+  enable_public_internet_access = true
+
+  authorized_networks = [
+    {
+      name  = "allow-all-inbound"
+      value = "0.0.0.0/0"
+    },
+  ]
+
+  # Indicate that we want to create a failover replica
+  enable_failover_replica = true
+
+  # Indicate we want read replicas to be created
+  num_read_replicas  = "${var.num_read_replicas}"
+  read_replica_zones = ["${var.read_replica_zones}"]
 
   # These together will construct the master_user privileges, i.e.
   # 'master_user_name'@'master_user_host' IDENTIFIED BY 'master_user_password'.
@@ -57,36 +80,7 @@ module "mysql" {
   master_user_name = "${var.master_user_name}"
   master_user_host = "%"
 
-  # To make it easier to test this example, we are giving the servers public IP addresses and allowing inbound
-  # connections from anywhere. In real-world usage, your servers should live in private subnets, only have private IP
-  # addresses, and only allow access from specific trusted networks, servers or applications in your VPC.
-  enable_public_internet_access = true
-
-  # Default setting for this is 'false' in 'variables.tf'
-  # In the test cases, we're setting this to true, to test forced SSL.
-  require_ssl = "${var.require_ssl}"
-
-  authorized_networks = [
-    {
-      name  = "allow-all-inbound"
-      value = "0.0.0.0/0"
-    },
-  ]
-
-  # Set auto-increment flags to test the
-  # feature during automated testing
-  database_flags = [
-    {
-      name  = "auto_increment_increment"
-      value = "5"
-    },
-    {
-      name  = "auto_increment_offset"
-      value = "5"
-    },
-  ]
-
   custom_labels = {
-    test-id = "mysql-public-ip-example"
+    test-id = "postgres-replicas-example"
   }
 }

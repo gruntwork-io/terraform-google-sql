@@ -23,7 +23,7 @@ locals {
 # ------------------------------------------------------------------------------
 
 data "template_file" "failover_proxy_connection" {
-  count    = "${var.enable_failover_replica}"
+  count    = "${local.actual_failover_replica_count}"
   template = "${var.project}:${var.region}:${google_sql_database_instance.failover_replica.0.name}"
 }
 
@@ -36,27 +36,27 @@ data "template_file" "failover_proxy_connection" {
 # ------------------------------------------------------------------------------
 
 data "template_file" "failover_certificate" {
-  count    = "${var.enable_failover_replica}"
+  count    = "${local.actual_failover_replica_count}"
   template = "${google_sql_database_instance.failover_replica.0.server_ca_cert.0.cert}"
 }
 
 data "template_file" "failover_certificate_common_name" {
-  count    = "${var.enable_failover_replica}"
+  count    = "${local.actual_failover_replica_count}"
   template = "${google_sql_database_instance.failover_replica.0.server_ca_cert.0.common_name}"
 }
 
 data "template_file" "failover_certificate_create_time" {
-  count    = "${var.enable_failover_replica}"
+  count    = "${local.actual_failover_replica_count}"
   template = "${google_sql_database_instance.failover_replica.0.server_ca_cert.0.create_time}"
 }
 
 data "template_file" "failover_certificate_expiration_time" {
-  count    = "${var.enable_failover_replica}"
+  count    = "${local.actual_failover_replica_count}"
   template = "${google_sql_database_instance.failover_replica.0.server_ca_cert.0.expiration_time}"
 }
 
 data "template_file" "failover_certificate_sha1_fingerprint" {
-  count    = "${var.enable_failover_replica}"
+  count    = "${local.actual_failover_replica_count}"
   template = "${google_sql_database_instance.failover_replica.0.server_ca_cert.0.sha1_fingerprint}"
 }
 

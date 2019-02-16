@@ -1,5 +1,5 @@
 # ------------------------------------------------------------------------------
-# LAUNCH A MYSQL CLOUD SQL PUBLIC IP INSTANCE
+# LAUNCH A POSTGRESQL CLOUD SQL PUBLIC IP INSTANCE
 # ------------------------------------------------------------------------------
 
 # ------------------------------------------------------------------------------
@@ -34,7 +34,7 @@ locals {
 # CREATE DATABASE INSTANCE WITH PUBLIC IP
 # ------------------------------------------------------------------------------
 
-module "mysql" {
+module "postgres" {
   # When using these modules in your own templates, you will need to use a Git URL with a ref attribute that pins you
   # to a specific version of the modules, such as the following example:
   # source = "git::git@github.com:gruntwork-io/terraform-google-sql.git//modules/cloud-sql?ref=v0.1.0"
@@ -45,7 +45,7 @@ module "mysql" {
   name    = "${local.instance_name}"
   db_name = "${var.db_name}"
 
-  engine       = "${var.mysql_version}"
+  engine       = "${var.postgres_version}"
   machine_type = "${var.machine_type}"
 
   # These together will construct the master_user privileges, i.e.
@@ -73,20 +73,16 @@ module "mysql" {
     },
   ]
 
-  # Set auto-increment flags to test the
-  # feature during automated testing
+  # Set test flags
+  # Cloud SQL will complain if they're not applicable to the engine
   database_flags = [
     {
-      name  = "auto_increment_increment"
-      value = "5"
-    },
-    {
-      name  = "auto_increment_offset"
-      value = "5"
+      name  = "autovacuum_naptime"
+      value = "2"
     },
   ]
 
   custom_labels = {
-    test-id = "mysql-public-ip-example"
+    test-id = "postgres-public-ip-example"
   }
 }

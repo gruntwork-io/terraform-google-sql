@@ -39,8 +39,8 @@ locals {
 module "mysql" {
   # When using these modules in your own templates, you will need to use a Git URL with a ref attribute that pins you
   # to a specific version of the modules, such as the following example:
-  # source = "git::git@github.com:gruntwork-io/terraform-google-sql.git//modules/mysql?ref=v0.1.0"
-  source = "../../modules/mysql"
+  # source = "git::git@github.com:gruntwork-io/terraform-google-sql.git//modules/cloud-sql?ref=v0.1.0"
+  source = "../../modules/cloud-sql"
 
   project = "${var.project}"
   region  = "${var.region}"
@@ -65,8 +65,8 @@ module "mysql" {
   ]
 
   # Indicate that we want to create a failover replica
-  enable_failover_replica = true
-  failover_replica_zone   = "${var.failover_replica_zone}"
+  enable_failover_replica     = true
+  mysql_failover_replica_zone = "${var.failover_replica_zone}"
 
   # Indicate we want read replicas to be created
   num_read_replicas  = "${var.num_read_replicas}"

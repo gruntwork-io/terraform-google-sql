@@ -1,3 +1,7 @@
+# ------------------------------------------------------------------------------
+# CLIENT CERTIFICATE OUTPUTS
+# ------------------------------------------------------------------------------
+
 output "client_ca_cert" {
   description = "Certificate data for the client certificate."
   value       = "${google_sql_ssl_cert.client_cert.cert}"

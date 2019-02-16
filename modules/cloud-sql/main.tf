@@ -12,8 +12,14 @@
 # ------------------------------------------------------------------------------
 
 locals {
+  # Determine the engine type
   is_postgres = "${replace(var.engine, "POSTGRES", "") != var.engine}"
   is_mysql    = "${replace(var.engine, "MYSQL", "") != var.engine}"
+
+  # Calculate actuals, so we get expected behavior for each engine
+  actual_binary_log_enabled     = "${local.is_postgres ? false : var.mysql_binary_log_enabled}"
+  actual_availability_type      = "${local.is_postgres && var.enable_failover_replica ? "REGIONAL" : "ZONAL"}"
+  actual_failover_replica_count = "${local.is_postgres ? 0 : var.enable_failover_replica ? 1 : 0}"
 
   # Terraform does not allow using lists of maps with coditionals, so we have to
   # trick terraform by creating a string conditional first.
@@ -71,7 +77,7 @@ resource "google_sql_database_instance" "master" {
     }
 
     backup_configuration {
-      binary_log_enabled = "${var.binary_log_enabled}"
+      binary_log_enabled = "${local.actual_binary_log_enabled}"
       enabled            = "${var.backup_enabled}"
       start_time         = "${var.backup_start_time}"
     }
@@ -85,7 +91,7 @@ resource "google_sql_database_instance" "master" {
     disk_size         = "${var.disk_size}"
     disk_type         = "${var.disk_type}"
     database_flags    = ["${var.database_flags}"]
-    availability_type = "${var.availability_type}"
+    availability_type = "${local.actual_availability_type}"
 
     user_labels = "${var.custom_labels}"
   }
@@ -94,9 +100,9 @@ resource "google_sql_database_instance" "master" {
   # Sometimes the database creation can, however, take longer, so we
   # increase the timeouts slightly.
   timeouts {
-    create = "30m"
-    delete = "30m"
-    update = "30m"
+    create = "${var.resource_timeout}"
+    delete = "${var.resource_timeout}"
+    update = "${var.resource_timeout}"
   }
 }
 
@@ -138,7 +144,7 @@ resource "null_resource" "wait_for" {
 # ------------------------------------------------------------------------------
 
 resource "google_sql_database_instance" "failover_replica" {
-  count = "${var.enable_failover_replica}"
+  count = "${local.actual_failover_replica_count}"
 
   depends_on = [
     "google_sql_database_instance.master",
@@ -171,7 +177,7 @@ resource "google_sql_database_instance" "failover_replica" {
 
     location_preference {
       follow_gae_application = "${var.follow_gae_application}"
-      zone                   = "${var.failover_replica_zone}"
+      zone                   = "${var.mysql_failover_replica_zone}"
     }
 
     disk_size      = "${var.disk_size}"
@@ -185,9 +191,9 @@ resource "google_sql_database_instance" "failover_replica" {
   # Sometimes the database creation can, however, take longer, so we
   # increase the timeouts slightly.
   timeouts {
-    create = "30m"
-    delete = "30m"
-    update = "30m"
+    create = "${var.resource_timeout}"
+    delete = "${var.resource_timeout}"
+    update = "${var.resource_timeout}"
   }
 }
 
@@ -243,9 +249,9 @@ resource "google_sql_database_instance" "read_replica" {
   # to allow successful creation of multiple read replicas without having to
   # fear the operation timing out.
   timeouts {
-    create = "60m"
-    delete = "60m"
-    update = "60m"
+    create = "${var.resource_timeout}"
+    delete = "${var.resource_timeout}"
+    update = "${var.resource_timeout}"
   }
 }
 

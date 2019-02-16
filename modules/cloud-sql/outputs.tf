@@ -71,7 +71,7 @@ output "db_name" {
 }
 
 # ------------------------------------------------------------------------------
-# FAILOVER REPLICA OUTPUTS
+# FAILOVER REPLICA OUTPUTS - ONLY APPLICABLE TO MYSQL
 # ------------------------------------------------------------------------------
 
 output "failover_instance_name" {
@@ -100,7 +100,7 @@ output "failover_proxy_connection" {
 }
 
 # ------------------------------------------------------------------------------
-# FAILOVER CERT OUTPUTS
+# FAILOVER CERT OUTPUTS - ONLY APPLICABLE TO MYSQL
 # ------------------------------------------------------------------------------
 
 output "failover_replica_ca_cert" {

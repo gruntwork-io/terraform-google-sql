@@ -1,7 +1,7 @@
-# MySQL Cloud SQL Private IP Example
+# PostgreSQL Cloud SQL HA Example
 
-This folder contains an example of how to use the [Cloud SQL module](/modules/cloud-sql) to create a [Google Cloud SQL](https://cloud.google.com/sql/) 
-[MySQL](https://cloud.google.com/sql/docs/mysql/) database instance with a [private IP address](https://cloud.google.com/sql/docs/mysql/private-ip). 
+This folder contains an example of how to use the [Cloud SQL module](/modules/cloud-sql) to create a [High Availability](https://cloud.google.com/sql/docs/postgres/high-availability) [Google Cloud SQL](https://cloud.google.com/sql/) 
+[PostgreSQL](https://cloud.google.com/sql/docs/postgres/) database cluster with a [public IP address](https://cloud.google.com/sql/docs/postgres/connect-external-app#appaccessIP) and a [read replica](https://cloud.google.com/sql/docs/postgres/replication/). 
 
 ## How do you run this example?
 
@@ -16,6 +16,3 @@ To run this example, you need to:
 
 When the templates are applied, Terraform will output the IP address of the instance 
 and the instance path for [connecting using the Cloud SQL Proxy](https://cloud.google.com/sql/docs/mysql/connect-admin-proxy). 
-
-Note that you cannot connect to the private IP instance from outside Google Cloud Platform. 
-If you want to experiment with connecting from your own workstation, see the [public IP example](../mysql-public-ip)  

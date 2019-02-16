@@ -7,6 +7,7 @@ import (
 	"github.com/gruntwork-io/terratest/modules/logger"
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/gruntwork-io/terratest/modules/test-structure"
+	_ "github.com/lib/pq"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"path/filepath"
@@ -14,10 +15,10 @@ import (
 	"testing"
 )
 
-const NAME_PREFIX_REPLICAS = "mysql-replicas"
-const EXAMPLE_NAME_REPLICAS = "mysql-replicas"
+const NAME_PREFIX_POSTGRES_REPLICAS = "postgres-replicas"
+const EXAMPLE_NAME_POSTGRES_REPLICAS = "postgres-replicas"
 
-func TestMySqlReplicas(t *testing.T) {
+func TestPostgresReplicas(t *testing.T) {
 	t.Parallel()
 
 	//os.Setenv("SKIP_bootstrap", "true")
@@ -28,19 +29,17 @@ func TestMySqlReplicas(t *testing.T) {
 	//os.Setenv("SKIP_teardown", "true")
 
 	_examplesDir := test_structure.CopyTerraformFolderToTemp(t, "../", "examples")
-	exampleDir := filepath.Join(_examplesDir, EXAMPLE_NAME_REPLICAS)
+	exampleDir := filepath.Join(_examplesDir, EXAMPLE_NAME_POSTGRES_REPLICAS)
 
 	// BOOTSTRAP VARIABLES FOR THE TESTS
 	test_structure.RunTestStage(t, "bootstrap", func() {
 		projectId := gcp.GetGoogleProjectIDFromEnvVar(t)
 		region := getRandomRegion(t, projectId)
 
-		masterZone, failoverReplicaZone := getTwoDistinctRandomZonesForRegion(t, projectId, region)
-		readReplicaZone := gcp.GetRandomZoneForRegion(t, projectId, region)
+		masterZone, readReplicaZone := getTwoDistinctRandomZonesForRegion(t, projectId, region)
 
 		test_structure.SaveString(t, exampleDir, KEY_REGION, region)
 		test_structure.SaveString(t, exampleDir, KEY_MASTER_ZONE, masterZone)
-		test_structure.SaveString(t, exampleDir, KEY_FAILOVER_REPLICA_ZONE, failoverReplicaZone)
 		test_structure.SaveString(t, exampleDir, KEY_READ_REPLICA_ZONE, readReplicaZone)
 		test_structure.SaveString(t, exampleDir, KEY_PROJECT, projectId)
 	})
@@ -56,9 +55,8 @@ func TestMySqlReplicas(t *testing.T) {
 		region := test_structure.LoadString(t, exampleDir, KEY_REGION)
 		projectId := test_structure.LoadString(t, exampleDir, KEY_PROJECT)
 		masterZone := test_structure.LoadString(t, exampleDir, KEY_MASTER_ZONE)
-		failoverReplicaZone := test_structure.LoadString(t, exampleDir, KEY_FAILOVER_REPLICA_ZONE)
 		readReplicaZone := test_structure.LoadString(t, exampleDir, KEY_READ_REPLICA_ZONE)
-		terraformOptions := createTerratestOptionsForCloudSql(projectId, region, exampleDir, NAME_PREFIX_REPLICAS, masterZone, failoverReplicaZone, 1, readReplicaZone)
+		terraformOptions := createTerratestOptionsForCloudSql(projectId, region, exampleDir, NAME_PREFIX_POSTGRES_REPLICAS, masterZone, "", 1, readReplicaZone)
 		test_structure.SaveTerraformOptions(t, exampleDir, terraformOptions)
 
 		terraform.InitAndApply(t, terraformOptions)
@@ -77,18 +75,9 @@ func TestMySqlReplicas(t *testing.T) {
 
 		expectedDBConn := fmt.Sprintf("%s:%s:%s", projectId, region, instanceNameFromOutput)
 
-		assert.True(t, strings.HasPrefix(instanceNameFromOutput, NAME_PREFIX_REPLICAS))
+		assert.True(t, strings.HasPrefix(instanceNameFromOutput, NAME_PREFIX_POSTGRES_REPLICAS))
 		assert.Equal(t, DB_NAME, dbNameFromOutput)
 		assert.Equal(t, expectedDBConn, proxyConnectionFromOutput)
-
-		// Failover replica outputs
-		failoverInstanceNameFromOutput := terraform.Output(t, terraformOptions, OUTPUT_FAILOVER_INSTANCE_NAME)
-		failoverProxyConnectionFromOutput := terraform.Output(t, terraformOptions, OUTPUT_FAILOVER_PROXY_CONNECTION)
-
-		expectedFailoverDBConn := fmt.Sprintf("%s:%s:%s", projectId, region, failoverInstanceNameFromOutput)
-
-		assert.True(t, strings.HasPrefix(failoverInstanceNameFromOutput, NAME_PREFIX_REPLICAS))
-		assert.Equal(t, expectedFailoverDBConn, failoverProxyConnectionFromOutput)
 
 		// Read replica outputs
 		readReplicaInstanceNameFromOutputList := terraform.OutputList(t, terraformOptions, OUTPUT_READ_REPLICA_INSTANCE_NAMES)
@@ -99,7 +88,7 @@ func TestMySqlReplicas(t *testing.T) {
 
 		expectedReadReplicaDBConn := fmt.Sprintf("%s:%s:%s", projectId, region, readReplicaInstanceNameFromOutput)
 
-		assert.True(t, strings.HasPrefix(readReplicaInstanceNameFromOutput, NAME_PREFIX_REPLICAS))
+		assert.True(t, strings.HasPrefix(readReplicaInstanceNameFromOutput, NAME_PREFIX_POSTGRES_REPLICAS))
 		assert.Equal(t, expectedReadReplicaDBConn, readReplicaProxyConnectionFromOutput)
 	})
 
@@ -109,11 +98,11 @@ func TestMySqlReplicas(t *testing.T) {
 
 		publicIp := terraform.Output(t, terraformOptions, OUTPUT_MASTER_PUBLIC_IP)
 
-		connectionString := fmt.Sprintf("%s:%s@tcp(%s:3306)/%s", DB_USER, DB_PASS, publicIp, DB_NAME)
+		connectionString := fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable", DB_USER, DB_PASS, publicIp, DB_NAME)
 
 		// Does not actually open up the connection - just returns a DB ref
 		logger.Logf(t, "Connecting to: %s", publicIp)
-		db, err := sql.Open("mysql", connectionString)
+		db, err := sql.Open("postgres", connectionString)
 		require.NoError(t, err, "Failed to open DB connection")
 
 		// Make sure we clean up properly
@@ -126,8 +115,8 @@ func TestMySqlReplicas(t *testing.T) {
 		}
 
 		// Create table if not exists
-		logger.Logf(t, "Create table: %s", MYSQL_CREATE_TEST_TABLE_WITH_AUTO_INCREMENT_STATEMENT)
-		if _, err = db.Exec(MYSQL_CREATE_TEST_TABLE_WITH_AUTO_INCREMENT_STATEMENT); err != nil {
+		logger.Logf(t, "Create table: %s", POSTGRES_CREATE_TEST_TABLE_WITH_SERIAL)
+		if _, err = db.Exec(POSTGRES_CREATE_TEST_TABLE_WITH_SERIAL); err != nil {
 			t.Fatalf("Failed to create table: %v", err)
 		}
 
@@ -137,21 +126,12 @@ func TestMySqlReplicas(t *testing.T) {
 			t.Fatalf("Failed to clean up table: %v", err)
 		}
 
-		// Insert data to check that our auto-increment flags worked
-		logger.Logf(t, "Insert data: %s", MYSQL_INSERT_TEST_ROW)
-		stmt, err := db.Prepare(MYSQL_INSERT_TEST_ROW)
-		require.NoError(t, err, "Failed to prepare statement")
+		logger.Logf(t, "Insert data: %s", POSTGRES_INSERT_TEST_ROW)
+		var testid int
+		err = db.QueryRow(POSTGRES_INSERT_TEST_ROW).Scan(&testid)
+		require.NoError(t, err, "Failed to insert data")
 
-		// Execute the statement
-		res, err := stmt.Exec("Grunt")
-		require.NoError(t, err, "Failed to execute statement")
-
-		// Get the last insert id
-		lastId, err := res.LastInsertId()
-		require.NoError(t, err, "Failed to get last insert id")
-
-		// Since we set the auto increment to 7, modulus should always be 0
-		assert.Equal(t, int64(0), int64(lastId%7))
+		assert.True(t, testid > 0, "Data was inserted")
 	})
 
 	// TEST READ REPLICA WITH REGULAR SQL CLIENT
@@ -161,47 +141,37 @@ func TestMySqlReplicas(t *testing.T) {
 		readReplicaPublicIpList := terraform.OutputList(t, terraformOptions, OUTPUT_READ_REPLICA_PUBLIC_IPS)
 		readReplicaPublicIp := readReplicaPublicIpList[0]
 
-		connectionString := fmt.Sprintf("%s:%s@tcp(%s:3306)/%s", DB_USER, DB_PASS, readReplicaPublicIp, DB_NAME)
+		connectionString := fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable", DB_USER, DB_PASS, readReplicaPublicIp, DB_NAME)
 
 		// Does not actually open up the connection - just returns a DB ref
-		logger.Logf(t, "Connecting to read replica: %s", readReplicaPublicIp)
-		db, err := sql.Open("mysql", connectionString)
-		require.NoError(t, err, "Failed to open DB connection to read replica")
+		logger.Logf(t, "Connecting to: %s", readReplicaPublicIp)
+		db, err := sql.Open("postgres", connectionString)
+		require.NoError(t, err, "Failed to open DB connection")
 
 		// Make sure we clean up properly
 		defer db.Close()
 
 		// Run ping to actually test the connection
-		logger.Log(t, "Ping the read replica DB")
+		logger.Log(t, "Ping the DB")
 		if err = db.Ping(); err != nil {
-			t.Fatalf("Failed to ping read replica DB: %v", err)
+			t.Fatalf("Failed to ping DB: %v", err)
 		}
 
 		// Try to insert data to verify we cannot write
-		logger.Logf(t, "Insert data: %s", MYSQL_INSERT_TEST_ROW)
-		stmt, err := db.Prepare(MYSQL_INSERT_TEST_ROW)
-		require.NoError(t, err, "Failed to prepare insert readonly statement")
+		logger.Logf(t, "Insert data: %s", POSTGRES_INSERT_TEST_ROW)
+		var testid int
+		err = db.QueryRow(POSTGRES_INSERT_TEST_ROW).Scan(&testid)
 
-		// Execute the statement
-		_, err = stmt.Exec("ReadOnlyGrunt")
 		// This time we actually expect an error:
-		// 'The MySQL server is running with the --read-only option so it cannot execute this statement'
+		// 'cannot execute INSERT in a read-only transaction'
 		require.Error(t, err, "Should not be able to write to read replica")
 		logger.Logf(t, "Failed to insert data to read replica as expected: %v", err)
 
-		// Prepare statement for reading data
-		stmtOut, err := db.Prepare(SQL_QUERY_ROW_COUNT)
-		require.NoError(t, err, "Failed to prepare readonly count statement")
-
 		// Query data, results don't matter...
 		logger.Logf(t, "Query r/o data: %s", SQL_QUERY_ROW_COUNT)
-
-		var numResults int
-
-		err = stmtOut.QueryRow().Scan(&numResults)
+		rows, err := db.Query(SQL_QUERY_ROW_COUNT)
 		require.NoError(t, err, "Failed to execute query statement on read replica")
 
-		logger.Logf(t, "Number of rows... just for fun: %v", numResults)
-
+		assert.True(t, rows.Next(), "We have a result")
 	})
 }

@@ -1,7 +1,7 @@
-# MySQL Cloud SQL Public IP Example
+# PostgreSQL Cloud SQL Public IP Example
 
 This folder contains an example of how to use the [Cloud SQL module](/modules/cloud-sql) to create a [Google Cloud SQL](https://cloud.google.com/sql/) 
-[MySQL](https://cloud.google.com/sql/docs/mysql/) database instance with a [public IP address](https://cloud.google.com/sql/docs/mysql/connect-external-app#appaccessIP). 
+[PostgreSQL](https://cloud.google.com/sql/docs/postgres/) database instance with a [public IP address](https://cloud.google.com/sql/docs/postgres/connect-external-app#appaccessIP). 
 
 ## How do you run this example?
 
