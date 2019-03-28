@@ -13,8 +13,8 @@ output "master_ip_addresses" {
 }
 
 output "master_private_ip" {
-  description = "The first IPv4 address of the addresses assigned to the instance. As this instance has only private IP, it is the private IP address."
-  value       = "${module.postgres.master_first_ip_address}"
+  description = "The private IPv4 address of the master instance"
+  value       = "${module.postgres.master_private_ip_address}"
 }
 
 output "master_instance" {

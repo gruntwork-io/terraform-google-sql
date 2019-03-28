@@ -20,31 +20,6 @@ locals {
   actual_binary_log_enabled     = "${local.is_postgres ? false : var.mysql_binary_log_enabled}"
   actual_availability_type      = "${local.is_postgres && var.enable_failover_replica ? "REGIONAL" : "ZONAL"}"
   actual_failover_replica_count = "${local.is_postgres ? 0 : var.enable_failover_replica ? 1 : 0}"
-
-  # Terraform does not allow using lists of maps with coditionals, so we have to
-  # trick terraform by creating a string conditional first.
-  # See https://github.com/hashicorp/terraform/issues/12453
-  ip_configuration_key = "${var.private_network != "" ? "PRIVATE" : "PUBLIC"}"
-
-  ip_configuration_def = {
-    "PRIVATE" = [{
-      authorized_networks = ["${var.authorized_networks}"]
-      ipv4_enabled        = "${var.enable_public_internet_access}"
-      private_network     = "${var.private_network}"
-      require_ssl         = "${var.require_ssl}"
-    }]
-
-    "PUBLIC" = [{
-      authorized_networks = ["${var.authorized_networks}"]
-      ipv4_enabled        = "${var.enable_public_internet_access}"
-      require_ssl         = "${var.require_ssl}"
-    }]
-  }
-
-  # We have to construct the sub-block dynamically. If the user creates a public-ip only instance,
-  # passing an empty string into 'private_network' causes
-  # 'private_network" ("") doesn't match regexp "projects/...'
-  ip_configuration = "${local.ip_configuration_def[local.ip_configuration_key]}"
 }
 
 # ------------------------------------------------------------------------------
@@ -69,7 +44,12 @@ resource "google_sql_database_instance" "master" {
     authorized_gae_applications = ["${var.authorized_gae_applications}"]
     disk_autoresize             = "${var.disk_autoresize}"
 
-    ip_configuration = ["${local.ip_configuration}"]
+    ip_configuration {
+      authorized_networks = ["${var.authorized_networks}"]
+      ipv4_enabled        = "${var.enable_public_internet_access}"
+      private_network     = "${var.private_network}"
+      require_ssl         = "${var.require_ssl}"
+    }
 
     location_preference {
       follow_gae_application = "${var.follow_gae_application}"
@@ -173,7 +153,12 @@ resource "google_sql_database_instance" "failover_replica" {
     authorized_gae_applications = ["${var.authorized_gae_applications}"]
     disk_autoresize             = "${var.disk_autoresize}"
 
-    ip_configuration = ["${local.ip_configuration}"]
+    ip_configuration {
+      authorized_networks = ["${var.authorized_networks}"]
+      ipv4_enabled        = "${var.enable_public_internet_access}"
+      private_network     = "${var.private_network}"
+      require_ssl         = "${var.require_ssl}"
+    }
 
     location_preference {
       follow_gae_application = "${var.follow_gae_application}"
@@ -230,7 +215,12 @@ resource "google_sql_database_instance" "read_replica" {
     authorized_gae_applications = ["${var.authorized_gae_applications}"]
     disk_autoresize             = "${var.disk_autoresize}"
 
-    ip_configuration = ["${local.ip_configuration}"]
+    ip_configuration {
+      authorized_networks = ["${var.authorized_networks}"]
+      ipv4_enabled        = "${var.enable_public_internet_access}"
+      private_network     = "${var.private_network}"
+      require_ssl         = "${var.require_ssl}"
+    }
 
     location_preference {
       follow_gae_application = "${var.follow_gae_application}"

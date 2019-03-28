@@ -7,14 +7,9 @@ output "master_instance_name" {
   value       = "${module.mysql.master_instance_name}"
 }
 
-output "master_ip_addresses" {
-  description = "All IP addresses of the instance as list of maps, see https://www.terraform.io/docs/providers/google/r/sql_database_instance.html#ip_address-0-ip_address"
-  value       = "${module.mysql.master_ip_addresses}"
-}
-
 output "master_public_ip" {
-  description = "The first IPv4 address of the addresses assigned to the master instance. As this instance has only public IP, it is the public IP address."
-  value       = "${module.mysql.master_first_ip_address}"
+  description = "The public IPv4 address of the master instance."
+  value       = "${module.mysql.master_public_ip_address}"
 }
 
 output "master_instance" {
@@ -56,8 +51,8 @@ output "failover_instance_name" {
 }
 
 output "failover_public_ip" {
-  description = "The first IPv4 address of the addresses assigned to the failover instance. As this instance has only public IP, it is the public IP address."
-  value       = "${module.mysql.failover_first_ip_address}"
+  description = "The public IPv4 address of the failover instance"
+  value       = "${module.mysql.failover_public_ip_address}"
 }
 
 output "failover_proxy_connection" {
@@ -75,8 +70,8 @@ output "read_replica_instance_names" {
 }
 
 output "read_replica_public_ips" {
-  description = "List of first IPv4 addresses of the addresses assigned to the read replica instances. As the instances have only public IP in the example, the are the public IP addresses."
-  value       = ["${module.mysql.read_replica_first_ip_addresses}"]
+  description = "List of public IPv4 addresses of the read replica instances"
+  value       = ["${module.mysql.read_replica_public_ip_addresses}"]
 }
 
 output "read_replica_instances" {

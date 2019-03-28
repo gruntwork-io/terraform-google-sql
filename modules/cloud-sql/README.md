@@ -25,14 +25,15 @@ You can also use the [Cloud SQL Proxy for MySQL](https://cloud.google.com/sql/do
 to connect to an instance that is also configured to use private IP. The proxy can connect using either the private IP address or a public IP address.
 
 This module provides the connection details as [Terraform output 
-variables](https://www.terraform.io/intro/getting-started/outputs.html):
+variables](https://www.terraform.io/intro/getting-started/outputs.html). Use the public / private addresses depending on your configuration:
 
 
-1. **Master First IP Address** `master_first_ip_address`: The first IPv4 address of the addresses assigned to the instance. If the instance has only public IP, it is the [public IP address](https://cloud.google.com/sql/docs/mysql/connect-admin-ip). If it has only private IP, it the [private IP address](https://cloud.google.com/sql/docs/mysql/private-ip). If it has both, it is the first item in the list and full IP address details are in `master_ip_addresses`.
+1. **Master Public IP Address** `master_public_ip_address`: The public IPv4 address of the master instance.
+1. **Master Private IP Address** `master_private_ip_address`: The private IPv4 address of the master instance.
 1. **Master Proxy connection** `master_proxy_connection`: Instance path for connecting with Cloud SQL Proxy; see [Connecting mysql Client Using the Cloud SQL Proxy](https://cloud.google.com/sql/docs/mysql/connect-admin-proxy).
-1. **Read Replica First IP Addresses** `read_replica_first_ip_addresses`: A list of all read replica IP addresses in the cluster. Use these addresses for reads (see "How do you scale this database?" below).
+1. **Read Replica Public IP Addresses** `read_replica_public_ip_addresses`: A list of read replica public IP addresses in the cluster. Use these addresses for reads (see "How do you scale this database?" below).
+1. **Read Replica Private IP Addresses** `read_replica_private_ip_addresses`: A list of read replica private IP addresses in the cluster. Use these addresses for reads (see "How do you scale this database?" below).
 1. **Read Replica Proxy Connections** `read_replica_proxy_connections`: A list of instance paths for connecting with Cloud SQL Proxy; see [Connecting Using the Cloud SQL Proxy](https://cloud.google.com/sql/docs/mysql/connect-admin-proxy).
-
 
 
 You can programmatically extract these variables in your Terraform templates and pass them to other resources. 
