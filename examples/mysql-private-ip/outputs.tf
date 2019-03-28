@@ -7,6 +7,11 @@ output "master_instance_name" {
   value       = "${module.mysql.master_instance_name}"
 }
 
+output "master_ip_addresses" {
+  description = "All IP addresses of the instance as list of maps, see https://www.terraform.io/docs/providers/google/r/sql_database_instance.html#ip_address-0-ip_address"
+  value       = "${module.mysql.master_ip_addresses}"
+}
+
 output "master_private_ip" {
   description = "The private IPv4 address of the master instance."
   value       = "${module.mysql.master_private_ip_address}"
