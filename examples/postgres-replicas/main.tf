@@ -7,6 +7,7 @@
 # ------------------------------------------------------------------------------
 
 provider "google-beta" {
+  version = "~> 2.1.0"
   region  = "${var.region}"
   project = "${var.project}"
 }

@@ -7,14 +7,19 @@ output "master_instance_name" {
   value       = "${google_sql_database_instance.master.name}"
 }
 
+output "master_public_ip_address" {
+  description = "The public IPv4 address of the master instance."
+  value       = "${google_sql_database_instance.master.public_ip_address}"
+}
+
+output "master_private_ip_address" {
+  description = "The public IPv4 address of the master instance."
+  value       = "${google_sql_database_instance.master.private_ip_address}"
+}
+
 output "master_ip_addresses" {
   description = "All IP addresses of the master instance JSON encoded, see https://www.terraform.io/docs/providers/google/r/sql_database_instance.html#ip_address-0-ip_address"
   value       = "${jsonencode(google_sql_database_instance.master.ip_address)}"
-}
-
-output "master_first_ip_address" {
-  description = "The first IPv4 address of the addresses assigned to the master instance. If the instance has only public IP, it is the public IP address. If it has only private IP, it the private IP address. If it has both, it is the first item in the list and full IP address details are in 'instance_ip_addresses'"
-  value       = "${google_sql_database_instance.master.first_ip_address}"
 }
 
 output "master_instance" {
@@ -79,14 +84,19 @@ output "failover_instance_name" {
   value       = "${join("", google_sql_database_instance.failover_replica.*.name)}"
 }
 
+output "failover_public_ip_address" {
+  description = "The public IPv4 address of the failover instance."
+  value       = "${join("", google_sql_database_instance.failover_replica.*.public_ip_address)}"
+}
+
+output "failover_private_ip_address" {
+  description = "The private IPv4 address of the failover instance."
+  value       = "${join("", google_sql_database_instance.failover_replica.*.private_ip_address)}"
+}
+
 output "failover_ip_addresses" {
   description = "All IP addresses of the failover instance JSON encoded, see https://www.terraform.io/docs/providers/google/r/sql_database_instance.html#ip_address-0-ip_address"
   value       = "${jsonencode(google_sql_database_instance.failover_replica.*.ip_address)}"
-}
-
-output "failover_first_ip_address" {
-  description = "The first IPv4 address of the addresses assigned to the failover instance. If the instance has only public IP, it is the public IP address. If it has only private IP, it the private IP address. If it has both, it is the first item in the list and full IP address details are in 'instance_ip_addresses'"
-  value       = "${join("", google_sql_database_instance.failover_replica.*.first_ip_address)}"
 }
 
 output "failover_instance" {
@@ -142,9 +152,14 @@ output "read_replica_ip_addresses" {
   value       = "${jsonencode(google_sql_database_instance.read_replica.*.ip_address)}"
 }
 
-output "read_replica_first_ip_addresses" {
-  description = "List of first IPv4 addresses of the addresses assigned to the read replica instances. If the instance has only public IP, it is the public IP address. If it has only private IP, it the private IP address. If it has both, it is the first item in the list and full IP address details are in 'instance_ip_addresses'"
-  value       = ["${google_sql_database_instance.read_replica.*.first_ip_address}"]
+output "read_replica_public_ip_addresses" {
+  description = "List of public IPv4 addresses of the read replica instances."
+  value       = ["${google_sql_database_instance.read_replica.*.public_ip_address}"]
+}
+
+output "read_replica_private_ip_addresses" {
+  description = "List of private IPv4 addresses of the read replica instances."
+  value       = ["${google_sql_database_instance.read_replica.*.private_ip_address}"]
 }
 
 output "read_replica_instances" {

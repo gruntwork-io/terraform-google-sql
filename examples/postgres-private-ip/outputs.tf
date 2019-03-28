@@ -7,14 +7,9 @@ output "master_instance_name" {
   value       = "${module.postgres.master_instance_name}"
 }
 
-output "master_ip_addresses" {
-  description = "All IP addresses of the instance as list of maps, see https://www.terraform.io/docs/providers/google/r/sql_database_instance.html#ip_address-0-ip_address"
-  value       = "${module.postgres.master_ip_addresses}"
-}
-
 output "master_private_ip" {
-  description = "The first IPv4 address of the addresses assigned to the instance. As this instance has only private IP, it is the private IP address."
-  value       = "${module.postgres.master_first_ip_address}"
+  description = "The private IPv4 address of the master instance"
+  value       = "${module.postgres.master_private_ip_address}"
 }
 
 output "master_instance" {

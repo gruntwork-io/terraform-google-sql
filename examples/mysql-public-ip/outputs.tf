@@ -7,14 +7,9 @@ output "master_instance_name" {
   value       = "${module.mysql.master_instance_name}"
 }
 
-output "master_ip_addresses" {
-  description = "All IP addresses of the instance as list of maps, see https://www.terraform.io/docs/providers/google/r/sql_database_instance.html#ip_address-0-ip_address"
-  value       = "${module.mysql.master_ip_addresses}"
-}
-
 output "master_public_ip" {
-  description = "The first IPv4 address of the addresses assigned to the instance. As this instance has only public IP, it is the public IP address."
-  value       = "${module.mysql.master_first_ip_address}"
+  description = "The public IPv4 address of the master instance."
+  value       = "${module.mysql.master_public_ip_address}"
 }
 
 output "master_ca_cert" {
