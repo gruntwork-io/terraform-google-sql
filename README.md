@@ -2,13 +2,36 @@
 
 # Cloud SQL Modules
 
-This repo contains modules for running relational databases such as MySQL and PostgreSQL on Google's
-[Cloud SQL](https://cloud.google.com/sql/) on [GCP](https://cloud.google.com/).
+This repo contains modules for running relational databases such as MySQL and PostgreSQL on
+[Google Cloud Platform (GCP)](https://cloud.google.com/) using [Cloud SQL](https://cloud.google.com/sql/).
 
-## Code included in this Module
+## Quickstart
 
-* [cloud-sql](/modules/cloud-sql): Deploy a Cloud SQL [MySQL](https://cloud.google.com/sql/docs/mysql/) or [PostgreSQL](https://cloud.google.com/sql/docs/postgres/) cluster.
+If you want to quickly spin up a Cloud SQL database, you can run the example that is in the root of this repo. Check out
+[postgres-private-ip example documentation](https://github.com/gruntwork-io/terraform-google-sql/blob/master/examples/postgres-private-ip)
+for instructions.
 
+## What's in this repo
+
+This repo has the following folder structure:
+
+* [root](https://github.com/gruntwork-io/terraform-google-sql/tree/master): The root folder contains an example of how
+  to deploy a private PostgreSQL instance in Cloud SQL. See [postgres-private-ip](https://github.com/gruntwork-io/terraform-google-sql/blob/master/examples/postgres-private-ip)
+  for the documentation.
+
+* [modules](https://github.com/gruntwork-io/terraform-google-sql/tree/master/modules): This folder contains the
+  main implementation code for this Module, broken down into multiple standalone submodules.
+
+  The primary module is:
+
+    * [cloud-sql](/modules/cloud-sql): Deploy a Cloud SQL [MySQL](https://cloud.google.com/sql/docs/mysql/) or
+    [PostgreSQL](https://cloud.google.com/sql/docs/postgres/) database.
+
+* [examples](https://github.com/gruntwork-io/terraform-google-sql/tree/master/examples): This folder contains
+  examples of how to use the submodules.
+
+* [test](https://github.com/gruntwork-io/terraform-google-sql/tree/master/test): Automated tests for the submodules
+  and examples.
 
 ## What is Cloud SQL?
 
@@ -21,6 +44,18 @@ your relational databases on Google Cloud Platform. Cloud SQL automatically incl
 * Secure external connections with the [Cloud SQL Proxy](https://cloud.google.com/sql/docs/mysql/sql-proxy) or with the SSL/TLS protocol.
 
 You can learn more about Cloud SQL from [the official documentation](https://cloud.google.com/sql/docs/).
+
+## What's a Module?
+
+A Module is a canonical, reusable, best-practices definition for how to run a single piece of infrastructure, such
+as a database or server cluster. Each Module is written using a combination of [Terraform](https://www.terraform.io/)
+and scripts (mostly bash) and include automated tests, documentation, and examples. It is maintained both by the open
+source community and companies that provide commercial support.
+
+Instead of figuring out the details of how to run a piece of infrastructure from scratch, you can reuse
+existing code that has been proven in production. And instead of maintaining all that infrastructure code yourself,
+you can leverage the work of the Module community to pick up infrastructure improvements through
+a version number bump.
 
 ## Who maintains this Module?
 
@@ -54,4 +89,6 @@ MINOR, and PATCH versions on each release to indicate any incompatibilities.
 
 ## License
 
-Please see [LICENSE.txt](/LICENSE.txt) for details on how the code in this repo is licensed.
+Please see [LICENSE](/LICENSE) for how the code in this repo is licensed.
+
+Copyright &copy; 2019 Gruntwork, Inc.
