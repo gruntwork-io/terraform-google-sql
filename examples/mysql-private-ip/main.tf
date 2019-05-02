@@ -92,7 +92,7 @@ module "mysql" {
   private_network = "${google_compute_network.private_network.self_link}"
 
   # Wait for the vpc connection to complete
-  wait_for = "${google_service_networking_connection.private_vpc_connection.network}"
+  dependencies = ["${google_service_networking_connection.private_vpc_connection.network}"]
 
   # Set auto-increment flags to test the
   # feature during automated testing
