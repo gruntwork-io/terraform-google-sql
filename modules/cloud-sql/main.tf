@@ -119,8 +119,8 @@ resource "google_sql_user" "default" {
 # ------------------------------------------------------------------------------
 
 resource "null_resource" "dependency_getter" {
-  triggers {
-    instance = "${join(",", var.dependencies)}"
+  provisioner "local-exec" {
+    command = "echo ${length(var.dependencies)}"
   }
 }
 
