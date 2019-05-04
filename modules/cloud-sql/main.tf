@@ -30,7 +30,7 @@ locals {
 # ------------------------------------------------------------------------------
 
 resource "google_sql_database_instance" "master" {
-  depends_on = ["null_resource.wait_for"]
+  depends_on = ["null_resource.dependency_getter"]
 
   provider         = "google-beta"
   name             = "${var.name}"
@@ -111,11 +111,16 @@ resource "google_sql_user" "default" {
 }
 
 # ------------------------------------------------------------------------------
-# CREATE A NULL RESOURCE TO EMULATE DEPENDENCIES
+# SET MODULE DEPENDENCY RESOURCE
+# This works around a terraform limitation where we can not specify module dependencies natively.
+# See https://github.com/hashicorp/terraform/issues/1178 for more discussion.
+# By resolving and computing the dependencies list, we are able to make all the resources in this module depend on the
+# resources backing the values in the dependencies list.
 # ------------------------------------------------------------------------------
-resource "null_resource" "wait_for" {
-  triggers = {
-    instance = "${var.wait_for}"
+
+resource "null_resource" "dependency_getter" {
+  provisioner "local-exec" {
+    command = "echo ${length(var.dependencies)}"
   }
 }
 
