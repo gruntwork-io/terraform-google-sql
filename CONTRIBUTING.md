@@ -1,5 +1,9 @@
 # Contribution Guidelines
 
+<!-- NOTE: We use absolute linking here instead of relative linking, because the terraform registry does not support
+           relative linking correctly.
+-->
+
 Contributions to this Module are very welcome! We follow a fairly standard [pull request process](
 https://help.github.com/articles/about-pull-requests/) for contributions, subject to the following guidelines:
  

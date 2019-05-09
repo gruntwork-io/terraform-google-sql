@@ -1,6 +1,10 @@
 # MySQL Cloud SQL HA Example
 
-This folder contains an example of how to use the [Cloud SQL module](/modules/cloud-sql) to create a [High Availability](https://cloud.google.com/sql/docs/mysql/configure-ha) [Google Cloud SQL](https://cloud.google.com/sql/) 
+<!-- NOTE: We use absolute linking here instead of relative linking, because the terraform registry does not support
+           relative linking correctly.
+-->
+
+This folder contains an example of how to use the [Cloud SQL module](https://github.com/gruntwork-io/terraform-google-sql/tree/master/modules/cloud-sql) to create a [High Availability](https://cloud.google.com/sql/docs/mysql/configure-ha) [Google Cloud SQL](https://cloud.google.com/sql/) 
 [MySQL](https://cloud.google.com/sql/docs/mysql/) database cluster with a [public IP](https://cloud.google.com/sql/docs/mysql/connect-external-app#appaccessIP) and failover and [read replicas](https://cloud.google.com/sql/docs/mysql/replication/). 
 
 ## How do you run this example?

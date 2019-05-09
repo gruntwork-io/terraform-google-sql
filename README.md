@@ -3,6 +3,10 @@
 
 # Cloud SQL Modules
 
+<!-- NOTE: We use absolute linking here instead of relative linking, because the terraform registry does not support
+           relative linking correctly.
+-->
+
 This repo contains modules for running relational databases such as MySQL and PostgreSQL on
 [Google Cloud Platform (GCP)](https://cloud.google.com/) using [Cloud SQL](https://cloud.google.com/sql/).
 

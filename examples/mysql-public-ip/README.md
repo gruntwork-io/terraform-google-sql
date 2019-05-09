@@ -1,6 +1,6 @@
 # MySQL Cloud SQL Public IP Example
 
-This folder contains an example of how to use the [Cloud SQL module](/modules/cloud-sql) to create a [Google Cloud SQL](https://cloud.google.com/sql/) 
+This folder contains an example of how to use the [Cloud SQL module](https://github.com/gruntwork-io/terraform-google-sql/tree/master/modules/cloud-sql) to create a [Google Cloud SQL](https://cloud.google.com/sql/) 
 [MySQL](https://cloud.google.com/sql/docs/mysql/) database instance with a [public IP address](https://cloud.google.com/sql/docs/mysql/connect-external-app#appaccessIP). 
 
 ## How do you run this example?

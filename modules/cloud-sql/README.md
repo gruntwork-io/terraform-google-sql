@@ -1,5 +1,9 @@
 # Cloud SQL Module
 
+<!-- NOTE: We use absolute linking here instead of relative linking, because the terraform registry does not support
+           relative linking correctly.
+-->
+
 This module creates a [Google Cloud SQL](https://cloud.google.com/sql/) cluster. 
 The cluster is managed by Google, automating backups, replication, patches, and updates. 
 
