@@ -11,12 +11,12 @@ This module helps you run [MySQL](https://cloud.google.com/sql/docs/mysql/) and 
 
 ## How do you use this module?
 
-See the [examples](/examples) folder for an example. 
+See the [examples](https://github.com/gruntwork-io/terraform-google-sql/tree/master/examples) folder for an example. 
 
 ## How do you configure this module?
 
 This module allows you to configure a number of parameters, such as high availability, backup windows, maintenance window and replicas. 
-For a list of all available variables and their descriptions, see [variables.tf](./variables.tf).
+For a list of all available variables and their descriptions, see [variables.tf](https://github.com/gruntwork-io/terraform-google-sql/blob/master/modules/cloud-sql/variables.tf).
 
 ## How do you connect to the database?
 
@@ -96,7 +96,7 @@ See https://github.com/terraform-providers/terraform-provider-google/issues/2446
 
 Retrieving and outputting distinct values from list of maps is not possible with resources using `count` prior to `terraform 0.12`. 
 Instead we have to output the values JSON encoded - for example `read_replica_server_ca_certs`. For full details of the outputs and 
-their format, see [outputs.tf](./outputs.tf).
+their format, see [outputs.tf](https://github.com/gruntwork-io/terraform-google-sql/blob/master/modules/cloud-sql/outputs.tf).
 
 See https://github.com/hashicorp/terraform/issues/17048
 
