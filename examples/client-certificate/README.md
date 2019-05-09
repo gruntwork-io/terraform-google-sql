@@ -13,7 +13,7 @@ Creating the certificate while there are other operations ongoing will result in
 To run this example, you need to:
 
 1. Install [Terraform](https://www.terraform.io/).
-1. Open up `vars.tf` and set secrets at the top of the file as environment variables and fill in any other variables in
+1. Open up `variables.tf` and set secrets at the top of the file as environment variables and fill in any other variables in
    the file that don't have defaults. 
 1. `terraform init`.
 1. `terraform plan`.
