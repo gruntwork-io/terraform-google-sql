@@ -40,7 +40,7 @@ locals {
 module "postgres" {
   # When using these modules in your own templates, you will need to use a Git URL with a ref attribute that pins you
   # to a specific version of the modules, such as the following example:
-  # source = "git::git@github.com:gruntwork-io/terraform-google-sql.git//modules/cloud-sql?ref=v0.1.0"
+  # source = "github.com/gruntwork-io/terraform-google-sql.git//modules/cloud-sql?ref=v0.1.1"
   source = "../../modules/cloud-sql"
 
   project = "${var.project}"
