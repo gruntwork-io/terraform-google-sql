@@ -12,10 +12,10 @@ provider "google-beta" {
   project = "${var.project}"
 }
 
-# Use Terraform 0.10.x so that we can take advantage of Terraform GCP functionality as a separate provider via
-# https://github.com/terraform-providers/terraform-provider-google
 terraform {
-  required_version = ">= 0.10.3"
+  # The modules used in this example have been updated with 0.12 syntax, which means the example is no longer
+  # compatible with any versions below 0.12.
+  required_version = ">= 0.12"
 }
 
 # ------------------------------------------------------------------------------
