@@ -24,6 +24,6 @@ terraform {
 
 resource "google_sql_ssl_cert" "client_cert" {
   provider    = "google-beta"
-  common_name = "${var.common_name}"
-  instance    = "${var.database_instance_name}"
+  common_name = var.common_name
+  instance    = var.database_instance_name
 }

@@ -43,15 +43,15 @@ module "mysql" {
   # source = "github.com/gruntwork-io/terraform-google-sql.git//modules/cloud-sql?ref=v0.1.1"
   source = "../../modules/cloud-sql"
 
-  project = "${var.project}"
-  region  = "${var.region}"
-  name    = "${local.instance_name}"
-  db_name = "${var.db_name}"
+  project = var.project
+  region  = var.region
+  name    = local.instance_name
+  db_name = var.db_name
 
-  engine       = "${var.mysql_version}"
-  machine_type = "${var.machine_type}"
+  engine       = var.mysql_version
+  machine_type = var.machine_type
 
-  master_zone = "${var.master_zone}"
+  master_zone = var.master_zone
 
   # To make it easier to test this example, we are giving the servers public IP addresses and allowing inbound
   # connections from anywhere. In real-world usage, your servers should live in private subnets, only have private IP
@@ -67,19 +67,19 @@ module "mysql" {
 
   # Indicate that we want to create a failover replica
   enable_failover_replica     = true
-  mysql_failover_replica_zone = "${var.failover_replica_zone}"
+  mysql_failover_replica_zone = var.failover_replica_zone
 
   # Indicate we want read replicas to be created
-  num_read_replicas  = "${var.num_read_replicas}"
-  read_replica_zones = ["${var.read_replica_zones}"]
+  num_read_replicas  = var.num_read_replicas
+  read_replica_zones = var.read_replica_zones
 
   # These together will construct the master_user privileges, i.e.
   # 'master_user_name'@'master_user_host' IDENTIFIED BY 'master_user_password'.
   # These should typically be set as the environment variable TF_VAR_master_user_password, etc.
   # so you don't check these into source control."
-  master_user_password = "${var.master_user_password}"
+  master_user_password = var.master_user_password
 
-  master_user_name = "${var.master_user_name}"
+  master_user_name = var.master_user_name
   master_user_host = "%"
 
   # Set auto-increment flags to test the
