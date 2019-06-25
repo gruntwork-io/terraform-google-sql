@@ -56,7 +56,7 @@ variable "activation_policy" {
 
 variable "authorized_networks" {
   description = "A list of authorized CIDR-formatted IP address ranges that can connect to this DB. Only applies to public IP instances."
-  type        = list(string)
+  type        = list(any)
   default     = []
 
   # Example:
@@ -125,7 +125,7 @@ variable "db_collation" {
 
 variable "database_flags" {
   description = "List of Cloud SQL flags that are applied to the database server"
-  type        = list(map(string))
+  type        = list(any)
   default     = []
 
   # Example:
