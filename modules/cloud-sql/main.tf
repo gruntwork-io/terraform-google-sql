@@ -30,7 +30,7 @@ locals {
 # ------------------------------------------------------------------------------
 
 resource "google_sql_database_instance" "master" {
-  depends_on = ["null_resource.dependency_getter"]
+  depends_on = [null_resource.dependency_getter]
 
   provider         = "google-beta"
   name             = var.name
@@ -105,7 +105,7 @@ resource "google_sql_database_instance" "master" {
 # ------------------------------------------------------------------------------
 
 resource "google_sql_database" "default" {
-  depends_on = ["google_sql_database_instance.master"]
+  depends_on = [google_sql_database_instance.master]
 
   name      = var.db_name
   project   = var.project
@@ -115,7 +115,7 @@ resource "google_sql_database" "default" {
 }
 
 resource "google_sql_user" "default" {
-  depends_on = ["google_sql_database.default"]
+  depends_on = [google_sql_database.default]
 
   name     = var.master_user_name
   project  = var.project
@@ -146,9 +146,9 @@ resource "google_sql_database_instance" "failover_replica" {
   count = local.actual_failover_replica_count
 
   depends_on = [
-    "google_sql_database_instance.master",
-    "google_sql_database.default",
-    "google_sql_user.default",
+    google_sql_database_instance.master,
+    google_sql_database.default,
+    google_sql_user.default,
   ]
 
   provider         = "google-beta"
@@ -223,10 +223,10 @@ resource "google_sql_database_instance" "read_replica" {
   count = var.num_read_replicas
 
   depends_on = [
-    "google_sql_database_instance.master",
-    "google_sql_database_instance.failover_replica",
-    "google_sql_database.default",
-    "google_sql_user.default",
+    google_sql_database_instance.master,
+    google_sql_database_instance.failover_replica,
+    google_sql_database.default,
+    google_sql_user.default,
   ]
 
   provider         = "google-beta"
