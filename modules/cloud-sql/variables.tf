@@ -114,13 +114,13 @@ variable "maintenance_track" {
 variable "db_charset" {
   description = "The charset for the default database."
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "db_collation" {
   description = "The collation for the default database. Example for MySQL databases: 'utf8_general_ci'."
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "database_flags" {
@@ -163,13 +163,13 @@ variable "disk_type" {
 variable "follow_gae_application" {
   description = "A GAE application whose zone to remain in. Must be in the same region as this instance."
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "master_zone" {
-  description = "Preferred zone for the master instance (e.g. 'us-central1-a'). 'region'. If empty, Google will auto-assign a zone."
+  description = "Preferred zone for the master instance (e.g. 'us-central1-a'). 'region'. If null, Google will auto-assign a zone."
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "master_user_host" {
@@ -194,7 +194,7 @@ variable "enable_failover_replica" {
 variable "mysql_failover_replica_zone" {
   description = "The preferred zone for the failover instance (e.g. 'us-central1-b'). Must be different than 'master_zone'. Only applicable to MySQL, Postgres will determine this automatically."
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "require_ssl" {
@@ -206,7 +206,7 @@ variable "require_ssl" {
 variable "private_network" {
   description = "The resource link for the VPC network from which the Cloud SQL instance is accessible for private IP."
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "num_read_replicas" {
