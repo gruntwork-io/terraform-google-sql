@@ -55,7 +55,7 @@ variable "db_name" {
 variable "name_override" {
   description = "You may optionally override the name_prefix + random string by specifying an override"
   type        = string
-  default     = ""
+  default     = null
 }
 
 # When configuring a public IP instance, you should only allow secure connections

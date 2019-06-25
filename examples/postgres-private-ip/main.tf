@@ -28,7 +28,7 @@ resource "random_id" "name" {
 
 locals {
   # If name_override is specified, use that - otherwise use the name_prefix with a random string
-  instance_name        = "${length(var.name_override) == 0 ? format("%s-%s", var.name_prefix, random_id.name.hex) : var.name_override}"
+  instance_name        = var.name_override == null ? format("%s-%s", var.name_prefix, random_id.name.hex) : var.name_override
   private_network_name = "private-network-${random_id.name.hex}"
   private_ip_name      = "private-ip-${random_id.name.hex}"
 }
