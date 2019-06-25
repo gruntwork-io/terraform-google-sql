@@ -3,16 +3,17 @@ package test
 import (
 	"database/sql"
 	"fmt"
-	"github.com/gruntwork-io/terratest/modules/gcp"
-	"github.com/gruntwork-io/terratest/modules/logger"
-	"github.com/gruntwork-io/terratest/modules/terraform"
-	"github.com/gruntwork-io/terratest/modules/test-structure"
-	_ "github.com/lib/pq"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/gruntwork-io/terratest/modules/gcp"
+	"github.com/gruntwork-io/terratest/modules/logger"
+	"github.com/gruntwork-io/terratest/modules/terraform"
+	test_structure "github.com/gruntwork-io/terratest/modules/test-structure"
+	_ "github.com/lib/pq"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 const NAME_PREFIX_POSTGRES_REPLICAS = "postgres-replicas"
@@ -56,7 +57,7 @@ func TestPostgresReplicas(t *testing.T) {
 		projectId := test_structure.LoadString(t, exampleDir, KEY_PROJECT)
 		masterZone := test_structure.LoadString(t, exampleDir, KEY_MASTER_ZONE)
 		readReplicaZone := test_structure.LoadString(t, exampleDir, KEY_READ_REPLICA_ZONE)
-		terraformOptions := createTerratestOptionsForCloudSql(projectId, region, exampleDir, NAME_PREFIX_POSTGRES_REPLICAS, masterZone, "", 1, readReplicaZone)
+		terraformOptions := createTerratestOptionsForCloudSqlReplicas(projectId, region, exampleDir, NAME_PREFIX_POSTGRES_REPLICAS, masterZone, "", 1, readReplicaZone)
 		test_structure.SaveTerraformOptions(t, exampleDir, terraformOptions)
 
 		terraform.InitAndApply(t, terraformOptions)

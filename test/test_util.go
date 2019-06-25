@@ -1,12 +1,13 @@
 package test
 
 import (
-	"github.com/gruntwork-io/terratest/modules/gcp"
-	"github.com/gruntwork-io/terratest/modules/terraform"
-	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"os"
 	"testing"
+
+	"github.com/gruntwork-io/terratest/modules/gcp"
+	"github.com/gruntwork-io/terratest/modules/terraform"
+	"github.com/stretchr/testify/require"
 )
 
 const DB_NAME = "testdb"
@@ -63,8 +64,24 @@ func getTwoDistinctRandomZonesForRegion(t *testing.T, projectID string, region s
 	return firstZone, secondZone
 }
 
-func createTerratestOptionsForCloudSql(projectId string, region string, exampleDir string, namePrefix string, masterZone string, failoverReplicaZone string, numReadReplicas int, readReplicaZone string) *terraform.Options {
+func createTerratestOptionsForCloudSql(projectId string, region string, exampleDir string, namePrefix string) *terraform.Options {
+	terratestOptions := &terraform.Options{
+		// The path to where your Terraform code is located
+		TerraformDir: exampleDir,
+		Vars: map[string]interface{}{
+			"region":               region,
+			"project":              projectId,
+			"name_prefix":          namePrefix,
+			"db_name":              DB_NAME,
+			"master_user_name":     DB_USER,
+			"master_user_password": DB_PASS,
+		},
+	}
 
+	return terratestOptions
+}
+
+func createTerratestOptionsForCloudSqlReplicas(projectId string, region string, exampleDir string, namePrefix string, masterZone string, failoverReplicaZone string, numReadReplicas int, readReplicaZone string) *terraform.Options {
 	terratestOptions := &terraform.Options{
 		// The path to where your Terraform code is located
 		TerraformDir: exampleDir,

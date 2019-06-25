@@ -3,15 +3,16 @@ package test
 import (
 	"database/sql"
 	"fmt"
-	"github.com/gruntwork-io/terratest/modules/gcp"
-	"github.com/gruntwork-io/terratest/modules/logger"
-	"github.com/gruntwork-io/terratest/modules/terraform"
-	"github.com/gruntwork-io/terratest/modules/test-structure"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/gruntwork-io/terratest/modules/gcp"
+	"github.com/gruntwork-io/terratest/modules/logger"
+	"github.com/gruntwork-io/terratest/modules/terraform"
+	test_structure "github.com/gruntwork-io/terratest/modules/test-structure"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 const NAME_PREFIX_REPLICAS = "mysql-replicas"
@@ -58,7 +59,7 @@ func TestMySqlReplicas(t *testing.T) {
 		masterZone := test_structure.LoadString(t, exampleDir, KEY_MASTER_ZONE)
 		failoverReplicaZone := test_structure.LoadString(t, exampleDir, KEY_FAILOVER_REPLICA_ZONE)
 		readReplicaZone := test_structure.LoadString(t, exampleDir, KEY_READ_REPLICA_ZONE)
-		terraformOptions := createTerratestOptionsForCloudSql(projectId, region, exampleDir, NAME_PREFIX_REPLICAS, masterZone, failoverReplicaZone, 1, readReplicaZone)
+		terraformOptions := createTerratestOptionsForCloudSqlReplicas(projectId, region, exampleDir, NAME_PREFIX_REPLICAS, masterZone, failoverReplicaZone, 1, readReplicaZone)
 		test_structure.SaveTerraformOptions(t, exampleDir, terraformOptions)
 
 		terraform.InitAndApply(t, terraformOptions)
