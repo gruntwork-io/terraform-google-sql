@@ -33,6 +33,7 @@ variable "master_user_password" {
 # OPTIONAL PARAMETERS
 # Generally, these values won't need to be changed.
 # ---------------------------------------------------------------------------------------------------------------------
+
 variable "postgres_version" {
   description = "The engine version of the database, e.g. `POSTGRES_9_6`. See https://cloud.google.com/sql/docs/features for supported versions."
   type        = string

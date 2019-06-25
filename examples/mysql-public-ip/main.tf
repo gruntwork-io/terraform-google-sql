@@ -65,7 +65,7 @@ module "mysql" {
 
   # Default setting for this is 'false' in 'variables.tf'
   # In the test cases, we're setting this to true, to test forced SSL.
-  require_ssl = "${var.require_ssl}"
+  require_ssl = var.require_ssl
 
   authorized_networks = [
     {
