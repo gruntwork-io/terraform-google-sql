@@ -50,13 +50,11 @@ module "postgres" {
   machine_type = var.machine_type
 
   # These together will construct the master_user privileges, i.e.
-  # 'master_user_name'@'master_user_host' IDENTIFIED BY 'master_user_password'.
+  # 'master_user_name' IDENTIFIED BY 'master_user_password'.
   # These should typically be set as the environment variable TF_VAR_master_user_password, etc.
   # so you don't check these into source control."
   master_user_password = var.master_user_password
-
-  master_user_name = var.master_user_name
-  master_user_host = "%"
+  master_user_name     = var.master_user_name
 
   # To make it easier to test this example, we are giving the servers public IP addresses and allowing inbound
   # connections from anywhere. In real-world usage, your servers should live in private subnets, only have private IP

@@ -246,5 +246,11 @@ func TestPostgresPublicIP(t *testing.T) {
 		if err = db.Ping(); err != nil {
 			t.Fatalf("Failed to ping DB with forced SSL: %v", err)
 		}
+
+		// Drop the test table if it exists
+		logger.Logf(t, "Drop table: %s", POSTGRES_DROP_TEST_TABLE)
+		if _, err = db.Exec(POSTGRES_DROP_TEST_TABLE); err != nil {
+			t.Fatalf("Failed to drop table: %v", err)
+		}
 	})
 }

@@ -56,7 +56,7 @@ variable "activation_policy" {
 
 variable "authorized_networks" {
   description = "A list of authorized CIDR-formatted IP address ranges that can connect to this DB. Only applies to public IP instances."
-  type        = list(any)
+  type        = list(map(string))
   default     = []
 
   # Example:
@@ -173,7 +173,7 @@ variable "master_zone" {
 }
 
 variable "master_user_host" {
-  description = "The host part for the default user, i.e. 'master_user_name'@'master_user_host' IDENTIFIED BY 'master_user_password' "
+  description = "The host part for the default user, i.e. 'master_user_name'@'master_user_host' IDENTIFIED BY 'master_user_password'. Don't set this field for Postgres instances."
   type        = string
   default     = "%"
 }
@@ -249,6 +249,6 @@ variable "resource_timeout" {
 
 variable "dependencies" {
   description = "Create a dependency between the resources in this module to the interpolated values in this list (and thus the source resources). In other words, the resources in this module will now depend on the resources backing the values in this list such that those resources need to be created before the resources in this module, and the resources in this module need to be destroyed before the resources in the list."
-  type        = list(any)
+  type        = list(string)
   default     = []
 }

@@ -44,6 +44,7 @@ const SQL_QUERY_ROW_COUNT = "SELECT count(*) FROM test"
 
 const POSTGRES_CREATE_TEST_TABLE_WITH_SERIAL = "CREATE TABLE IF NOT EXISTS test (id SERIAL, name varchar(10) NOT NULL, PRIMARY KEY (ID))"
 const POSTGRES_INSERT_TEST_ROW = "INSERT INTO test(name) VALUES('Grunty') RETURNING id"
+const POSTGRES_DROP_TEST_TABLE = "DROP TABLE IF EXISTS test"
 
 func getRandomRegion(t *testing.T, projectID string) string {
 	approvedRegions := []string{"europe-north1", "europe-west1", "europe-west2", "europe-west3", "us-central1", "us-east1", "us-west1"}

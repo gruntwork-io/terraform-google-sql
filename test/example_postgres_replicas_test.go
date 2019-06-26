@@ -45,6 +45,29 @@ func TestPostgresReplicas(t *testing.T) {
 		test_structure.SaveString(t, exampleDir, KEY_PROJECT, projectId)
 	})
 
+	// AT THE END OF THE TESTS, CLEAN UP ANY POSTGRES OBJECTS THAT WERE CREATED
+	defer test_structure.RunTestStage(t, "cleanup_postgres_objects", func() {
+		terraformOptions := test_structure.LoadTerraformOptions(t, exampleDir)
+
+		publicIp := terraform.Output(t, terraformOptions, OUTPUT_MASTER_PUBLIC_IP)
+
+		connectionString := fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable", DB_USER, DB_PASS, publicIp, DB_NAME)
+
+		// Does not actually open up the connection - just returns a DB ref
+		logger.Logf(t, "Connecting to: %s", publicIp)
+		db, err := sql.Open("postgres", connectionString)
+		require.NoError(t, err, "Failed to open DB connection")
+
+		// Make sure we clean up properly
+		defer db.Close()
+
+		// Drop table if it exists
+		logger.Logf(t, "Drop table: %s", POSTGRES_DROP_TEST_TABLE)
+		if _, err = db.Exec(POSTGRES_DROP_TEST_TABLE); err != nil {
+			t.Fatalf("Failed to drop table: %v", err)
+		}
+	})
+
 	// AT THE END OF THE TESTS, RUN `terraform destroy`
 	// TO CLEAN UP ANY RESOURCES THAT WERE CREATED
 	defer test_structure.RunTestStage(t, "teardown", func() {

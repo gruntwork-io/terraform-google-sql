@@ -73,13 +73,11 @@ module "postgres" {
   read_replica_zones = var.read_replica_zones
 
   # These together will construct the master_user privileges, i.e.
-  # 'master_user_name'@'master_user_host' IDENTIFIED BY 'master_user_password'.
+  # 'master_user_name' IDENTIFIED BY 'master_user_password'.
   # These should typically be set as the environment variable TF_VAR_master_user_password, etc.
   # so you don't check these into source control."
   master_user_password = var.master_user_password
-
-  master_user_name = var.master_user_name
-  master_user_host = "%"
+  master_user_name     = var.master_user_name
 
   custom_labels = {
     test-id = "postgres-replicas-example"

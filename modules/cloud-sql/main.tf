@@ -48,7 +48,7 @@ resource "google_sql_database_instance" "master" {
       dynamic "authorized_networks" {
         for_each = var.authorized_networks
         content {
-          name  = authorized_networks.value.name
+          name  = lookup(authorized_networks.value, "name", null)
           value = authorized_networks.value.value
         }
       }
@@ -117,10 +117,13 @@ resource "google_sql_database" "default" {
 resource "google_sql_user" "default" {
   depends_on = [google_sql_database.default]
 
-  name     = var.master_user_name
   project  = var.project
+  name     = var.master_user_name
   instance = google_sql_database_instance.master.name
-  host     = var.master_user_host
+  # Postgres users don't have hosts, so the API will ignore this value which causes Terraform to attempt
+  # to recreate the user each time.
+  # See https://github.com/terraform-providers/terraform-provider-google/issues/1526 for more information.
+  host     = local.is_postgres ? null : var.master_user_host
   password = var.master_user_password
 }
 
@@ -295,6 +298,7 @@ resource "google_sql_database_instance" "read_replica" {
 # ------------------------------------------------------------------------------
 # CREATE A TEMPLATE FILE TO SIGNAL ALL RESOURCES HAVE BEEN CREATED
 # ------------------------------------------------------------------------------
+
 data "template_file" "complete" {
   depends_on = [
     google_sql_database_instance.master,
