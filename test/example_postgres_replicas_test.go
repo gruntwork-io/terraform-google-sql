@@ -45,6 +45,13 @@ func TestPostgresReplicas(t *testing.T) {
 		test_structure.SaveString(t, exampleDir, KEY_PROJECT, projectId)
 	})
 
+	// AT THE END OF THE TESTS, RUN `terraform destroy`
+	// TO CLEAN UP ANY RESOURCES THAT WERE CREATED
+	defer test_structure.RunTestStage(t, "teardown", func() {
+		terraformOptions := test_structure.LoadTerraformOptions(t, exampleDir)
+		terraform.Destroy(t, terraformOptions)
+	})
+
 	// AT THE END OF THE TESTS, CLEAN UP ANY POSTGRES OBJECTS THAT WERE CREATED
 	defer test_structure.RunTestStage(t, "cleanup_postgres_objects", func() {
 		terraformOptions := test_structure.LoadTerraformOptions(t, exampleDir)
@@ -66,13 +73,6 @@ func TestPostgresReplicas(t *testing.T) {
 		if _, err = db.Exec(POSTGRES_DROP_TEST_TABLE); err != nil {
 			t.Fatalf("Failed to drop table: %v", err)
 		}
-	})
-
-	// AT THE END OF THE TESTS, RUN `terraform destroy`
-	// TO CLEAN UP ANY RESOURCES THAT WERE CREATED
-	defer test_structure.RunTestStage(t, "teardown", func() {
-		terraformOptions := test_structure.LoadTerraformOptions(t, exampleDir)
-		terraform.Destroy(t, terraformOptions)
 	})
 
 	test_structure.RunTestStage(t, "deploy", func() {
