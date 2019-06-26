@@ -1,5 +1,6 @@
 [![Maintained by Gruntwork.io](https://img.shields.io/badge/maintained%20by-gruntwork.io-%235849a6.svg)](https://gruntwork.io/?ref=repo_google_cloudsql)
 [![GitHub tag (latest SemVer)](https://img.shields.io/github/tag/gruntwork-io/terraform-google-sql.svg?label=latest)](http://github.com/gruntwork-io/terraform-google-sql/releases/latest)
+![Terraform Version](https://img.shields.io/badge/tf-%3E%3D0.12.0-blue.svg)
 
 # Cloud SQL Modules
 
@@ -20,33 +21,33 @@ for instructions.
 
 This repo has the following folder structure:
 
-* [root](https://github.com/gruntwork-io/terraform-google-sql/tree/master): The root folder contains an example of how
+- [root](https://github.com/gruntwork-io/terraform-google-sql/tree/master): The root folder contains an example of how
   to deploy a private PostgreSQL instance in Cloud SQL. See [postgres-private-ip](https://github.com/gruntwork-io/terraform-google-sql/blob/master/examples/postgres-private-ip)
   for the documentation.
 
-* [modules](https://github.com/gruntwork-io/terraform-google-sql/tree/master/modules): This folder contains the
+- [modules](https://github.com/gruntwork-io/terraform-google-sql/tree/master/modules): This folder contains the
   main implementation code for this Module, broken down into multiple standalone submodules.
 
   The primary module is:
 
-    * [cloud-sql](https://github.com/gruntwork-io/terraform-google-sql/tree/master/modules/cloud-sql): Deploy a Cloud SQL [MySQL](https://cloud.google.com/sql/docs/mysql/) or
+  - [cloud-sql](https://github.com/gruntwork-io/terraform-google-sql/tree/master/modules/cloud-sql): Deploy a Cloud SQL [MySQL](https://cloud.google.com/sql/docs/mysql/) or
     [PostgreSQL](https://cloud.google.com/sql/docs/postgres/) database.
 
-* [examples](https://github.com/gruntwork-io/terraform-google-sql/tree/master/examples): This folder contains
+- [examples](https://github.com/gruntwork-io/terraform-google-sql/tree/master/examples): This folder contains
   examples of how to use the submodules.
 
-* [test](https://github.com/gruntwork-io/terraform-google-sql/tree/master/test): Automated tests for the submodules
+- [test](https://github.com/gruntwork-io/terraform-google-sql/tree/master/test): Automated tests for the submodules
   and examples.
 
 ## What is Cloud SQL?
 
-Cloud SQL is Google's fully-managed database service that makes it easy to set up, maintain, manage, and administer 
-your relational databases on Google Cloud Platform. Cloud SQL automatically includes: 
+Cloud SQL is Google's fully-managed database service that makes it easy to set up, maintain, manage, and administer
+your relational databases on Google Cloud Platform. Cloud SQL automatically includes:
 
-* Data replication between multiple zones with automatic failover.
-* Automated and on-demand backups, and point-in-time recovery.
-* Data encryption on networks, database tables, temporary files, and backups.
-* Secure external connections with the [Cloud SQL Proxy](https://cloud.google.com/sql/docs/mysql/sql-proxy) or with the SSL/TLS protocol.
+- Data replication between multiple zones with automatic failover.
+- Automated and on-demand backups, and point-in-time recovery.
+- Data encryption on networks, database tables, temporary files, and backups.
+- Secure external connections with the [Cloud SQL Proxy](https://cloud.google.com/sql/docs/mysql/sql-proxy) or with the SSL/TLS protocol.
 
 You can learn more about Cloud SQL from [the official documentation](https://cloud.google.com/sql/docs/).
 
@@ -70,17 +71,15 @@ commercial support, send an email to
 
 Gruntwork can help with:
 
-* Setup, customization, and support for this Module.
-* Modules and submodules for other types of infrastructure, such as VPCs, Docker clusters, databases, and continuous
+- Setup, customization, and support for this Module.
+- Modules and submodules for other types of infrastructure, such as VPCs, Docker clusters, databases, and continuous
   integration.
-* Modules and Submodules that meet compliance requirements, such as HIPAA.
-* Consulting & Training on GCP, AWS, Terraform, and DevOps.
-
+- Modules and Submodules that meet compliance requirements, such as HIPAA.
+- Consulting & Training on GCP, AWS, Terraform, and DevOps.
 
 ## How do I contribute to this Module?
 
 Contributions are very welcome! Check out the [Contribution Guidelines](https://github.com/gruntwork-io/terraform-google-sql/blob/master/CONTRIBUTING.md) for instructions.
-
 
 ## How is this Module versioned?
 
@@ -90,7 +89,6 @@ with the changelog, in the [Releases Page](https://github.com/gruntwork-io/terra
 During initial development, the major version will be 0 (e.g., `0.x.y`), which indicates the code does not yet have a
 stable API. Once we hit `1.0.0`, we will make every effort to maintain a backwards compatible API and use the MAJOR,
 MINOR, and PATCH versions on each release to indicate any incompatibilities.
-
 
 ## License
 

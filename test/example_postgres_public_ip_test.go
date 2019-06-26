@@ -3,18 +3,19 @@ package test
 import (
 	"database/sql"
 	"fmt"
-	_ "github.com/GoogleCloudPlatform/cloudsql-proxy/proxy/dialers/postgres"
-	"github.com/gruntwork-io/terratest/modules/gcp"
-	"github.com/gruntwork-io/terratest/modules/logger"
-	"github.com/gruntwork-io/terratest/modules/terraform"
-	"github.com/gruntwork-io/terratest/modules/test-structure"
-	_ "github.com/lib/pq"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
+
+	_ "github.com/GoogleCloudPlatform/cloudsql-proxy/proxy/dialers/postgres"
+	"github.com/gruntwork-io/terratest/modules/gcp"
+	"github.com/gruntwork-io/terratest/modules/logger"
+	"github.com/gruntwork-io/terratest/modules/terraform"
+	test_structure "github.com/gruntwork-io/terratest/modules/test-structure"
+	_ "github.com/lib/pq"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 const NAME_PREFIX_POSTGRES_PUBLIC = "postgres-public"
@@ -62,7 +63,7 @@ func TestPostgresPublicIP(t *testing.T) {
 	test_structure.RunTestStage(t, "deploy", func() {
 		region := test_structure.LoadString(t, exampleDir, KEY_REGION)
 		projectId := test_structure.LoadString(t, exampleDir, KEY_PROJECT)
-		terraformOptions := createTerratestOptionsForCloudSql(projectId, region, exampleDir, NAME_PREFIX_POSTGRES_PUBLIC, "", "", 0, "")
+		terraformOptions := createTerratestOptionsForCloudSql(projectId, region, exampleDir, NAME_PREFIX_POSTGRES_PUBLIC)
 		test_structure.SaveTerraformOptions(t, exampleDir, terraformOptions)
 
 		terraform.InitAndApply(t, terraformOptions)
@@ -137,7 +138,7 @@ func TestPostgresPublicIP(t *testing.T) {
 		logger.Logf(t, "Connecting to: %s via Cloud SQL Proxy", proxyConn)
 
 		// Use the Cloud SQL Proxy for queries
-		// See https://cloud.google.com/sql/docs/mysql/sql-proxy
+		// See https://cloud.google.com/sql/docs/postgres/sql-proxy
 
 		// Note that sslmode=disable is required it does not mean that the connection
 		// is unencrypted. All connections via the proxy are completely encrypted.
@@ -244,6 +245,12 @@ func TestPostgresPublicIP(t *testing.T) {
 		logger.Log(t, "Ping the DB with forced SSL")
 		if err = db.Ping(); err != nil {
 			t.Fatalf("Failed to ping DB with forced SSL: %v", err)
+		}
+
+		// Drop the test table if it exists
+		logger.Logf(t, "Drop table: %s", POSTGRES_DROP_TEST_TABLE)
+		if _, err = db.Exec(POSTGRES_DROP_TEST_TABLE); err != nil {
+			t.Fatalf("Failed to drop table: %v", err)
 		}
 	})
 }

@@ -5,18 +5,19 @@ import (
 	"crypto/x509"
 	"database/sql"
 	"fmt"
+	"path/filepath"
+	"strings"
+	"testing"
+	"time"
+
 	mydialer "github.com/GoogleCloudPlatform/cloudsql-proxy/proxy/dialers/mysql"
 	"github.com/go-sql-driver/mysql"
 	"github.com/gruntwork-io/terratest/modules/gcp"
 	"github.com/gruntwork-io/terratest/modules/logger"
 	"github.com/gruntwork-io/terratest/modules/terraform"
-	"github.com/gruntwork-io/terratest/modules/test-structure"
+	test_structure "github.com/gruntwork-io/terratest/modules/test-structure"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"path/filepath"
-	"strings"
-	"testing"
-	"time"
 )
 
 const NAME_PREFIX_PUBLIC = "mysql-public"
@@ -65,7 +66,7 @@ func TestMySqlPublicIP(t *testing.T) {
 	test_structure.RunTestStage(t, "deploy", func() {
 		region := test_structure.LoadString(t, exampleDir, KEY_REGION)
 		projectId := test_structure.LoadString(t, exampleDir, KEY_PROJECT)
-		terraformOptions := createTerratestOptionsForCloudSql(projectId, region, exampleDir, NAME_PREFIX_PUBLIC, "", "", 0, "")
+		terraformOptions := createTerratestOptionsForCloudSql(projectId, region, exampleDir, NAME_PREFIX_PUBLIC)
 		test_structure.SaveTerraformOptions(t, exampleDir, terraformOptions)
 
 		terraform.InitAndApply(t, terraformOptions)

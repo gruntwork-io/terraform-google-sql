@@ -1,12 +1,13 @@
 package test
 
 import (
-	"github.com/gruntwork-io/terratest/modules/gcp"
-	"github.com/gruntwork-io/terratest/modules/terraform"
-	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"os"
 	"testing"
+
+	"github.com/gruntwork-io/terratest/modules/gcp"
+	"github.com/gruntwork-io/terratest/modules/terraform"
+	"github.com/stretchr/testify/require"
 )
 
 const DB_NAME = "testdb"
@@ -43,6 +44,7 @@ const SQL_QUERY_ROW_COUNT = "SELECT count(*) FROM test"
 
 const POSTGRES_CREATE_TEST_TABLE_WITH_SERIAL = "CREATE TABLE IF NOT EXISTS test (id SERIAL, name varchar(10) NOT NULL, PRIMARY KEY (ID))"
 const POSTGRES_INSERT_TEST_ROW = "INSERT INTO test(name) VALUES('Grunty') RETURNING id"
+const POSTGRES_DROP_TEST_TABLE = "DROP TABLE IF EXISTS test"
 
 func getRandomRegion(t *testing.T, projectID string) string {
 	approvedRegions := []string{"europe-north1", "europe-west1", "europe-west2", "europe-west3", "us-central1", "us-east1", "us-west1"}
@@ -63,8 +65,24 @@ func getTwoDistinctRandomZonesForRegion(t *testing.T, projectID string, region s
 	return firstZone, secondZone
 }
 
-func createTerratestOptionsForCloudSql(projectId string, region string, exampleDir string, namePrefix string, masterZone string, failoverReplicaZone string, numReadReplicas int, readReplicaZone string) *terraform.Options {
+func createTerratestOptionsForCloudSql(projectId string, region string, exampleDir string, namePrefix string) *terraform.Options {
+	terratestOptions := &terraform.Options{
+		// The path to where your Terraform code is located
+		TerraformDir: exampleDir,
+		Vars: map[string]interface{}{
+			"region":               region,
+			"project":              projectId,
+			"name_prefix":          namePrefix,
+			"db_name":              DB_NAME,
+			"master_user_name":     DB_USER,
+			"master_user_password": DB_PASS,
+		},
+	}
 
+	return terratestOptions
+}
+
+func createTerratestOptionsForCloudSqlReplicas(projectId string, region string, exampleDir string, namePrefix string, masterZone string, failoverReplicaZone string, numReadReplicas int, readReplicaZone string) *terraform.Options {
 	terratestOptions := &terraform.Options{
 		// The path to where your Terraform code is located
 		TerraformDir: exampleDir,
