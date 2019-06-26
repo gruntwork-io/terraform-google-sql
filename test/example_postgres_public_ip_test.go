@@ -138,7 +138,7 @@ func TestPostgresPublicIP(t *testing.T) {
 		logger.Logf(t, "Connecting to: %s via Cloud SQL Proxy", proxyConn)
 
 		// Use the Cloud SQL Proxy for queries
-		// See https://cloud.google.com/sql/docs/mysql/sql-proxy
+		// See https://cloud.google.com/sql/docs/postgres/sql-proxy
 
 		// Note that sslmode=disable is required it does not mean that the connection
 		// is unencrypted. All connections via the proxy are completely encrypted.
