@@ -75,6 +75,12 @@ output "db_name" {
   value       = google_sql_database.default.name
 }
 
+output "db_password" {
+  description = "Password of the default user"
+  value       = google_sql_user.default.password
+  sensitive   = true
+}
+
 # ------------------------------------------------------------------------------
 # FAILOVER REPLICA OUTPUTS - ONLY APPLICABLE TO MYSQL
 # ------------------------------------------------------------------------------

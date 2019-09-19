@@ -38,15 +38,22 @@ variable "master_user_name" {
   type        = string
 }
 
-variable "master_user_password" {
-  description = "The password part for the default user credentials, i.e. 'master_user_name'@'master_user_host' IDENTIFIED BY 'master_user_password'. This should typically be set as the environment variable TF_VAR_master_user_password so you don't check it into source control."
-  type        = string
-}
-
 # ---------------------------------------------------------------------------------------------------------------------
 # OPTIONAL PARAMETERS
 # Generally, these values won't need to be changed.
 # ---------------------------------------------------------------------------------------------------------------------
+
+variable "master_user_password" {
+  description = "The password part for the default user credentials, i.e. 'master_user_name'@'master_user_host' IDENTIFIED BY 'master_user_password'. This should typically be set as the environment variable TF_VAR_master_user_password so you don't check it into source control. If not specified, a default password will be generated for you."
+  type        = string
+  default     = ""
+}
+
+variable "master_user_password_length" {
+  description = "If the master_user_password is not specified, the default generated password will be this many bytes long."
+  type        = number
+  default     = 32
+}
 
 variable "activation_policy" {
   description = "This specifies when the instance should be active. Can be either `ALWAYS`, `NEVER` or `ON_DEMAND`."

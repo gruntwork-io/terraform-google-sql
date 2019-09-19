@@ -124,7 +124,17 @@ resource "google_sql_user" "default" {
   # to recreate the user each time.
   # See https://github.com/terraform-providers/terraform-provider-google/issues/1526 for more information.
   host     = local.is_postgres ? null : var.master_user_host
-  password = var.master_user_password
+  password = var.master_user_password == "" ? random_string.user_password.id : var.master_user_password
+
+}
+
+resource "random_string" "user_password" {
+  keepers = {
+    name = google_sql_database_instance.master.name
+  }
+
+  length  = var.master_user_password_length
+  special = false
 }
 
 # ------------------------------------------------------------------------------
