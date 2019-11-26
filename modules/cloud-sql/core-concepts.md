@@ -77,12 +77,3 @@ https://cloud.google.com/sql/faq#encryption
 * **Horizontal scaling**: To scale horizontally, you can add more replicas using the `num_read_replicas` and `read_replica_zones` input variables, 
   and the module will automatically deploy the new instances, sync them to the master, and make them available as read 
   replicas.
-
-## Known issues
-
-### Instance Recovery
-
-Due to limitations on the current `terraform` provider for Google, it is not possible to restore backups with `terraform`. 
-
-See https://github.com/terraform-providers/terraform-provider-google/issues/2446
-
