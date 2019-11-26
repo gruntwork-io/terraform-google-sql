@@ -1,23 +1,44 @@
+<!--
+:type: service
+:name: Google Cloud SQL
+:description: Run MySQL or PostgreSQL on Google's Cloud SQL Service. Supports read replicas, multi-zone automatic failover, and automatic backup.
+:icon: /_docs/cloud-sql-icon.png
+:category: database
+:cloud: gcp
+:tags: database, mysql, postgresql
+:license: gruntwork
+:built-with: terraform
+-->
+# Cloud SQL Modules
 [![Maintained by Gruntwork.io](https://img.shields.io/badge/maintained%20by-gruntwork.io-%235849a6.svg)](https://gruntwork.io/?ref=repo_google_cloudsql)
 [![GitHub tag (latest SemVer)](https://img.shields.io/github/tag/gruntwork-io/terraform-google-sql.svg?label=latest)](http://github.com/gruntwork-io/terraform-google-sql/releases/latest)
 ![Terraform Version](https://img.shields.io/badge/tf-%3E%3D0.12.0-blue.svg)
 
-# Cloud SQL Modules
-
-<!-- NOTE: We use absolute linking here instead of relative linking, because the terraform registry does not support
-           relative linking correctly.
--->
-
 This repo contains modules for running relational databases such as MySQL and PostgreSQL on
 [Google Cloud Platform (GCP)](https://cloud.google.com/) using [Cloud SQL](https://cloud.google.com/sql/).
 
-## Quickstart
+## Cloud SQL Architecture
 
-If you want to quickly spin up a Cloud SQL database, you can run the example that is in the root of this repo. Check out
-[postgres-private-ip example documentation](https://github.com/gruntwork-io/terraform-google-sql/blob/master/examples/postgres-private-ip)
-for instructions.
+![Cloud SQL Architecture](_docs/cloud-sql.png "Cloud SQL Architecture")
 
-## What's in this repo
+## Features
+
+- Deploy a fully-managed relational database
+- Supports MySQL and PostgreSQL
+- Optional failover instances
+- Optional read replicas
+
+## Learn
+
+This repo is a part of [the Gruntwork Infrastructure as Code Library](https://gruntwork.io/infrastructure-as-code-library/), a collection of reusable, battle-tested, production ready infrastructure code. If you’ve never used the Infrastructure as Code Library before, make sure to read [How to use the Gruntwork Infrastructure as Code Library](https://gruntwork.io/guides/foundations/how-to-use-gruntwork-infrastructure-as-code-library/)!
+
+### Core concepts
+
+- [What is Cloud SQL](https://github.com/gruntwork-io/terraform-google-sql/blob/master/modules/cloud-sql/core-concepts.md#what-is-cloud-sql)
+- [Cloud SQL documentation](https://cloud.google.com/sql/docs/)
+- **[Designing Data Intensive Applications](https://dataintensive.net/)**: the best book we’ve found for understanding data systems, including relational databases, NoSQL, replication, sharding, consistency, and so on.
+
+### Repo organisation
 
 This repo has the following folder structure:
 
@@ -30,68 +51,53 @@ This repo has the following folder structure:
 
   The primary module is:
 
-  - [cloud-sql](https://github.com/gruntwork-io/terraform-google-sql/tree/master/modules/cloud-sql): Deploy a Cloud SQL [MySQL](https://cloud.google.com/sql/docs/mysql/) or
-    [PostgreSQL](https://cloud.google.com/sql/docs/postgres/) database.
-
+  - [cloud-sql](https://github.com/gruntwork-io/terraform-google-sql/tree/master/modules/cloud-sql): Deploy a Cloud SQL [MySQL](https://cloud.google.com/sql/docs/mysql/) or [PostgreSQL](https://cloud.google.com/sql/docs/postgres/) database.
+  
 - [examples](https://github.com/gruntwork-io/terraform-google-sql/tree/master/examples): This folder contains
   examples of how to use the submodules.
 
 - [test](https://github.com/gruntwork-io/terraform-google-sql/tree/master/test): Automated tests for the submodules
   and examples.
 
-## What is Cloud SQL?
+## Deploy
 
-Cloud SQL is Google's fully-managed database service that makes it easy to set up, maintain, manage, and administer
-your relational databases on Google Cloud Platform. Cloud SQL automatically includes:
+### Non-production deployment (quick start for learning)
 
-- Data replication between multiple zones with automatic failover.
-- Automated and on-demand backups, and point-in-time recovery.
-- Data encryption on networks, database tables, temporary files, and backups.
-- Secure external connections with the [Cloud SQL Proxy](https://cloud.google.com/sql/docs/mysql/sql-proxy) or with the SSL/TLS protocol.
+If you just want to try this repo out for experimenting and learning, check out the following resources:
 
-You can learn more about Cloud SQL from [the official documentation](https://cloud.google.com/sql/docs/).
+- [examples folder](https://github.com/gruntwork-io/terraform-google-sql/blob/master/examples): The `examples` folder contains sample code optimized for learning, experimenting, and testing (but not production usage).
 
-## What's a Module?
+### Production deployment
 
-A Module is a canonical, reusable, best-practices definition for how to run a single piece of infrastructure, such
-as a database or server cluster. Each Module is written using a combination of [Terraform](https://www.terraform.io/)
-and scripts (mostly bash) and include automated tests, documentation, and examples. It is maintained both by the open
-source community and companies that provide commercial support.
+If you want to deploy this repo in production, check out the following resources:
 
-Instead of figuring out the details of how to run a piece of infrastructure from scratch, you can reuse
-existing code that has been proven in production. And instead of maintaining all that infrastructure code yourself,
-you can leverage the work of the Module community to pick up infrastructure improvements through
-a version number bump.
+- [cloud-sql module in the GCP Reference Architecture](https://github.com/gruntwork-io/infrastructure-modules-google/tree/master/data-stores/cloud-sql): Production-ready sample code from the GCP Reference Architecture.
 
-## Who maintains this Module?
+## Manage
 
-This Module and its Submodules are maintained by [Gruntwork](http://www.gruntwork.io/). Read the [Gruntwork Philosophy](https://github.com/gruntwork-io/terraform-google-sql/blob/master/GRUNTWORK_PHILOSOPHY.md) document to learn more about how Gruntwork builds production grade infrastructure code. If you are looking for help or
-commercial support, send an email to
-[support@gruntwork.io](mailto:support@gruntwork.io?Subject=Google%20SQL%20Module).
+### Day-to-day operations
 
-Gruntwork can help with:
+- [How to connect to a Cloud SQL instance](https://github.com/gruntwork-io/terraform-google-sql/tree/master/modules/cloud-sql/core-concepts.md#how-do-you-connect-to-the-database)
+- [How to configure high availability](https://github.com/gruntwork-io/terraform-google-sql/tree/master/modules/cloud-sql/core-concepts.md#how-do-you-configure-high-availability)
+- [How to secure the database instance](https://github.com/gruntwork-io/terraform-google-sql/tree/master/modules/cloud-sql/core-concepts.md#how-do-you-secure-the-database)
+- [How to scale the database](https://github.com/gruntwork-io/terraform-google-sql/tree/master/modules/cloud-sql/core-concepts.md#how-do-you-secure-the-database)
 
-- Setup, customization, and support for this Module.
-- Modules and submodules for other types of infrastructure, such as VPCs, Docker clusters, databases, and continuous
-  integration.
-- Modules and Submodules that meet compliance requirements, such as HIPAA.
-- Consulting & Training on GCP, AWS, Terraform, and DevOps.
+## Support
 
-## How do I contribute to this Module?
+If you need help with this repo or anything else related to infrastructure or DevOps, Gruntwork offers [Commercial Support](https://gruntwork.io/support/) via Slack, email, and phone/video. If you’re already a Gruntwork customer, hop on Slack and ask away! If not, [subscribe now](https://www.gruntwork.io/pricing/). If you’re not sure, feel free to email us at [support@gruntwork.io](mailto:support@gruntwork.io).
 
-Contributions are very welcome! Check out the [Contribution Guidelines](https://github.com/gruntwork-io/terraform-google-sql/blob/master/CONTRIBUTING.md) for instructions.
+## Contributions
 
-## How is this Module versioned?
+Contributions to this repo are very welcome and appreciated! If you find a bug or want to add a new feature or even contribute an entirely new module, we are very happy to accept pull requests, provide feedback, and run your changes through our automated test suite.
 
-This Module follows the principles of [Semantic Versioning](http://semver.org/). You can find each new release, along
-with the changelog, in the [Releases Page](https://github.com/gruntwork-io/terraform-google-sql/releases).
-
-During initial development, the major version will be 0 (e.g., `0.x.y`), which indicates the code does not yet have a
-stable API. Once we hit `1.0.0`, we will make every effort to maintain a backwards compatible API and use the MAJOR,
-MINOR, and PATCH versions on each release to indicate any incompatibilities.
+Please see [Contributing to the Gruntwork Infrastructure as Code Library](https://gruntwork.io/guides/foundations/how-to-use-gruntwork-infrastructure-as-code-library/#contributing-to-the-gruntwork-infrastructure-as-code-library) for instructions.
 
 ## License
 
-Please see [LICENSE](https://github.com/gruntwork-io/terraform-google-sql/blob/master/LICENSE.txt) for how the code in this repo is licensed.
+Please see [LICENSE](https://github.com/gruntwork-io/terraform-google-sql/blob/master/LICENSE.txt) for details on how the code in this repo is licensed.
 
 Copyright &copy; 2019 Gruntwork, Inc.
+
+
+
+
