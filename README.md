@@ -19,7 +19,7 @@ This repo contains modules for running relational databases such as MySQL and Po
 
 ## Cloud SQL Architecture
 
-![Cloud SQL Architecture](_docs/cloud-sql.png "Cloud SQL Architecture")
+![Cloud SQL Architecture](https://github.com/gruntwork-io/terraform-google-sql/blob/master/_docs/cloud-sql.png "Cloud SQL Architecture")
 
 ## Features
 

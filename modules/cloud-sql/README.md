@@ -16,7 +16,7 @@ This module helps you run [MySQL](https://cloud.google.com/sql/docs/mysql/) and 
 
 ## Cloud SQL Architecture
 
-![Cloud SQL Architecture](../../_docs/cloud-sql.png "Cloud SQL Architecture")
+![Cloud SQL Architecture](https://github.com/gruntwork-io/terraform-google-sql/blob/master/_docs/cloud-sql.png "Cloud SQL Architecture")
 
 ## Features
 
