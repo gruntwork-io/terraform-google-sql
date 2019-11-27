@@ -6,7 +6,7 @@
 :category: database
 :cloud: gcp
 :tags: database, mysql, postgresql
-:license: gruntwork
+:license: open-source
 :built-with: terraform
 -->
 # Cloud SQL Modules
