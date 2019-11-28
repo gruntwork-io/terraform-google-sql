@@ -68,7 +68,9 @@ If you just want to try this repo out for experimenting and learning, check out 
 
 If you want to deploy this repo in production, check out the following resources:
 
-- [cloud-sql module in the GCP Reference Architecture](https://github.com/gruntwork-io/infrastructure-modules-google/tree/master/data-stores/cloud-sql): Production-ready sample code from the GCP Reference Architecture.
+- [cloud-sql module in the GCP Reference Architecture](https://github.com/gruntwork-io/infrastructure-modules-google/tree/master/data-stores/cloud-sql): 
+Production-ready sample code from the GCP Reference Architecture. Note that the repository is private and accessible only with 
+Gruntwork subscription. To get access, [subscribe now](https://www.gruntwork.io/pricing/) or contact us at [support@gruntwork.io](mailto:support@gruntwork.io) for more information.
 
 ## Manage
 
