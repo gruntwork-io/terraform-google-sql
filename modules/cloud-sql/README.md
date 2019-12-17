@@ -1,5 +1,10 @@
 # Cloud SQL Module
 
+[![Maintained by Gruntwork.io](https://img.shields.io/badge/maintained%20by-gruntwork.io-%235849a6.svg)](https://gruntwork.io/?ref=repo_google_cloudsql)
+[![GitHub tag (latest SemVer)](https://img.shields.io/github/tag/gruntwork-io/terraform-google-sql.svg?label=latest)](http://github.com/gruntwork-io/terraform-google-sql/releases/latest)
+![Terraform Version](https://img.shields.io/badge/tf-%3E%3D0.12.0-blue.svg)
+
+
 <!-- NOTE: We use absolute linking here instead of relative linking, because the terraform registry does not support
            relative linking correctly.
 -->
@@ -9,80 +14,72 @@ The cluster is managed by Google, automating backups, replication, patches, and 
 
 This module helps you run [MySQL](https://cloud.google.com/sql/docs/mysql/) and [PostgreSQL](https://cloud.google.com/sql/docs/postgres/) databases in [Google Cloud](https://cloud.google.com/).
 
-## How do you use this module?
+## Cloud SQL Architecture
 
-See the [examples](https://github.com/gruntwork-io/terraform-google-sql/tree/master/examples) folder for an example. 
+![Cloud SQL Architecture](https://github.com/gruntwork-io/terraform-google-sql/blob/master/_docs/cloud-sql.png "Cloud SQL Architecture")
 
-## How do you configure this module?
+## Features
 
-This module allows you to configure a number of parameters, such as high availability, backup windows, maintenance window and replicas. 
-For a list of all available variables and their descriptions, see [variables.tf](https://github.com/gruntwork-io/terraform-google-sql/blob/master/modules/cloud-sql/variables.tf).
+- Deploy a fully-managed relational database
+- Supports MySQL and PostgreSQL
+- Optional failover instances
+- Optional read replicas
 
-## How do you connect to the database?
+## Learn
 
-**Cloud SQL instances are created in a producer network (a VPC network internal to Google). They are not created in your VPC network. See https://cloud.google.com/sql/docs/mysql/private-ip**
- 
-You can use both public IP and private IP to connect to a Cloud SQL instance. 
-Neither connection method affects the other; you must protect the public IP connection whether the instance is configured to use private IP or not.
+This repo is a part of [the Gruntwork Infrastructure as Code Library](https://gruntwork.io/infrastructure-as-code-library/), a collection of reusable, battle-tested, production ready infrastructure code. If you’ve never used the Infrastructure as Code Library before, make sure to read [How to use the Gruntwork Infrastructure as Code Library](https://gruntwork.io/guides/foundations/how-to-use-gruntwork-infrastructure-as-code-library/)!
 
-You can also use the [Cloud SQL Proxy for MySQL](https://cloud.google.com/sql/docs/mysql/sql-proxy) and [Cloud SQL Proxy for PostgreSQL](https://cloud.google.com/sql/docs/postgres/sql-proxy) 
-to connect to an instance that is also configured to use private IP. The proxy can connect using either the private IP address or a public IP address.
+### Core concepts
 
-This module provides the connection details as [Terraform output 
-variables](https://www.terraform.io/intro/getting-started/outputs.html). Use the public / private addresses depending on your configuration:
+- [What is Cloud SQL](https://github.com/gruntwork-io/terraform-google-sql/blob/master/modules/cloud-sql/core-concepts.md#what-is-cloud-sql)
+- [Cloud SQL documentation](https://cloud.google.com/sql/docs/)
+- **[Designing Data Intensive Applications](https://dataintensive.net/)**: the best book we’ve found for understanding data systems, including relational databases, NoSQL, replication, sharding, consistency, and so on.
 
+### Repo organisation
 
-1. **Master Public IP Address** `master_public_ip_address`: The public IPv4 address of the master instance.
-1. **Master Private IP Address** `master_private_ip_address`: The private IPv4 address of the master instance.
-1. **Master Proxy connection** `master_proxy_connection`: Instance path for connecting with Cloud SQL Proxy; see [Connecting mysql Client Using the Cloud SQL Proxy](https://cloud.google.com/sql/docs/mysql/connect-admin-proxy).
-1. **Read Replica Public IP Addresses** `read_replica_public_ip_addresses`: A list of read replica public IP addresses in the cluster. Use these addresses for reads (see "How do you scale this database?" below).
-1. **Read Replica Private IP Addresses** `read_replica_private_ip_addresses`: A list of read replica private IP addresses in the cluster. Use these addresses for reads (see "How do you scale this database?" below).
-1. **Read Replica Proxy Connections** `read_replica_proxy_connections`: A list of instance paths for connecting with Cloud SQL Proxy; see [Connecting Using the Cloud SQL Proxy](https://cloud.google.com/sql/docs/mysql/connect-admin-proxy).
+This repo has the following folder structure:
 
+- [root](https://github.com/gruntwork-io/terraform-google-sql/tree/master): The root folder contains an example of how
+  to deploy a private PostgreSQL instance in Cloud SQL. See [postgres-private-ip](https://github.com/gruntwork-io/terraform-google-sql/blob/master/examples/postgres-private-ip)
+  for the documentation.
 
-You can programmatically extract these variables in your Terraform templates and pass them to other resources. 
-You'll also see the variables at the end of each `terraform apply` call or if you run `terraform output`.
+- [modules](https://github.com/gruntwork-io/terraform-google-sql/tree/master/modules): This folder contains the
+  main implementation code for this Module, broken down into multiple standalone submodules.
 
-For full connectivity options and detailed documentation, see [Connecting to Cloud SQL MySQL from External Applications](https://cloud.google.com/sql/docs/mysql/connect-external-app) and [Connecting to Cloud SQL PostgreSQL from External Applications](https://cloud.google.com/sql/docs/postgres/external-connection-methods).
+  The primary module is:
 
-## How do you configure High Availability?
+  - [cloud-sql](https://github.com/gruntwork-io/terraform-google-sql/tree/master/modules/cloud-sql): Deploy a Cloud SQL [MySQL](https://cloud.google.com/sql/docs/mysql/) or [PostgreSQL](https://cloud.google.com/sql/docs/postgres/) database.
+  
+- [examples](https://github.com/gruntwork-io/terraform-google-sql/tree/master/examples): This folder contains
+  examples of how to use the submodules.
 
-You can enable High Availability using the `enable_failover_replica` input variable.
+- [test](https://github.com/gruntwork-io/terraform-google-sql/tree/master/test): Automated tests for the submodules
+  and examples.
 
-### High Availability for MySQL
+## Deploy
 
-The configuration is made up of a primary instance (master) in the primary zone (`master_zone` input variable) and a failover replica in the secondary zone (`failover_replica_zone` input variable).
-The failover replica is configured with the same database flags, users and passwords, authorized applications and networks, and databases as the primary instance.
+### Non-production deployment (quick start for learning)
 
-For full details about MySQL High Availability, see https://cloud.google.com/sql/docs/mysql/high-availability
+If you just want to try this repo out for experimenting and learning, check out the following resources:
 
-### High Availability for PostgreSQL
+- [examples folder](https://github.com/gruntwork-io/terraform-google-sql/blob/master/examples): The `examples` folder contains sample code optimized for learning, experimenting, and testing (but not production usage).
 
-A Cloud SQL PostgreSQL instance configured for HA is also called a _regional instance_ and is located in a primary and secondary zone within the configured region. Within a regional instance, 
-the configuration is made up of a primary instance (master) and a standby instance. You control the primary zone for the master instance
-with input variable `master_zone` and Google will automatically place the standby instance in another zone. 
+### Production deployment
 
-For full details about PostgreSQL High Availability, see https://cloud.google.com/sql/docs/postgres/high-availability
+If you want to deploy this repo in production, check out the following resources:
 
+- [cloud-sql module in the GCP Reference Architecture](https://github.com/gruntwork-io/infrastructure-modules-google/tree/master/data-stores/cloud-sql): 
+Production-ready sample code from the GCP Reference Architecture. Note that the repository is private and accessible only with 
+Gruntwork subscription. To get access, [subscribe now](https://www.gruntwork.io/pricing/) or contact us at [support@gruntwork.io](mailto:support@gruntwork.io) for more information.
 
-## How do you secure this database?
+## Manage
 
-Cloud SQL customer data is encrypted when stored in database tables, temporary files, and backups. 
-External connections can be encrypted by using SSL, or by using the Cloud SQL Proxy, which automatically encrypts traffic to and from the database.
-If you do not use the proxy, you can enforce SSL for external connections using the `require_ssl` input variable.
+### Day-to-day operations
 
-For further information, see https://cloud.google.com/blog/products/gcp/best-practices-for-securing-your-google-cloud-databases and 
-https://cloud.google.com/sql/faq#encryption
-
-## How do you scale this database?
-
-* **Storage**: Cloud SQL manages storage for you, automatically growing cluster volume up to 10TB You can set the 
-initial disk size using the `disk_size` input variable.
-* **Vertical scaling**: To scale vertically (i.e. bigger DB instances with more CPU and RAM), use the `machine_type` 
-  input variable. For a list of Cloud SQL Machine Types, see [Cloud SQL Pricing](https://cloud.google.com/sql/pricing#2nd-gen-pricing).
-* **Horizontal scaling**: To scale horizontally, you can add more replicas using the `num_read_replicas` and `read_replica_zones` input variables, 
-  and the module will automatically deploy the new instances, sync them to the master, and make them available as read 
-  replicas.
+- [How to connect to a Cloud SQL instance](https://github.com/gruntwork-io/terraform-google-sql/tree/master/modules/cloud-sql/core-concepts.md#how-do-you-connect-to-the-database)
+- [How to configure high availability](https://github.com/gruntwork-io/terraform-google-sql/tree/master/modules/cloud-sql/core-concepts.md#how-do-you-configure-high-availability)
+- [How to secure the database instance](https://github.com/gruntwork-io/terraform-google-sql/tree/master/modules/cloud-sql/core-concepts.md#how-do-you-secure-the-database)
+- [How to scale the database](https://github.com/gruntwork-io/terraform-google-sql/tree/master/modules/cloud-sql/core-concepts.md#how-do-you-secure-the-database)
 
 ## Known Issues
 
@@ -92,12 +89,18 @@ Due to limitations on the current `terraform` provider for Google, it is not pos
 
 See https://github.com/terraform-providers/terraform-provider-google/issues/2446
 
-### Read Replica and IP Addresses Outputs
+## Support
 
-Retrieving and outputting distinct values from list of maps is not possible with resources using `count` prior to `terraform 0.12`. 
-Instead we have to output the values JSON encoded - for example `read_replica_server_ca_certs`. For full details of the outputs and 
-their format, see [outputs.tf](https://github.com/gruntwork-io/terraform-google-sql/blob/master/modules/cloud-sql/outputs.tf).
+If you need help with this repo or anything else related to infrastructure or DevOps, Gruntwork offers [Commercial Support](https://gruntwork.io/support/) via Slack, email, and phone/video. If you’re already a Gruntwork customer, hop on Slack and ask away! If not, [subscribe now](https://www.gruntwork.io/pricing/). If you’re not sure, feel free to email us at [support@gruntwork.io](mailto:support@gruntwork.io).
 
-See https://github.com/hashicorp/terraform/issues/17048
+## Contributions
 
+Contributions to this repo are very welcome and appreciated! If you find a bug or want to add a new feature or even contribute an entirely new module, we are very happy to accept pull requests, provide feedback, and run your changes through our automated test suite.
 
+Please see [Contributing to the Gruntwork Infrastructure as Code Library](https://gruntwork.io/guides/foundations/how-to-use-gruntwork-infrastructure-as-code-library/#contributing-to-the-gruntwork-infrastructure-as-code-library) for instructions.
+
+## License
+
+Please see [LICENSE](https://github.com/gruntwork-io/terraform-google-sql/blob/master/LICENSE.txt) for details on how the code in this repo is licensed.
+
+Copyright &copy; 2019 Gruntwork, Inc.
