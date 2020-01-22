@@ -22,6 +22,12 @@ locals {
   actual_failover_replica_count = local.is_postgres ? 0 : var.enable_failover_replica ? 1 : 0
 }
 
+provider "google-beta" {
+  project = var.project
+  region  = var.region
+  version = "~> 2.20.0"
+}
+
 # ------------------------------------------------------------------------------
 # CREATE THE MASTER INSTANCE
 #
