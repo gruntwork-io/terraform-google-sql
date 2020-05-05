@@ -185,3 +185,8 @@ output "complete" {
   description = "Output signaling that all resources have been created"
   value       = data.template_file.complete.rendered
 }
+
+output "service_account_email_address" {
+  description = "Service account email address associated with the CloudSQL instance"
+  value       = google_sql_database_instance.master.service_account_email_address
+}
