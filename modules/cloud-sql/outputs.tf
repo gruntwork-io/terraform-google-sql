@@ -81,6 +81,12 @@ output "db_password" {
   sensitive   = true
 }
 
+output "db_additional_passwords" {
+  description = "Passwords of the additional users"
+  value       = google_sql_user.additional_users.*.password
+  sensitive   = true
+}
+
 # ------------------------------------------------------------------------------
 # FAILOVER REPLICA OUTPUTS - ONLY APPLICABLE TO MYSQL
 # ------------------------------------------------------------------------------
