@@ -144,7 +144,7 @@ resource "random_string" "user_password" {
 }
 
 resource "random_string" "additional_users_passwords" {
-  count = local.additional_users
+  count = var.additional_users
 
   keepers = {
     name = google_sql_database_instance.master.name
