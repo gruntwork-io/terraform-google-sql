@@ -245,6 +245,17 @@ variable "resource_timeout" {
   default     = "60m"
 }
 
+variable "additional_users" {
+  description = "Additional database users"
+  type = list(object({
+    name = string
+    # TODO: once optional object parameters are supported
+    # password = string
+    # length = number
+  }))
+  default = []
+}
+
 # ---------------------------------------------------------------------------------------------------------------------
 # MODULE DEPENDENCIES
 # Workaround Terraform limitation where there is no module depends_on.

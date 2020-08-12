@@ -143,6 +143,32 @@ resource "random_string" "user_password" {
   special = false
 }
 
+resource "random_string" "additional_users_passwords" {
+  count = length(var.additional_users)
+
+  keepers = {
+    instance = google_sql_database_instance.master.name
+    user     = var.additional_users[count.index].name
+  }
+
+  length  = var.master_user_password_length
+  special = false
+}
+
+resource "google_sql_user" "additional_users" {
+  count = length(var.additional_users)
+
+  project  = var.project
+  name     = var.additional_users[count.index].name
+  instance = google_sql_database_instance.master.name
+  # Postgres users don't have hosts, so the API will ignore this value which causes Terraform to attempt
+  # to recreate the user each time.
+  # See https://github.com/terraform-providers/terraform-provider-google/issues/1526 for more information.
+  host     = local.is_postgres ? null : var.master_user_host
+  password = element(random_string.additional_users_passwords.*.result, count.index)
+}
+
+
 # ------------------------------------------------------------------------------
 # SET MODULE DEPENDENCY RESOURCE
 # This works around a terraform limitation where we can not specify module dependencies natively.
