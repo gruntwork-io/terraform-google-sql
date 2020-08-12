@@ -165,7 +165,7 @@ resource "google_sql_user" "additional_users" {
   # to recreate the user each time.
   # See https://github.com/terraform-providers/terraform-provider-google/issues/1526 for more information.
   host     = local.is_postgres ? null : var.master_user_host
-  password = random_string.additional_users_passwords[count.index].hex
+  password = element(random_string.additional_users_passwords.*.hex, count.index)
 }
 
 
