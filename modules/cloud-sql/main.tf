@@ -156,10 +156,10 @@ resource "random_string" "additional_users_passwords" {
 }
 
 resource "google_sql_user" "additional_users" {
-  for_each = var.additional_users
+  count = length(var.additional_users)
 
   project  = var.project
-  name     = each.value.name
+  name     = var.additional_users[count.index].name
   instance = google_sql_database_instance.master.name
   # Postgres users don't have hosts, so the API will ignore this value which causes Terraform to attempt
   # to recreate the user each time.
