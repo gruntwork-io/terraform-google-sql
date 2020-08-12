@@ -144,10 +144,11 @@ resource "random_string" "user_password" {
 }
 
 resource "random_string" "additional_users_passwords" {
-  count = var.additional_users
+  for_each = var.additional_users
 
   keepers = {
-    name = google_sql_database_instance.master.name
+    instance = google_sql_database_instance.master.name
+    user     = each.value.name
   }
 
   length  = var.master_user_password_length
