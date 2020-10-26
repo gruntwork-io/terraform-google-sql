@@ -64,9 +64,10 @@ resource "google_sql_database_instance" "master" {
     }
 
     backup_configuration {
-      binary_log_enabled = local.actual_binary_log_enabled
-      enabled            = var.backup_enabled
-      start_time         = var.backup_start_time
+      binary_log_enabled             = local.actual_binary_log_enabled
+      enabled                        = var.backup_enabled
+      start_time                     = var.backup_start_time
+      point_in_time_recovery_enabled = var.point_in_time_recovery_enabled
     }
 
     maintenance_window {
