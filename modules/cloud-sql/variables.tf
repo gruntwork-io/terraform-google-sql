@@ -69,12 +69,6 @@ variable "authorized_networks" {
   # ]
 }
 
-variable "authorized_gae_applications" {
-  description = "A list of Google App Engine (GAE) project names that are allowed to access this instance."
-  type        = list(string)
-  default     = []
-}
-
 variable "backup_enabled" {
   description = "Set to false if you want to disable backup."
   type        = bool
@@ -158,12 +152,6 @@ variable "disk_type" {
   description = "The type of storage to use. Must be one of `PD_SSD` or `PD_HDD`."
   type        = string
   default     = "PD_SSD"
-}
-
-variable "follow_gae_application" {
-  description = "A GAE application whose zone to remain in. Must be in the same region as this instance."
-  type        = string
-  default     = null
 }
 
 variable "master_zone" {
