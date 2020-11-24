@@ -4,6 +4,13 @@
 # election, replication, failover, backups, patching, and encryption.
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+terraform {
+  # This module is now only being tested with Terraform 0.13.x. However, to make upgrading easier, we are setting
+  # 0.12.26 as the minimum version, as that version added support for required_providers with source URLs, making it
+  # forwards compatible with 0.13.x code.
+  required_version = ">= 0.12.26"
+}
+
 # ------------------------------------------------------------------------------
 # PREPARE LOCALS
 #
@@ -39,10 +46,9 @@ resource "google_sql_database_instance" "master" {
   database_version = var.engine
 
   settings {
-    tier                        = var.machine_type
-    activation_policy           = var.activation_policy
-    authorized_gae_applications = var.authorized_gae_applications
-    disk_autoresize             = var.disk_autoresize
+    tier              = var.machine_type
+    activation_policy = var.activation_policy
+    disk_autoresize   = var.disk_autoresize
 
     ip_configuration {
       dynamic "authorized_networks" {
@@ -58,9 +64,12 @@ resource "google_sql_database_instance" "master" {
       require_ssl     = var.require_ssl
     }
 
-    location_preference {
-      follow_gae_application = var.follow_gae_application
-      zone                   = var.master_zone
+    dynamic "location_preference" {
+      for_each = var.master_zone == null ? [] : list(var.master_zone)
+
+      content {
+        zone = location_preference.value
+      }
     }
 
     backup_configuration {
@@ -171,9 +180,8 @@ resource "google_sql_database_instance" "failover_replica" {
   settings {
     crash_safe_replication = true
 
-    tier                        = var.machine_type
-    authorized_gae_applications = var.authorized_gae_applications
-    disk_autoresize             = var.disk_autoresize
+    tier            = var.machine_type
+    disk_autoresize = var.disk_autoresize
 
     ip_configuration {
       dynamic "authorized_networks" {
@@ -189,9 +197,12 @@ resource "google_sql_database_instance" "failover_replica" {
       require_ssl     = var.require_ssl
     }
 
-    location_preference {
-      follow_gae_application = var.follow_gae_application
-      zone                   = var.mysql_failover_replica_zone
+    dynamic "location_preference" {
+      for_each = var.mysql_failover_replica_zone == null ? [] : list(var.mysql_failover_replica_zone)
+
+      content {
+        zone = location_preference.value
+      }
     }
 
     disk_size = var.disk_size
@@ -247,9 +258,8 @@ resource "google_sql_database_instance" "read_replica" {
   }
 
   settings {
-    tier                        = var.machine_type
-    authorized_gae_applications = var.authorized_gae_applications
-    disk_autoresize             = var.disk_autoresize
+    tier            = var.machine_type
+    disk_autoresize = var.disk_autoresize
 
     ip_configuration {
       dynamic "authorized_networks" {
@@ -266,8 +276,7 @@ resource "google_sql_database_instance" "read_replica" {
     }
 
     location_preference {
-      follow_gae_application = var.follow_gae_application
-      zone                   = element(var.read_replica_zones, count.index)
+      zone = element(var.read_replica_zones, count.index)
     }
 
     disk_size = var.disk_size

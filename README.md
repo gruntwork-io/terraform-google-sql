@@ -9,10 +9,12 @@
 :license: open-source
 :built-with: terraform
 -->
+
 # Cloud SQL Modules
+
 [![Maintained by Gruntwork.io](https://img.shields.io/badge/maintained%20by-gruntwork.io-%235849a6.svg)](https://gruntwork.io/?ref=repo_google_cloudsql)
 [![GitHub tag (latest SemVer)](https://img.shields.io/github/tag/gruntwork-io/terraform-google-sql.svg?label=latest)](http://github.com/gruntwork-io/terraform-google-sql/releases/latest)
-![Terraform Version](https://img.shields.io/badge/tf-%3E%3D0.12.0-blue.svg)
+![Terraform Version](https://img.shields.io/badge/tf-%3E%3D0.13.0-blue.svg)
 
 This repo contains modules for running relational databases such as MySQL and PostgreSQL on
 [Google Cloud Platform (GCP)](https://cloud.google.com/) using [Cloud SQL](https://cloud.google.com/sql/).
@@ -52,7 +54,7 @@ This repo has the following folder structure:
   The primary module is:
 
   - [cloud-sql](https://github.com/gruntwork-io/terraform-google-sql/tree/master/modules/cloud-sql): Deploy a Cloud SQL [MySQL](https://cloud.google.com/sql/docs/mysql/) or [PostgreSQL](https://cloud.google.com/sql/docs/postgres/) database.
-  
+
 - [examples](https://github.com/gruntwork-io/terraform-google-sql/tree/master/examples): This folder contains
   examples of how to use the submodules.
 
@@ -71,9 +73,9 @@ If you just want to try this repo out for experimenting and learning, check out 
 
 If you want to deploy this repo in production, check out the following resources:
 
-- [cloud-sql module in the GCP Reference Architecture](https://github.com/gruntwork-io/infrastructure-modules-google/tree/master/data-stores/cloud-sql): 
-Production-ready sample code from the GCP Reference Architecture. Note that the repository is private and accessible only with 
-Gruntwork subscription. To get access, [subscribe now](https://www.gruntwork.io/pricing/) or contact us at [support@gruntwork.io](mailto:support@gruntwork.io) for more information.
+- [cloud-sql module in the GCP Reference Architecture](https://github.com/gruntwork-io/infrastructure-modules-google/tree/master/data-stores/cloud-sql):
+  Production-ready sample code from the GCP Reference Architecture. Note that the repository is private and accessible only with
+  Gruntwork subscription. To get access, [subscribe now](https://www.gruntwork.io/pricing/) or contact us at [support@gruntwork.io](mailto:support@gruntwork.io) for more information.
 
 ## Manage
 
@@ -99,7 +101,3 @@ Please see [Contributing to the Gruntwork Infrastructure as Code Library](https:
 Please see [LICENSE](https://github.com/gruntwork-io/terraform-google-sql/blob/master/LICENSE.txt) for details on how the code in this repo is licensed.
 
 Copyright &copy; 2019 Gruntwork, Inc.
-
-
-
-
