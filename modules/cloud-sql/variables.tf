@@ -81,6 +81,12 @@ variable "backup_start_time" {
   default     = "04:00"
 }
 
+variable "postgres_point_in_time_recovery_enabled" {
+  description = "Will restart database if enabled after instance creation - only applicable to PostgreSQL"
+  type        = bool
+  default     = false
+}
+
 variable "mysql_binary_log_enabled" {
   description = "Set to false if you want to disable binary logs - only applicable to MySQL. Note, when using failover or read replicas, master and existing backups need to have binary_log_enabled=true set."
   type        = bool
