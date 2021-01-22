@@ -25,8 +25,8 @@ locals {
 
   # Calculate actuals, so we get expected behavior for each engine
   actual_binary_log_enabled     = local.is_postgres ? false : var.mysql_binary_log_enabled
-  actual_availability_type      = local.is_postgres && var.enable_failover_replica ? "REGIONAL" : "ZONAL"
-  actual_failover_replica_count = local.is_postgres ? 0 : var.enable_failover_replica ? 1 : 0
+  actual_availability_type      = local.is_postgres && var.enable_failover_replica || var.engine == "MYSQL_8_0" && var.enable_failover_replica ? "REGIONAL" : "ZONAL"
+  actual_failover_replica_count = local.is_postgres || var.engine == "MYSQL_8_0" ? 0 : var.enable_failover_replica ? 1 : 0
 }
 
 # ------------------------------------------------------------------------------
