@@ -59,10 +59,13 @@ module "mysql" {
   master_user_name = var.master_user_name
   master_user_host = "%"
 
-  # To make it easier to test this example, we are giving the servers public IP addresses and allowing inbound
-  # connections from anywhere. In real-world usage, your servers should live in private subnets, only have private IP
-  # addresses, and only allow access from specific trusted networks, servers or applications in your VPC.
+  # To make it easier to test this example, we are giving the instances public IP addresses and allowing inbound
+  # connections from anywhere. We also disable deletion protection so we can destroy the databases during the tests.
+  # In real-world usage, your instances should live in private subnets, only have private IP addresses, and only allow
+  # access from specific trusted networks, servers or applications in your VPC. By default, we recommend setting
+  # deletion_protection to true, to ensure database instances are not inadvertently destroyed.
   enable_public_internet_access = true
+  deletion_protection = false
 
   # Default setting for this is 'false' in 'variables.tf'
   # In the test cases, we're setting this to true, to test forced SSL.
