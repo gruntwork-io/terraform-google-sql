@@ -232,6 +232,13 @@ variable "resource_timeout" {
   default     = "60m"
 }
 
+# Whether or not to allow Terraform to destroy the instance.
+variable "deletion_protection" {
+  description = "Whether or not to allow Terraform to destroy the instance. Unless this field is set to false in Terraform state, a terraform destroy or terraform apply command that deletes the instance will fail."
+  type        = bool
+  default     = "true"
+}
+
 # ---------------------------------------------------------------------------------------------------------------------
 # MODULE DEPENDENCIES
 # Workaround Terraform limitation where there is no module depends_on.
