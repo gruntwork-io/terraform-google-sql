@@ -7,7 +7,7 @@
 # ------------------------------------------------------------------------------
 
 provider "google-beta" {
-  version = "~> 3.43.0"
+  version = "~> 3.57.0"
   project = var.project
   region  = var.region
 }
@@ -79,6 +79,11 @@ module "postgres" {
 
   engine       = var.postgres_version
   machine_type = var.machine_type
+
+  # To make it easier to test this example, we are disabling deletion protection so we can destroy the databases
+  # during the tests. By default, we recommend setting deletion_protection to true, to ensure database instances are
+  # not inadvertently destroyed.
+  deletion_protection = false
 
   # These together will construct the master_user privileges, i.e.
   # 'master_user_name'@'master_user_host' IDENTIFIED BY 'master_user_password'.

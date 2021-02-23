@@ -45,6 +45,9 @@ resource "google_sql_database_instance" "master" {
   region           = var.region
   database_version = var.engine
 
+  # Whether or not to allow Terraform to destroy the instance.
+  deletion_protection = var.deletion_protection
+
   settings {
     tier              = var.machine_type
     activation_policy = var.activation_policy
@@ -173,6 +176,9 @@ resource "google_sql_database_instance" "failover_replica" {
   # The name of the instance that will act as the master in the replication setup.
   master_instance_name = google_sql_database_instance.master.name
 
+  # Whether or not to allow Terraform to destroy the instance.
+  deletion_protection = var.deletion_protection
+
   replica_configuration {
     # Specifies that the replica is the failover target.
     failover_target = true
@@ -252,6 +258,9 @@ resource "google_sql_database_instance" "read_replica" {
 
   # The name of the instance that will act as the master in the replication setup.
   master_instance_name = google_sql_database_instance.master.name
+
+  # Whether or not to allow Terraform to destroy the instance.
+  deletion_protection = var.deletion_protection
 
   replica_configuration {
     # Specifies that the replica is not the failover target.
