@@ -39,13 +39,13 @@ locals {
 
 # Simple network, auto-creates subnetworks
 resource "google_compute_network" "private_network" {
-  provider = "google-beta"
+  provider = google-beta
   name     = local.private_network_name
 }
 
 # Reserve global internal address range for the peering
 resource "google_compute_global_address" "private_ip_address" {
-  provider      = "google-beta"
+  provider      = google-beta
   name          = local.private_ip_name
   purpose       = "VPC_PEERING"
   address_type  = "INTERNAL"
@@ -55,7 +55,7 @@ resource "google_compute_global_address" "private_ip_address" {
 
 # Establish VPC network peering connection using the reserved address range
 resource "google_service_networking_connection" "private_vpc_connection" {
-  provider                = "google-beta"
+  provider                = google-beta
   network                 = google_compute_network.private_network.self_link
   service                 = "servicenetworking.googleapis.com"
   reserved_peering_ranges = [google_compute_global_address.private_ip_address.name]
