@@ -38,7 +38,7 @@ provider google-beta {
 resource "google_sql_database_instance" "master" {
   depends_on = [null_resource.dependency_getter]
 
-  provider         = "google-beta"
+  provider         = google-beta
   name             = var.name
   project          = var.project
   region           = var.region
