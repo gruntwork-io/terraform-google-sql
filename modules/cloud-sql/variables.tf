@@ -247,12 +247,7 @@ variable "resource_timeout" {
 
 variable "additional_users" {
   description = "Additional database users"
-  type = list(object({
-    name = string
-    # TODO: once optional object parameters are supported
-    # password = string
-    # length = number
-  }))
+  type = list
   default = []
 }
 
