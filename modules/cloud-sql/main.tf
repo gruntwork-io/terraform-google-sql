@@ -38,7 +38,7 @@ provider google-beta {
 resource "google_sql_database_instance" "master" {
   depends_on = [null_resource.dependency_getter]
 
-  provider         = "google-beta"
+  provider         = google-beta
   name             = var.name
   project          = var.project
   region           = var.region
@@ -148,7 +148,7 @@ resource "random_string" "additional_users_passwords" {
 
   keepers = {
     instance = google_sql_database_instance.master.name
-    user     = var.additional_users[count.index].name
+    user     = var.additional_users[count.index]
   }
 
   length  = var.master_user_password_length
@@ -159,7 +159,7 @@ resource "google_sql_user" "additional_users" {
   count = length(var.additional_users)
 
   project  = var.project
-  name     = var.additional_users[count.index].name
+  name     = var.additional_users[count.index]
   instance = google_sql_database_instance.master.name
   # Postgres users don't have hosts, so the API will ignore this value which causes Terraform to attempt
   # to recreate the user each time.
