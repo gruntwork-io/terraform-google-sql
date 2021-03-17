@@ -196,7 +196,7 @@ resource "google_sql_database_instance" "failover_replica" {
     google_sql_user.default,
   ]
 
-  provider         = "google-beta"
+  provider         = google-beta
   name             = "${var.name}-failover"
   project          = var.project
   region           = var.region
@@ -274,7 +274,7 @@ resource "google_sql_database_instance" "read_replica" {
     google_sql_user.default,
   ]
 
-  provider         = "google-beta"
+  provider         = google-beta
   name             = "${var.name}-read-${count.index}"
   project          = var.project
   region           = var.region
