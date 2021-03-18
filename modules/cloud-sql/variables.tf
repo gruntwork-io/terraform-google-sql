@@ -247,8 +247,8 @@ variable "resource_timeout" {
 
 variable "additional_users" {
   description = "Additional database users"
-  type = list
-  default = []
+  type        = list(any)
+  default     = []
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
