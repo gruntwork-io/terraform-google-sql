@@ -81,6 +81,12 @@ variable "backup_start_time" {
   default     = "04:00"
 }
 
+variable "backup_location" {
+  description = "The region where the backup will be stored"
+  type        = string
+  default     = null
+}
+
 variable "postgres_point_in_time_recovery_enabled" {
   description = "Will restart database if enabled after instance creation - only applicable to PostgreSQL"
   type        = bool

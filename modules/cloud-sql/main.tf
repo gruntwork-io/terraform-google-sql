@@ -80,6 +80,7 @@ resource "google_sql_database_instance" "master" {
       enabled                        = var.backup_enabled
       start_time                     = var.backup_start_time
       point_in_time_recovery_enabled = local.is_postgres ? var.postgres_point_in_time_recovery_enabled : null
+      location                       = var.backup_location
     }
 
     maintenance_window {
