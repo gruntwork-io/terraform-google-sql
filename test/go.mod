@@ -5,7 +5,8 @@ go 1.14
 require (
 	github.com/GoogleCloudPlatform/cloudsql-proxy v0.0.0-20200504171905-7e668d9ad0ba
 	github.com/go-sql-driver/mysql v1.5.0
-	github.com/gruntwork-io/terratest v0.31.3
+	github.com/gruntwork-io/gruntwork-cli v0.7.0 // indirect
+	github.com/gruntwork-io/terratest v0.36.3
 	github.com/lib/pq v1.5.1
 	github.com/stretchr/testify v1.5.1
 )
