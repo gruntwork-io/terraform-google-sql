@@ -35,7 +35,7 @@ variable "postgres_version" {
 
 variable "machine_type" {
   description = "The machine type to use, see https://cloud.google.com/sql/pricing for more details"
-  default     = "db-f1-micro"
+  default     = "db-e2-micro"
 }
 
 variable "db_name" {
