@@ -2,7 +2,7 @@
 
 [![Maintained by Gruntwork.io](https://img.shields.io/badge/maintained%20by-gruntwork.io-%235849a6.svg)](https://gruntwork.io/?ref=repo_google_cloudsql)
 [![GitHub tag (latest SemVer)](https://img.shields.io/github/tag/gruntwork-io/terraform-google-sql.svg?label=latest)](http://github.com/gruntwork-io/terraform-google-sql/releases/latest)
-![Terraform Version](https://img.shields.io/badge/tf-%3E%3D0.14.0-blue.svg)
+![Terraform Version](https://img.shields.io/badge/tf-%3E%3D1.0.x-blue.svg)
 
 
 <!-- NOTE: We use absolute linking here instead of relative linking, because the terraform registry does not support
