@@ -73,6 +73,7 @@ resource "google_sql_database_instance" "master" {
       binary_log_enabled = local.actual_binary_log_enabled
       enabled            = var.backup_enabled
       start_time         = var.backup_start_time
+      location           = var.backup_location
     }
 
     maintenance_window {

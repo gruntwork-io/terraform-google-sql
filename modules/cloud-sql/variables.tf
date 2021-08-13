@@ -94,6 +94,11 @@ variable "backup_start_time" {
   default     = "04:00"
 }
 
+variable "backup_location" {
+  type        = string
+  default     = "us"
+}
+
 variable "mysql_binary_log_enabled" {
   description = "Set to false if you want to disable binary logs - only applicable to MySQL. Note, when using failover or read replicas, master and existing backups need to have binary_log_enabled=true set."
   type        = bool
