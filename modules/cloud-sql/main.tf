@@ -68,7 +68,7 @@ resource "google_sql_database_instance" "master" {
     }
 
     dynamic "location_preference" {
-      for_each = var.master_zone == null ? [] : list(var.master_zone)
+      for_each = var.master_zone == null ? [] : [var.master_zone]
 
       content {
         zone = location_preference.value
@@ -205,7 +205,7 @@ resource "google_sql_database_instance" "failover_replica" {
     }
 
     dynamic "location_preference" {
-      for_each = var.mysql_failover_replica_zone == null ? [] : list(var.mysql_failover_replica_zone)
+      for_each = var.mysql_failover_replica_zone == null ? [] : [var.mysql_failover_replica_zone]
 
       content {
         zone = location_preference.value
