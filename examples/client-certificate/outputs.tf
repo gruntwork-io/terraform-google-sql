@@ -11,4 +11,5 @@ output "client_ca_cert" {
 output "client_private_key" {
   description = "Private key associated with the client certificate."
   value       = google_sql_ssl_cert.client_cert.private_key
+  sensitive   = true
 }

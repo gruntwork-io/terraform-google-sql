@@ -5,9 +5,9 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 terraform {
-  # This module is now only being tested with Terraform 0.14.x. However, to make upgrading easier, we are setting
+  # This module is now only being tested with Terraform 1.0.x. However, to make upgrading easier, we are setting
   # 0.12.26 as the minimum version, as that version added support for required_providers with source URLs, making it
-  # forwards compatible with 0.14.x code.
+  # forwards compatible with 1.0.x code.
   required_version = ">= 0.12.26"
 }
 
@@ -68,7 +68,7 @@ resource "google_sql_database_instance" "master" {
     }
 
     dynamic "location_preference" {
-      for_each = var.master_zone == null ? [] : list(var.master_zone)
+      for_each = var.master_zone == null ? [] : [var.master_zone]
 
       content {
         zone = location_preference.value
@@ -205,7 +205,7 @@ resource "google_sql_database_instance" "failover_replica" {
     }
 
     dynamic "location_preference" {
-      for_each = var.mysql_failover_replica_zone == null ? [] : list(var.mysql_failover_replica_zone)
+      for_each = var.mysql_failover_replica_zone == null ? [] : [var.mysql_failover_replica_zone]
 
       content {
         zone = location_preference.value
