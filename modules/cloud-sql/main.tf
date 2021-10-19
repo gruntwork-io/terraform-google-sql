@@ -48,6 +48,8 @@ resource "google_sql_database_instance" "master" {
   # Whether or not to allow Terraform to destroy the instance.
   deletion_protection = var.deletion_protection
 
+  encryption_key_name = var.encryption_key_name
+
   settings {
     tier              = var.machine_type
     activation_policy = var.activation_policy

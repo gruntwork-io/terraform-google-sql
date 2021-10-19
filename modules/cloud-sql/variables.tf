@@ -239,6 +239,16 @@ variable "deletion_protection" {
   default     = "true"
 }
 
+# In order to use this feature, a special kind of service account must be created and granted permission on this key. 
+# This step can currently only be done manually, please see <https://cloud.google.com/sql/docs/mysql/configure-cmek#service-account>. 
+# That service account needs the `Cloud KMS > Cloud KMS CryptoKey Encrypter/Decrypter` role on your key - please see <https://cloud.google.com/sql/docs/mysql/configure-cmek#grantkey>.
+#   https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/sql_database_instance#encryption_key_name
+variable "encryption_key_name" {
+  description = "The full path to the encryption key used for the CMEK disk encryption. Setting up disk encryption currently requires manual steps outside of Terraform. The provided key must be in the same region as the SQL instance."
+  type        = string
+  default     = null
+}
+
 # ---------------------------------------------------------------------------------------------------------------------
 # MODULE DEPENDENCIES
 # Workaround Terraform limitation where there is no module depends_on.
