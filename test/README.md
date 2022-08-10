@@ -26,19 +26,8 @@ clean up.
 ### Prerequisites
 
 - Install the latest version of [Go](https://golang.org/).
-- Install [dep](https://github.com/golang/dep) for Go dependency management.
 - Install [Terraform](https://www.terraform.io/downloads.html).
 - Configure your Google credentials using one of the [options supported by GCP](https://cloud.google.com/docs/authentication/getting-started).
-
-
-### One-time setup
-
-Download Go dependencies using dep:
-
-```
-cd test
-dep ensure
-```
 
 
 ### Run all the tests
